@@ -2,7 +2,7 @@ rule sort:
     input:
         get_input_bams,
     output:
-        "results/sorted/sorted_{sample}.bam
+        "results/sorted/sorted_{sample}.bam"
     log:
         "logs/sorted/{sample}.log"
     threads: 8
@@ -15,9 +15,9 @@ rule scallop:
     input:
         "results/sorted/sorted_{sample}.bam",
     output:
-        "results/separate_scallops/{sample}.gtf
+        "results/separate_scallops/{sample}.gtf"
     log:
-        "logs/separate_scallops/{sample}.log
+        "logs/separate_scallops/{sample}.log"
     threads: 1
     params:
         extra=config["scallop_params"],
@@ -28,11 +28,11 @@ rule scallop:
     
 rule taco:
     input:
-        expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES)
+        expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES),
     output:
-        directory("results/scallop_annotation/)
+        directory("results/scallop_annotation/")
     log:
-        "logs/scallop_annotation/scallop.log
+        "logs/scallop_annotation/scallop.log"
     threads: 24
     params:
         extra=config["taco_params"],
