@@ -7,7 +7,7 @@ rule sort:
         "logs/sorted/{sample}.log"
     threads: 8
     params:
-        extra=config["samtools_params],
+        extra=config["samtools_params"],
     wrapper:
         "v2.1.1/bio/samtools/sort"
 
