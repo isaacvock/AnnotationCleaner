@@ -28,7 +28,7 @@ rule scallop:
     
 rule taco:
     input:
-        expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES),
+        expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES)
     output:
         directory("results/scallop_annotation/")
     log:
