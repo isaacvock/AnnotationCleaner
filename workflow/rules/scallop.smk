@@ -41,8 +41,7 @@ rule taco:
     input:
         "results/tacoinput/samplefile.txt"
     output:
-        output_dir=directory("results/scallop_annotation/"),
-        output_dummy="results/scallop_annotation/success.txt"
+        output_dummy="results/ignorethisdirectory/success.txt"
     log:
         "logs/scallop_annotation/scallop.log"
     threads: 24
@@ -52,7 +51,7 @@ rule taco:
         "../envs/scallop.yaml"
     shell:
         """
-        taco_run -o {output.output_dir} -p {threads} {params.extra} {input} 1> {log} 2>&1
+        taco_run -o ./results/scallop_annotation/ -p {threads} {params.extra} {input} 1> {log} 2>&1
         touch {output.output_dummy}
         """
     

@@ -52,12 +52,12 @@ if config["use_scallop"]:
 
             rule all:
                 input:
-                    "results/scallop_annotation/success.txt",
+                    "results/ignorethisdirectory/success.txt",
                     "results/stringtie_annotation/stringtie.gtf"
     else:
         rule all:
             input:
-                "results/scallop_annotation/success.txt"
+                "results/ignorethisdirectory/success.txt"
 else:
     rule all:
         input:
