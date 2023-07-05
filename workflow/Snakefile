@@ -28,6 +28,8 @@ container: "docker://continuumio/miniconda3"
 
 
 ##### load rules #####
+include: "rules/common.smk"
+
 if config["use_scallop"]:
     include: "rules/scallop.smk"
 
