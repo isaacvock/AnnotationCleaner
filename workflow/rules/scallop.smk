@@ -15,7 +15,7 @@ rule scallop:
     input:
         "results/sorted/sorted_{sample}.bam",
     output:
-        "results/separate_scallops/{sample}.gtf"
+        gtf="results/separate_scallops/{sample}.gtf",
     log:
         "logs/separate_scallops/{sample}.log"
     threads: 1
@@ -24,11 +24,22 @@ rule scallop:
     conda:
         "../envs/scallop.yaml",
     shell:
-        "scallop -i {input} -o {output} {params.extra} 1> {log} 2>&1"
+        "scallop -i {input} -o {output.gtf} {params.extra} 1> {log} 2>&1"
+    
+rule tacoinput:
+    input:
+        expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES),
+    output:
+        "results/tacoinput/samplefile.txt"
+    threads: 1
+    run:
+        with open(output[0], "w") as file:
+            for path in input:
+                file.write(path + "\n")
     
 rule taco:
     input:
-        expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES)
+        "results/tacoinput/samplefile.txt"
     output:
         output_dir=directory("results/scallop_annotation/"),
         output_dummy="results/scallop_annotation/success.txt"
@@ -41,7 +52,7 @@ rule taco:
         "../envs/scallop.yaml"
     shell:
         """
-        taco_run {input} -o {output.output_dir} -p {threads} {params.extra} 1> {log} 2>&1
+        taco_run -o {output.output_dir} -p {threads} {params.extra} {input} 1> {log} 2>&1
         touch {output.output_dummy}
         """
     
