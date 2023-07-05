@@ -56,7 +56,8 @@ if config["use_scallop"]:
                     "results/stringtie_annotation/stringtie.gtf"
     else:
         rule all:
-            "results/scallop_annotation/scallop.gtf"
+            input:
+                "results/scallop_annotation/scallop.gtf"
 else:
     rule all:
         input:
