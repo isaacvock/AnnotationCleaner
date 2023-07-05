@@ -52,12 +52,12 @@ if config["use_scallop"]:
 
             rule all:
                 input:
-                    "results/scallop_annotation/scallop.gtf",
+                    directory("results/scallop_annotation/")
                     "results/stringtie_annotation/stringtie.gtf"
     else:
         rule all:
             input:
-                "results/scallop_annotation/scallop.gtf"
+                directory("results/scallop_annotation/")
 else:
     rule all:
         input:
