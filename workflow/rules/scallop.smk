@@ -30,7 +30,8 @@ rule taco:
     input:
         expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES)
     output:
-        directory("results/scallop_annotation/")
+        output_dir=directory("results/scallop_annotation/"),
+        output_dummy="results/scallop_annotation/success.txt"
     log:
         "logs/scallop_annotation/scallop.log"
     threads: 24
@@ -39,5 +40,8 @@ rule taco:
     conda:
         "../envs/scallop.yaml"
     shell:
-        "taco_run {input} -o {output} -p {threads} {params.extra} 1> {log} 2>&1"
+        """
+        taco_run {input} -o {output.output_dir} -p {threads} {params.extra} 1> {log} 2>&1
+        touch {output.output_dummy}
+        """
     
