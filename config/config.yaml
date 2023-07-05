@@ -1,1 +1,31 @@
 ##### PARAMETERS TO ALTER
+
+# Path to bam files
+samples:
+  Rep_1: data/bam/WT_replicate_1.bam
+  Rep_2: data/bam/WT_replicate_2.bam
+  Rep_3: data/bam/WT_nos4U.bam
+
+
+##### PARAMETERS YOU SHOULD DOUBLE CHECK
+
+# Use Scallop + TACO for annotation building
+use_scallop: True
+
+# Use StringTie for annotation building
+use_stringtie: False
+
+# Use mikado to combine annotations built by multiple tools
+use_mikado: False
+
+# Parameters to pass to samtools (other than input, output, -m, and -T)
+samtools_params: ""
+
+# Parameters to pass to scallop (other than input and output)
+scallop_params: ""
+
+# Parameters to pass to TACO (other than input, output, and threads)
+taco_params: ""
+
+# Parameters to pass to StringTie 
+stringtie_params: ""

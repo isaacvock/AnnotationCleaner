@@ -28,3 +28,34 @@ container: "docker://continuumio/miniconda3"
 
 
 ##### load rules #####
+if config["use_scallop"]:
+    include: "rules/scallop.smk"
+
+if config["use_stringtie"]:
+    include: "rules/stringtie.smk"
+
+if config["use_mikado"]:
+    include: "rules/mikado.smk"
+
+##### target rules #####
+
+if config["use_scallop"]:
+    if config["use_stringtie"]:
+        if config["use_mikado"]:
+
+            rule all:
+                input:
+                    "results/annotation/combined.gtf"
+        else:
+
+            rule all:
+                input:
+                    "results/scallop_annotation/scallop.gtf",
+                    "results/stringtie_annotation/stringtie.gtf"
+    else:
+        rule all:
+            "results/scallop_annotation/scallop.gtf"
+else:
+    rule all:
+        input:
+            "results/stringtie_annotation/stringtie.gtf"
