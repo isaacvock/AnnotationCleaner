@@ -32,7 +32,8 @@ taco_params: ""
 # Parameters to pass to TACO refcomp (other than output, reference, and test annotation)
 refcomp_params: ""
 
-
-
 # Parameters to pass to StringTie 
 stringtie_params: ""
+
+# Parameters to psas to StringTie --merge
+stringtie_merge_params: ""

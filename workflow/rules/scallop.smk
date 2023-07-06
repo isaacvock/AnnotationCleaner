@@ -1,16 +1,3 @@
-rule sort:
-    input:
-        get_input_bams,
-    output:
-        "results/sorted/sorted_{sample}.bam"
-    log:
-        "logs/sorted/{sample}.log"
-    threads: 8
-    params:
-        extra=config["samtools_params"],
-    wrapper:
-        "v2.1.1/bio/samtools/sort"
-
 rule scallop:
     input:
         "results/sorted/sorted_{sample}.bam",
