@@ -9,7 +9,7 @@ samples:
 # Annotation GTF to compare assemblies to 
 reference_gtf: data/annotation/reference.gtf
 
-##### PARAMETERS YOU SHOULD DOUBLE CHECK
+##### PARAMETERS THAT DETERMINE WHICH TRANSCRIPTOME ASSEMBLERS TO USE
 
 # Use Scallop + TACO for annotation building
 use_scallop: True
@@ -20,20 +20,39 @@ use_stringtie: False
 # Use mikado to combine annotations built by multiple tools
 use_mikado: False
 
+
+##### PARAMETERS AFFECTING ALL ASSEMBLERS
+
 # Parameters to pass to samtools (other than input, output, -m, and -T)
 samtools_params: ""
+
+
+##### SCALLOP PARAMETERS
 
 # Parameters to pass to scallop (other than input and output)
 scallop_params: ""
 
 # Parameters to pass to TACO (other than input, output, and threads)
-taco_params: ""
+scallop_taco_params: ""
 
 # Parameters to pass to TACO refcomp (other than output, reference, and test annotation)
-refcomp_params: ""
+scallop_refcomp_params: ""
+
+
+##### STRINGTIE PARAMETERS
+
 
 # Parameters to pass to StringTie 
 stringtie_params: ""
 
 # Parameters to psas to StringTie --merge
 stringtie_merge_params: ""
+
+# Parameters to pass to TACO using Stringtie annotations
+stringtie_taco_params: ""
+
+# Parameters to pass to TACO refcomp (other than output, reference, and test annotation)
+stringtie_refcomp_params: ""
+
+
+##### MIKADO PARAMETERS

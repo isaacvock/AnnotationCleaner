@@ -50,8 +50,8 @@ rule stringtie_taco:
         "logs/stringtie_taco/stringtie_taco.log"
     threads: 24
     params:
-        extra_taco=config["taco_params"],
-        extra_refcomp=config["refcomp_params"],
+        extra_taco=config["stringtie_taco_params"],
+        extra_refcomp=config["stringtie_refcomp_params"],
         gtf=config["reference_gtf"]
     conda:
         "../envs/scallop.yaml"

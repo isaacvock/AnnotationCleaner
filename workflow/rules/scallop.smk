@@ -33,8 +33,8 @@ rule scallop_taco:
         "logs/scallop_taco/scallop.log"
     threads: 24
     params:
-        extra_taco=config["taco_params"],
-        extra_refcomp=config["refcomp_params"],
+        extra_taco=config["scallop_taco_params"],
+        extra_refcomp=config["scallop_refcomp_params"],
         gtf=config["reference_gtf"]
     conda:
         "../envs/scallop.yaml"
