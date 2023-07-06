@@ -28,7 +28,7 @@ rule stringtie_merge:
     conda:
         "../envs/stringtie.yaml"
     shell:
-        "stringtie --merge -G {params.gtf} -o {output} {params.extra} {input}"
+        "stringtie --merge -p {threads} -G {params.gtf} -o {output} {params.extra} {input}"
 
 rule stringtie_tacoinput:
     input:
