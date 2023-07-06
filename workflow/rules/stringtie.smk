@@ -2,7 +2,7 @@ rule stringtie
     input:
         "results/sorted/sorted_{sample}.bam",
     output:
-        gtf="results/separate_stringties/{sample}.gtf",
+        "results/separate_stringties/{sample}.gtf",
     log:
         "logs/separate_stringties/{sample}.log"
     threads: 24
@@ -12,7 +12,7 @@ rule stringtie
     conda:
         "../envs/stringtie.yaml",
     shell:
-        "stringtie -o {output.gtf} -p {threads} -G {params.gtf} {params.extra} {input} 1> {log} 2>&1"
+        "stringtie -o {output} -p {threads} -G {params.gtf} {params.extra} {input} 1> {log} 2>&1"
 
 rule stringtie_merge
     input:

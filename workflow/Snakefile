@@ -53,6 +53,7 @@ if config["use_scallop"]:
             rule all:
                 input:
                     "results/ignorethisdirectory/success.txt",
+                    "results/stringtie_merge/stringtie_merged.gtf",
                     "results/ignorethisdirectory_stringtie/success.txt"
     else:
         rule all:
@@ -61,4 +62,5 @@ if config["use_scallop"]:
 else:
     rule all:
         input:
+            "results/stringtie_merge/stringtie_merged.gtf",
             "results/ignorethisdirectory_stringtie/success.txt"
