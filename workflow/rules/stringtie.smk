@@ -1,4 +1,4 @@
-rule stringtie
+rule stringtie:
     input:
         "results/sorted/sorted_{sample}.bam",
     output:
@@ -14,7 +14,7 @@ rule stringtie
     shell:
         "stringtie -o {output} -p {threads} -G {params.gtf} {params.extra} {input} 1> {log} 2>&1"
 
-rule stringtie_merge
+rule stringtie_merge:
     input:
         expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES),
     output:
