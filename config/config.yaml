@@ -1,10 +1,10 @@
 ##### PARAMETERS TO ALTER
 
-# Path to bam files
+# Path to bam files, relative to directory that AnnotationCleaner was deployed to
 samples:
   Rep_1: data/bam/WT_replicate_1.bam
   Rep_2: data/bam/WT_replicate_2.bam
-  Rep_3: data/bam/WT_nos4U.bam
+  Rep_3: data/bam/WT_replicate_3.bam
 
 # Annotation GTF to compare assemblies to 
 reference_gtf: data/annotation/reference.gtf
@@ -32,26 +32,26 @@ samtools_params: ""
 # Parameters to pass to scallop (other than input and output)
 scallop_params: ""
 
-# Parameters to pass to TACO (other than input, output, and threads)
+# Parameters to pass to TACO with Scallop input (other than input, output, and threads)
 scallop_taco_params: ""
 
-# Parameters to pass to TACO refcomp (other than output, reference, and test annotation)
+# Parameters to pass to TACO refcomp with Scallop input (other than output, reference, and test annotation)
 scallop_refcomp_params: ""
 
 
 ##### STRINGTIE PARAMETERS
 
 
-# Parameters to pass to StringTie 
+# Parameters to pass to Stringtie 
 stringtie_params: ""
 
-# Parameters to psas to StringTie --merge
+# Parameters to psas to Stringtie --merge
 stringtie_merge_params: ""
 
-# Parameters to pass to TACO using Stringtie annotations
+# Parameters to pass to TACO with Stringtie input
 stringtie_taco_params: ""
 
-# Parameters to pass to TACO refcomp (other than output, reference, and test annotation)
+# Parameters to pass to TACO refcomp with Stringtie input (other than output, reference, and test annotation)
 stringtie_refcomp_params: ""
 
 
