@@ -6,6 +6,8 @@ samples:
   Rep_2: data/bam/WT_replicate_2.bam
   Rep_3: data/bam/WT_nos4U.bam
 
+# Annotation GTF to compare assemblies to 
+reference_gtf: data/annotation/reference.gtf
 
 ##### PARAMETERS YOU SHOULD DOUBLE CHECK
 
@@ -26,6 +28,11 @@ scallop_params: ""
 
 # Parameters to pass to TACO (other than input, output, and threads)
 taco_params: ""
+
+# Parameters to pass to TACO refcomp (other than output, reference, and test annotation)
+refcomp_params: ""
+
+
 
 # Parameters to pass to StringTie 
 stringtie_params: ""
