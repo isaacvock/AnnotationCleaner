@@ -15,6 +15,19 @@ Other tools that may be implemented in the future are:
 
 Note, TACO is a tool for merging runs of Scallop, Stringtie, or simliar single-sample assemblers on multiple samples. Mikado is a tool combines transcriptomes from multiple different assemblers to infer a consensus transcriptome.
 
+## Quickstart
+
+Below are abriged instructions for running AnnotationCleaner, specifically for those especially comfortable with adopting new bioinformatic tools are who have experience with the key dependencies of AnnotationCleaner (i.e., the assembler tools listed above and Snakemake). The remaining of the README goes into greater detail about each step of this process.
+
+Steps to run AnnotationCleaner:
+
+0. Acquire bam files and a reference annotation (gtf file). These are the input to Annotation Cleaner
+1. Install [Git](https://git-scm.com/downloads), [Snakemake](https://snakemake.readthedocs.io/en/stable/), and [Mamba](https://mamba.readthedocs.io/en/latest/) (or [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)).
+2. Install Snakedeploy and deploy AnnotationCleaner (for example, follow instructions for deploying workflows on the [Snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=cbg-ethz/V-pipe))
+   * Create a directory that you want to run AnnotationCleaner in, then run `snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main` from inside that directory.
+3. Edit config.yaml file, providing paths to bam files and reference annotation, as well as any optional parameters to the assembly tools used.
+4. Run with a call to Snakemake that might look something like: `snakemake --cores all --use-conda`. `--use-conda` will automate installation of all other AnnotationCleaner dependencies, and is thus highly recommended. Otherwise, all dependencies will have to be installed manually and made available for AnnotationCleaner to call.
+
 ## Running 
 
 ### Step 1: Install basic dependencies
