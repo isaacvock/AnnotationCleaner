@@ -5,7 +5,7 @@ rule stringtie:
         "results/separate_stringties/{sample}.gtf",
     log:
         "logs/separate_stringties/{sample}.log"
-    threads: 24
+    threads: 36
     params:
         extra=config["stringtie_params"],
         gtf=config["reference_gtf"]
@@ -21,7 +21,7 @@ rule stringtie_merge:
         "results/stringtie_merge/stringtie_merged.gtf",
     log:
         "logs/stringtie_merge/stringtie_merged.log"
-    threads: 24
+    threads: 36
     params:
         extra=config["stringtie_merge_params"],
         gtf=config["reference_gtf"],
@@ -48,7 +48,7 @@ rule stringtie_taco:
         output_dummy="results/ignorethisdirectory_stringtie/success.txt"
     log:
         "logs/stringtie_taco/stringtie_taco.log"
-    threads: 24
+    threads: 36
     params:
         extra_taco=config["stringtie_taco_params"],
         extra_refcomp=config["stringtie_refcomp_params"],

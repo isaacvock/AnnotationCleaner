@@ -31,7 +31,7 @@ rule scallop_taco:
         output_dummy="results/ignorethisdirectory/success.txt"
     log:
         "logs/scallop_taco/scallop.log"
-    threads: 24
+    threads: 36
     params:
         extra_taco=config["scallop_taco_params"],
         extra_refcomp=config["scallop_refcomp_params"],
