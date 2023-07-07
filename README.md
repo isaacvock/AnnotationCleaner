@@ -81,7 +81,7 @@ This workflow can easily be deployed for your particular usecase with [Snakedepl
 mamba create -c conda-forge -c bioconda --name deploy_snakemake snakemake snakedeploy
 ```
 
-Next, create a directory that you want to run bam2bakR in (I'll refer to it as `workdir`) and move into it:
+Next, create a directory that you want to run AnnotationCleaner in (I'll refer to it as `workdir`) and move into it:
 ``` bash
 mkdir workdir
 cd workdir
@@ -94,7 +94,7 @@ conda activate deploy_snakemake
 snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main
 ```
 
-`snakedeploy deploy-workflow https://github.com/simonlabcode/bam2bakR.git` copies the content of the `config` directory in the bam2bakR Github repo into the directoy specified (`.`, which means current directory, i.e., `workdir` in this example). It also creates a directory called `workflow` that contains a singular Snakefile that instructs Snakemake to use the workflow hosted on the main branch (that is what `--branch main` determines) of the bam2bakR Github repo.
+`snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git` copies the content of the `config` directory in the AnnotationCleaner Github repo into the directoy specified (`.`, which means current directory, i.e., `workdir` in this example). It also creates a directory called `workflow` that contains a singular Snakefile that instructs Snakemake to use the workflow hosted on the main branch (that is what `--branch main` determines) of the AnnotationCleaner Github repo.
 
 ### Step 3: Update config
 
@@ -106,7 +106,7 @@ samples:
   Rep_2: data/bam/WT_replicate_2.bam
   Rep_3: data/bam/WT_replicate_3.bam
 ```
-`samples` is the list of sample IDs and paths to .bam files that you want to process. Delete the existing sample names and paths and add yours. The sample names in this example are `Rep_1`, `Rep_2`, and `Rep_3`. The `:` is necessary to distinguish the sample name from what follows, the path to the relevant bam file. Note, the path is NOT an absolute path, it is relative to the directory that you deployed to (i.e., `workdir` in this example). Thus, in this example, the bam files are located in a directory called `samples` that is inside of a directory called `data` located in `workdir`. Your data can be wherever you want it to be, but it might be easiest if you put it in a `data` directory inside the bam2bakR directory as in this example. 
+`samples` is the list of sample IDs and paths to .bam files that you want to process. Delete the existing sample names and paths and add yours. The sample names in this example are `Rep_1`, `Rep_2`, and `Rep_3`. The `:` is necessary to distinguish the sample name from what follows, the path to the relevant bam file. Note, the path is NOT an absolute path, it is relative to the directory that you deployed to (i.e., `workdir` in this example). Thus, in this example, the bam files are located in a directory called `samples` that is inside of a directory called `data` located in `workdir`. Your data can be wherever you want it to be, but it might be easiest if you put it in a `data` directory inside the AnnotationCleaner directory as in this example. 
 
 As another example, imagine that the `data` directory was in the directory that contains `workdir`, and that there was no `samples` subdirectory inside of `data`. In that case, the paths would look something like this:
 
