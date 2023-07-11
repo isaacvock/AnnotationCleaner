@@ -18,11 +18,11 @@ Note, TACO is a tool for merging runs of Scallop, Stringtie, or simliar single-s
 
 ## Quickstart
 
-Below are abriged instructions for running AnnotationCleaner, specifically for those especially comfortable with adopting new bioinformatic tools are who have experience with the key dependencies of AnnotationCleaner (i.e., the assembler tools listed above and Snakemake). The remaining of the README goes into greater detail about each step of this process.
+Below are abriged instructions for running AnnotationCleaner, meant specifically for those comfortable with adopting new bioinformatic tools and who have experience with the key dependencies of AnnotationCleaner (i.e., the assembler tools listed above and Snakemake). The rest of the README goes into greater detail about each step of this process.
 
 Steps to run AnnotationCleaner:
 
-0. Acquire bam files and a reference annotation (gtf file). These are the input to Annotation Cleaner
+0. Acquire bam files and a reference annotation (gtf file). These are the necessary input for Annotation Cleaner
 1. Install [Git](https://git-scm.com/downloads), [Snakemake](https://snakemake.readthedocs.io/en/stable/), and [Mamba](https://mamba.readthedocs.io/en/latest/) (or [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)).
 2. Install Snakedeploy and deploy AnnotationCleaner (for example, follow instructions for deploying workflows on the [Snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=cbg-ethz/V-pipe))
    * Create a directory that you want to run AnnotationCleaner in, then run `snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main` from inside that directory.
