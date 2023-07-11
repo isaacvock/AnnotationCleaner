@@ -12,6 +12,7 @@ Other tools that may be implemented in the future are:
 1. [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
 2. [Cufflinks](http://cole-trapnell-lab.github.io/cufflinks/) + [Cuffmerge](http://cole-trapnell-lab.github.io/cufflinks/cuffmerge/)
 3. Cufflinks + TACO
+4. [PsiCLASS](https://github.com/splicebox/PsiCLASS)
 
 Note, TACO is a tool for merging runs of Scallop, Stringtie, or simliar single-sample assemblers on multiple samples. Mikado is a tool combines transcriptomes from multiple different assemblers to infer a consensus transcriptome.
 
