@@ -1,0 +1,9 @@
+channels:
+  - bioconda
+  - nodefaults
+dependencies:
+  - mikado
+  - transdecoder
+  - blast
+  - prodigal
+  - diamond
