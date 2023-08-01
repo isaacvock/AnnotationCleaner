@@ -12,16 +12,17 @@ Other tools that may be implemented in the future are:
 1. [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
 2. [Cufflinks](http://cole-trapnell-lab.github.io/cufflinks/) + [Cuffmerge](http://cole-trapnell-lab.github.io/cufflinks/cuffmerge/)
 3. Cufflinks + TACO
+4. [PsiCLASS](https://github.com/splicebox/PsiCLASS)
 
 Note, TACO is a tool for merging runs of Scallop, Stringtie, or simliar single-sample assemblers on multiple samples. Mikado is a tool combines transcriptomes from multiple different assemblers to infer a consensus transcriptome.
 
 ## Quickstart
 
-Below are abriged instructions for running AnnotationCleaner, specifically for those especially comfortable with adopting new bioinformatic tools are who have experience with the key dependencies of AnnotationCleaner (i.e., the assembler tools listed above and Snakemake). The remaining of the README goes into greater detail about each step of this process.
+Below are abriged instructions for running AnnotationCleaner, meant specifically for those comfortable with adopting new bioinformatic tools and who have experience with the key dependencies of AnnotationCleaner (i.e., the assembler tools listed above and Snakemake). The rest of the README goes into greater detail about each step of this process.
 
 Steps to run AnnotationCleaner:
 
-0. Acquire bam files and a reference annotation (gtf file). These are the input to Annotation Cleaner
+0. Acquire bam files and a reference annotation (gtf file). These are the necessary input for Annotation Cleaner
 1. Install [Git](https://git-scm.com/downloads), [Snakemake](https://snakemake.readthedocs.io/en/stable/), and [Mamba](https://mamba.readthedocs.io/en/latest/) (or [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)).
 2. Install Snakedeploy and deploy AnnotationCleaner (for example, follow instructions for deploying workflows on the [Snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=cbg-ethz/V-pipe))
    * Create a directory that you want to run AnnotationCleaner in, then run `snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main` from inside that directory.
@@ -81,7 +82,7 @@ This workflow can easily be deployed for your particular usecase with [Snakedepl
 mamba create -c conda-forge -c bioconda --name deploy_snakemake snakemake snakedeploy
 ```
 
-Next, create a directory that you want to run bam2bakR in (I'll refer to it as `workdir`) and move into it:
+Next, create a directory that you want to run AnnotationCleaner in (I'll refer to it as `workdir`) and move into it:
 ``` bash
 mkdir workdir
 cd workdir
@@ -94,7 +95,7 @@ conda activate deploy_snakemake
 snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main
 ```
 
-`snakedeploy deploy-workflow https://github.com/simonlabcode/bam2bakR.git` copies the content of the `config` directory in the bam2bakR Github repo into the directoy specified (`.`, which means current directory, i.e., `workdir` in this example). It also creates a directory called `workflow` that contains a singular Snakefile that instructs Snakemake to use the workflow hosted on the main branch (that is what `--branch main` determines) of the bam2bakR Github repo.
+`snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git` copies the content of the `config` directory in the AnnotationCleaner Github repo into the directoy specified (`.`, which means current directory, i.e., `workdir` in this example). It also creates a directory called `workflow` that contains a singular Snakefile that instructs Snakemake to use the workflow hosted on the main branch (that is what `--branch main` determines) of the AnnotationCleaner Github repo.
 
 ### Step 3: Update config
 
@@ -106,7 +107,7 @@ samples:
   Rep_2: data/bam/WT_replicate_2.bam
   Rep_3: data/bam/WT_replicate_3.bam
 ```
-`samples` is the list of sample IDs and paths to .bam files that you want to process. Delete the existing sample names and paths and add yours. The sample names in this example are `Rep_1`, `Rep_2`, and `Rep_3`. The `:` is necessary to distinguish the sample name from what follows, the path to the relevant bam file. Note, the path is NOT an absolute path, it is relative to the directory that you deployed to (i.e., `workdir` in this example). Thus, in this example, the bam files are located in a directory called `samples` that is inside of a directory called `data` located in `workdir`. Your data can be wherever you want it to be, but it might be easiest if you put it in a `data` directory inside the bam2bakR directory as in this example. 
+`samples` is the list of sample IDs and paths to .bam files that you want to process. Delete the existing sample names and paths and add yours. The sample names in this example are `Rep_1`, `Rep_2`, and `Rep_3`. The `:` is necessary to distinguish the sample name from what follows, the path to the relevant bam file. Note, the path is NOT an absolute path, it is relative to the directory that you deployed to (i.e., `workdir` in this example). Thus, in this example, the bam files are located in a directory called `samples` that is inside of a directory called `data` located in `workdir`. Your data can be wherever you want it to be, but it might be easiest if you put it in a `data` directory inside the AnnotationCleaner directory as in this example. 
 
 As another example, imagine that the `data` directory was in the directory that contains `workdir`, and that there was no `samples` subdirectory inside of `data`. In that case, the paths would look something like this:
 
@@ -141,3 +142,18 @@ snakemake --cores all --use-conda
 There are **A LOT** of adjustable parameters that you can play with when running a Snakemake pipeline. I will point you to the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html) 
 for the details on everything you can change when running the pipeline.
 
+
+## Output
+
+In the `results` directory, you will find the following sub-directories generated by AnnotationCleaner (if you ran both Stringtie and Scallop; only the directories related to the relevant tool will be present if you ran a single one of these):
+
+1. `sorted`: Sorted bam files
+2. `separate_scallops`: Scallop gtfs created for each individual sample passed in
+3. `scallop_taco`: Output of `taco_run` using all Scallop gtfs as input
+4. `scallop_taco_refcomp`: Output of `taco_refcomp` using assembly.gtf present in `scallop_taco` and the provided reference gtf
+5. `separate_stringties`: Stringtie gtfs created for each individual sample passed in
+6. `stringtie_taco`: Output of `taco_run` using all Stringtie gtfs as input
+7. `stringtie_merge`: Output of `stringtie --merge` using all Stringtie gtfs as input
+8. `stringtie_taco_refcomp`: Output of `taco_refcomp` using assembly.gtf present in `stringtie_taco` and the provided reference gtf
+9. `ignorethisdirectory`: Directory that had to get created as a cheap hack for Snakemake to run TACO with Scallop output (problem is Snakemake needs some output for every rule, which in TACO's case should be a directory, but specifying this output to Snakemake causes Snakemake to create the directory prior to TACO running, which breaks TACO). Contains a singular empty text file
+10. `ignorethisdirectory_stringtie`: Directory that had to get created as a cheap hack for Snakemake to run TACO with Stringtie output. Contains a singular empty text file
