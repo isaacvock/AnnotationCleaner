@@ -81,8 +81,8 @@ mikado_scoring: data/mikado/scoring.yaml
 # Reference genome fasta
 genome: data/genome/reference.fasta
 
-# Reference proteome fasta
-proteome: data/proteome/reference.fasta
+# Database to BLAST
+blast_db: data/blast_db/reference.fasta
 
 # Annotation GTF to compare assemblies to 
 reference_gtf: 

@@ -30,7 +30,7 @@ rule mikado_configure:
     input:
         mlist=config["mikado_list"],
         reference=config["genome"],
-        proteins=config["proteome"],
+        proteins=config["blast_db"],
         junctions="results/identify_junctions/junctions.bed",
         get_mikado_input
     output:
@@ -92,7 +92,7 @@ rule identify_orfs:
 # Run BLAST to get homology data that will help mikado
 rule mikado_blast:
     input:
-        proteins=config["proteome"],
+        proteins=config["blast_db"],
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
         prepare_log="results/mikado_blast/blast_prepare.log",
@@ -106,7 +106,7 @@ rule mikado_blast:
         """
         makeblastdb -in {input.proteins} -dbtype prot -parse_seqids > {output.prepare_log}
         blastx -max_target_seqs 5 -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qent sstart send evalue bitscore ppos btop" \
-        -num_threads {threads} -query mikado_prepared.fasta -db {input.fasta} -out {output.mikado_blast} 1> {log} 2>&1
+        -num_threads {threads} -query {input.fasta} -db {input.proteins} -out {output.mikado_blast} 1> {log} 2>&1
         """
 
 # Create SQLite database with all information mikado needs
