@@ -50,6 +50,7 @@ rule mikado_configure:
         """  
 
 # Create sorted, non-redundant GTF with all input assemblies
+### SYNTAX CHECKED
 rule mikado_prepare:
     input:
         "results/mikado_configure/configuration.yaml",
@@ -66,21 +67,26 @@ rule mikado_prepare:
     shell:
         "mikado prepare --json-conf {input} -od results/mikado_prepare/ {params.extra} 1> {log} 2>&1"
 
+# Identify open reading frames with TransDecoder
+### SYNTAX CHECKED
 rule identify_orfs:
     input:
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
         orfs="results/identify_orfs/mikado.orfs.gff3"
     params:
-        orf_length=config["orf_min_length"],
         extra=config["transdecoder_params"],
     conda:
         "../envs/mikado.yaml"
     log:
         "logs/identify_orfs/TransDecoder.log"
-    threads: 4
+    threads: 1
     shell:
-        "TransDecoder.LongOrfs -t {input.fasta} -m {params.orf_length} --output_dir results/identify_orfs/ {params.extra} 1> {log} 2>&1"
+        """
+        TransDecoder.LongOrfs -t {input.fasta} --output_dir results/identify_orfs/ {params.extra} 1> {log} 2>&1
+        mv transcripts.fasta.transdecoder* results/identify_orfs/
+        mv results/identify_orfs/transcripts.fasta.transdecoder.gff3 {output}
+        """"
 
 
 # Run BLAST to get homology data that will help mikado

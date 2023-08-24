@@ -122,7 +122,6 @@ mikado_configure_params: ""
 
 mikado_prepare_params: ""
 
-orf_min_length: 100
 transdecoder_params: ""
 
 mikado_serialise_params: ""
