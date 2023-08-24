@@ -7,18 +7,20 @@ rule identify_junctions:
         "results/identify_junctions/junctions.bed"
     params:
         extra_prep=config["portcullis_prep_params"],
-        extra_junc=config["portcullis_junc_params"]
+        extra_junc=config["portcullis_junc_params"],
+        strandedness=config["portcullis_strandedness"],
+        orientation=config["portcullis_orientation"]
     conda:
         "../envs/mikado.yaml"
     threads: 8
     shell:
         """
-        portcullis prep -o prepare_portcullis {params.extra_prep} {input.fasta} {input.bams}
+        portcullis prep -t {threads} -o prepare_portcullis {params.extra_prep} {input.fasta} {input.bams}
         portcullis junc -t {threads} --orientation {params.orientation} \
         --strandedness {params.strandedness} -o results/identify_junctions/junctions {params.extra_junc} \
         prepare_portcullis/
         """
-        
+
 # Create configuration file
 rule mikado_configure:
     input:

@@ -68,6 +68,8 @@ proteome: data/proteome/reference.fasta
 
 portcullis_prep_params: ""
 portcullis_junc_params: ""
+portcullis_strandedness: "firststrand"
+portcullis_orientation: "RF"
 
 mikado_configure_params: ""
 
