@@ -137,6 +137,8 @@ rule mikado_serialise:
         --junctions {input.junctions} --xml {input.blast} --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
         """
 
+# Identify probable transcripts
+### CHECKED SYNTAX ###
 rule mikado_pick:
     input:
         mconfig="results/mikado_configure/configuration.yaml",
@@ -152,7 +154,7 @@ rule mikado_pick:
         "logs/mikado_serialise/mikado_pick.log"
     threads: 4
     shell:
-        "mikado pick --configuration {input.mconfig} -db {input.db} --subloci_out {output.subloci} -od results/mikado_pick/ {params.extra} 1> {log} 2>&1"
+        "mikado pick --configuration {input.mconfig} -db {input.db} --loci_out mikado.loci.gff3 --subloci_out mikado.subloci.gff3 -od results/mikado_pick/ {params.extra} 1> {log} 2>&1"
 
 
 rule mikado_compare:
