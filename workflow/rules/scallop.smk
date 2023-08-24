@@ -28,7 +28,7 @@ rule scallop_taco:
     input:
         "results/scallop_tacoinput/samplefile.txt"
     output:
-        output_dummy="results/ignorethisdirectory/success.txt"
+        output_dummy="results/ignorethisdirectory_scallop/success.txt"
     log:
         "logs/scallop_taco/scallop.log"
     threads: 36

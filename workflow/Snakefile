@@ -41,30 +41,6 @@ if config["use_mikado"]:
 
 ##### target rules #####
 
-if config["use_mikado"]:
-    # Mikado output
-    rule all:
-        input:
-            "results/annotation/combined.gtf"
-
-if config["scallop"]["use_scallop"]:
-    if config["stringtie"]["use_stringtie"]:
-
-        rule all:
-            input:
-                "results/ignorethisdirectory/success.txt",
-                "results/stringtie_merge/stringtie_merged.gtf",
-                "results/ignorethisdirectory_stringtie/success.txt"
-
-    else:
-
-        rule all:
-            input:
-                "results/ignorethisdirectory/success.txt"
-
-else:
-
-    rule all:
-        input:
-            "results/stringtie_merge/stringtie_merged.gtf",
-            "results/ignorethisdirectory_stringtie/success.txt"
+rule all:
+    input:
+        get_target_input

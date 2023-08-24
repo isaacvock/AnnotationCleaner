@@ -123,13 +123,14 @@ rule mikado_compare:
         reference=config["reference_gtf"],
         mikado_out="results/mikado_pick/mikado.loci.gff3"
     output:
-        comparison=directory("results/mikado_compare")
+        dummy="results/ignorethisdirectory_mikado/success.txt"
     conda:
         "../envs/mikado.yaml"
     shell:
         """
         mikado compare -r {input.reference} --index
-        miadko compare -r {input.reference} -p {input.mikado_out} -o results/mikado_compare/compare 
+        mikado compare -r {input.reference} -p {input.mikado_out} -o results/mikado_compare/compare 
+        touch {output.dummy}
         """
 
 

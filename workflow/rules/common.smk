@@ -21,6 +21,31 @@ def get_mikado_input():
 
     return gtfs
 
+
+def get_target_input():
+
+    target = []
+
+    if config["use_mikado"]:
+
+        target.append("results/ignorethisdirectory_mikado/success.txt")
+
+    if config["scallop"]["use_scallop"]:
+
+        target.append("results/ignorethisdirectory_scallop/success.txt")
+
+    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
+
+        target.append("results/ignorethisdirectory_stringtie/success.txt")
+
+    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_merge"]:
+    
+        target.append("results/stringtie_merge/stringtie_merged.gtf")
+
+    return target
+
+
+
 ### Sort bam files
 rule sort:
     input:
