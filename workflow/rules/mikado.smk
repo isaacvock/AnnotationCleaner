@@ -1,6 +1,22 @@
-
 # Identify splice junctions with Portcullis
 rule identify_junctions:
+    input:
+        fasta=config["reference_fasta"],
+        bams=expand()
+    output:
+        "results/identify_junctions/junctions.bed"
+    params:
+        extra_prep=config["portcullis_prep_params"],
+        extra_junc=config["portcullis_junc_params"]
+    conda:
+        "../envs/mikado.yaml"
+    shell:
+        """
+        portcullis prep -o prepare_portcullis {params.extra_prep} {input.fasta} {input.bams}
+        portcullis junc -t {threads} --orientation {params.orientation} \
+        --strandedness {params.strandedness} -o results/identify_junctions/junctions {params.extra_junc} \
+        prepare_portcullis/
+        """
 
 # Download protein fasta to make life easier?
 rule get_proteins:
@@ -16,8 +32,10 @@ rule mikado_configure:
     params:
         extra=config["mikado_configure_params"]
     threads: 4
+    conda:
+        "../envs/mikado.yaml"
     shell:
-        "mikado configure --list {input.mlist} --reference {input.reference} --junctions {input.junctions} -od results/mikado_configure/ {extra} -t {threads}"  
+        "mikado configure --list {input.mlist} --reference {input.reference} --junctions {input.junctions} -od results/mikado_configure/ {params.extra} -t {threads}"  
 
 # Create sorted, non-redundant GTF with all input assemblies
 rule mikado_prepare:
@@ -28,8 +46,10 @@ rule mikado_prepare:
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     params:
         extra=config["mikado_prepare_params"]
+    conda:
+        "../envs/mikado.yaml"
     shell:
-        "mikado prepare --json-conf {input} -od results/mikado_prepare/ {extra}"
+        "mikado prepare --json-conf {input} -od results/mikado_prepare/ {params.extra}"
 
 rule identify_orfs:
     input:
@@ -39,8 +59,10 @@ rule identify_orfs:
     params:
         orf_length=config["orf_min_length"],
         extra=config["transdecoder_params"],
+    conda:
+        "../envs/mikado.yaml"
     shell:
-        "TransDecoder.LongOrfs -t {input.fasta} -m {params.orf_length} --output_dir results/identify_orfs/ {extra}"
+        "TransDecoder.LongOrfs -t {input.fasta} -m {params.orf_length} --output_dir results/identify_orfs/ {params.extra}"
 
 
 # Run BLAST to get homology data that will help mikado
@@ -51,6 +73,8 @@ rule mikado_blast:
     output:
         prepare_log="results/mikado_blast/blast_prepare.log",
         mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
+    conda:
+        "../envs/mikado.yaml"
     shell:
         """
         makeblastdb -in {input.proteins} -dbtype prot -parse_seqids > {output.prepare_log}
@@ -64,14 +88,19 @@ rule mikado_serialise:
         mconfig="results/mikado_configure/configuration.yaml",
         #blast="results/blast/mikado_prepared.blast.tsv",
         orfs="results/identify_orfs/mikado.orfs.gff3",
+        junctions="results/identify_junctions/junctions.bed",
     output:
         db="results/mikado_serialise/mikado.db",
         slog="results/mikado_serialise/serialise.log",
     params:
         extra=config["mikado_serialise_params"]
+    conda:
+        "../envs/mikado.yaml"
     shell:
-        "mikado serialise --json-conf {input.mconfig} --orfs {input.orfs} -od results/mikado_serialise/ {extra}"
-
+        """
+        mikado serialise --json-conf {input.mconfig} --orfs {input.orfs} -od results/mikado_serialise/ \
+        --junctions {input.junctions} {params.extra}
+        """
 
 rule mikado_pick:
     input:
@@ -82,8 +111,10 @@ rule mikado_pick:
         loci="results/mikado_pick/mikado.loci.gff3"
     params:
         extra=config["mikado_pick_params"]
+    conda:
+        "../envs/mikado.yaml"
     shell:
-        "mikado pick --configuration {input.mconfig} -db {input.db} --subloci_out {output.subloci} -od results/mikado_pick/ {extra}"
+        "mikado pick --configuration {input.mconfig} -db {input.db} --subloci_out {output.subloci} -od results/mikado_pick/ {params.extra}"
 
 
 rule mikado_compare:
@@ -92,6 +123,8 @@ rule mikado_compare:
         mikado_out="results/mikado_pick/mikado.loci.gff3"
     output:
         comparison=directory("results/mikado_compare")
+    conda:
+        "../envs/mikado.yaml"
     shell:
         """
         mikado compare -r {input.reference} --index
