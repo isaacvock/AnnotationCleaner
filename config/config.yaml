@@ -125,6 +125,8 @@ portcullis_junc_params: ""
 ## Optional TransDecoder parameters
 transdecoder_params: ""
 
+## Optional blastx parameters
+blastx_params: "-max_target_seqs 5"
 
 ## Optional mikado pipeline parameters
 mikado_configure_params: ""

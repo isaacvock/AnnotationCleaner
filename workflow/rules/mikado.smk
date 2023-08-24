@@ -97,6 +97,8 @@ rule mikado_blast:
     output:
         prepare_log="results/mikado_blast/blast_prepare.log",
         mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
+    params:
+        extra=config["blastx_params"],
     conda:
         "../envs/mikado.yaml"
     log:
@@ -105,7 +107,7 @@ rule mikado_blast:
     shell:
         """
         makeblastdb -in {input.proteins} -dbtype prot -parse_seqids > {output.prepare_log}
-        blastx -max_target_seqs 5 -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qent sstart send evalue bitscore ppos btop" \
+        blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qent sstart send evalue bitscore ppos btop" \
         -num_threads {threads} -query {input.fasta} -db {input.proteins} -out {output.mikado_blast} 1> {log} 2>&1
         """
 
