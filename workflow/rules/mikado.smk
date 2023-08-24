@@ -25,6 +25,7 @@ rule identify_junctions:
         """
 
 # Create configuration file
+### SYNTAX CHECKED ###
 rule mikado_configure:
     input:
         mlist=config["mikado_list"],
@@ -61,6 +62,7 @@ rule mikado_prepare:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_prepare/mikado_prepare.log"
+    threads: 4
     shell:
         "mikado prepare --json-conf {input} -od results/mikado_prepare/ {params.extra} 1> {log} 2>&1"
 
@@ -76,6 +78,7 @@ rule identify_orfs:
         "../envs/mikado.yaml"
     log:
         "logs/identify_orfs/TransDecoder.log"
+    threads: 4
     shell:
         "TransDecoder.LongOrfs -t {input.fasta} -m {params.orf_length} --output_dir results/identify_orfs/ {params.extra} 1> {log} 2>&1"
 
@@ -92,6 +95,7 @@ rule mikado_blast:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_blast/mikado_blast.log"
+    threads: 4
     shell:
         """
         makeblastdb -in {input.proteins} -dbtype prot -parse_seqids > {output.prepare_log}
@@ -115,6 +119,7 @@ rule mikado_serialise:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_serialise/mikado_serialise.log"
+    threads: 4
     shell:
         """
         mikado serialise --json-conf {input.mconfig} --orfs {input.orfs} -od results/mikado_serialise/ \
@@ -134,6 +139,7 @@ rule mikado_pick:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_serialise/mikado_pick.log"
+    threads: 4
     shell:
         "mikado pick --configuration {input.mconfig} -db {input.db} --subloci_out {output.subloci} -od results/mikado_pick/ {params.extra} 1> {log} 2>&1"
 
@@ -148,6 +154,7 @@ rule mikado_compare:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_compare/mikado_compare.log"
+    threads: 4
     shell:
         """
         mikado compare -r {input.reference} --index 1> {log} 2>&1
@@ -168,6 +175,7 @@ rule make_mikado_list:
         reference=config["reference_gtf"]
     log:
         "logs/make_mikado_list/mikado_list.log"
+    threads: 1
     run:
 
         scallop = params.scallop
