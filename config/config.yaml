@@ -90,7 +90,7 @@ reference_gtf:
     annotation: data/annotation/reference.gtf # path to reference
     strandedness: True # strandedness of reference
     score: 0 # Score assigned to reference
-    is_reference: True # treat this like a reference
+    is_reference: False # treat this like a reference (False means don't always keep reference transcripts)
     exclude_redundant: False # exclude redundant gene models
     strip_cds: False # Skip the chimera split routine
 
