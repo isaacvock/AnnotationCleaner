@@ -28,7 +28,7 @@ def get_target_input():
 
     if config["use_mikado"]:
 
-        target.append("results/ignorethisdirectory_mikado/success.txt")
+        target.append("results/mikado_pick/mikado.loci.gff3")
 
     if config["scallop"]["use_scallop"]:
 

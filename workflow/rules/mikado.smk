@@ -156,7 +156,8 @@ rule mikado_pick:
     shell:
         "mikado pick --configuration {input.mconfig} -db {input.db} --loci_out mikado.loci.gff3 --subloci_out mikado.subloci.gff3 -od results/mikado_pick/ {params.extra} 1> {log} 2>&1"
 
-
+# Compare Mikado's to a reference
+### Currently cut off from pipeline by target rule ###
 rule mikado_compare:
     input:
         reference=config["reference_gtf"],
