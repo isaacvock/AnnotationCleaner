@@ -37,6 +37,10 @@ use_mikado: True
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
 
+# Annotation GTF to compare assemblies to
+reference_gtf: data/annotation/reference.gtf
+
+
 # Parameters to pass to samtools (other than input, output, -m, and -T)
 samtools_params: ""
 
@@ -84,16 +88,6 @@ genome: data/genome/reference.fasta
 # Database to BLAST
 blast_db: data/blast_db/reference.fasta
 
-# Annotation GTF to compare assemblies to 
-reference_gtf: 
-  rf: # Label to give to reference for mikado
-    annotation: data/annotation/reference.gtf # path to reference
-    strandedness: True # strandedness of reference
-    score: 0 # Score assigned to reference
-    is_reference: False # treat this like a reference (False means don't always keep reference transcripts)
-    exclude_redundant: False # exclude redundant gene models
-    strip_cds: False # Skip the chimera split routine
-
 
 # Annotations you are bringing in
 provided_annotations:
@@ -111,6 +105,14 @@ provided_annotations:
     is_reference: False
     exclude_redundant: False
     strip_cds: False
+  rf: # Label to give to reference for mikado
+    annotation: data/annotation/reference.gtf # path to reference
+    strandedness: True # strandedness of reference
+    score: 0 # Score assigned to reference
+    is_reference: False # treat this like a reference (False means don't always keep reference transcripts)
+    exclude_redundant: False # exclude redundant gene models
+    strip_cds: False # Skip the chimera split routine
+
 
 ## Required portcullis parameters
 portcullis_strandedness: "firststrand"
