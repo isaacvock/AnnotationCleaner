@@ -9,6 +9,9 @@ samples:
 # Annotation GTF to compare assemblies to 
 reference_gtf: data/annotation/reference.gtf
 
+# Additional assembled GTFs you want to add?
+additional_gtfs:
+
 ##### PARAMETERS THAT DETERMINE WHICH TRANSCRIPTOME ASSEMBLERS TO USE
 
 # Use Scallop + TACO for annotation building
@@ -56,3 +59,23 @@ stringtie_refcomp_params: ""
 
 
 ##### MIKADO PARAMETERS
+
+# Reference genome fasta
+genome: data/genome/reference.fasta
+
+# Reference proteome fasta
+proteome: data/proteome/reference.fasta
+
+portcullis_prep_params: ""
+portcullis_junc_params: ""
+
+mikado_configure_params: ""
+
+mikado_prepare_params: ""
+
+orf_min_length: 100
+transdecoder_params: ""
+
+mikado_serialise_params: ""
+
+mikado_pick_params: ""

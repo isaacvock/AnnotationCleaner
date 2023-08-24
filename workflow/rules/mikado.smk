@@ -1,8 +1,8 @@
-# Identify splice junctions with Portcullis
+# Identify high confidence splice junctions with Portcullis
 rule identify_junctions:
     input:
-        fasta=config["reference_fasta"],
-        bams=expand()
+        fasta=config["genome"],
+        bams=expand("results/sorted/sorted_{SID}.bam", SID = SAMP_NAMES)
     output:
         "results/identify_junctions/junctions.bed"
     params:
@@ -10,6 +10,7 @@ rule identify_junctions:
         extra_junc=config["portcullis_junc_params"]
     conda:
         "../envs/mikado.yaml"
+    threads: 8
     shell:
         """
         portcullis prep -o prepare_portcullis {params.extra_prep} {input.fasta} {input.bams}
@@ -17,15 +18,12 @@ rule identify_junctions:
         --strandedness {params.strandedness} -o results/identify_junctions/junctions {params.extra_junc} \
         prepare_portcullis/
         """
-
-# Download protein fasta to make life easier?
-rule get_proteins:
-
+        
 # Create configuration file
 rule mikado_configure:
     input:
         mlist=config["mikado_list"],
-        reference=config["reference_fasta"],
+        reference=config["genome"],
         junctions="results/identify_junctions/junctions.bed"
     output:
         "results/mikado_configure/configuration.yaml"
@@ -86,7 +84,7 @@ rule mikado_blast:
 rule mikado_serialise:
     input:
         mconfig="results/mikado_configure/configuration.yaml",
-        #blast="results/blast/mikado_prepared.blast.tsv",
+        blast="results/blast/mikado_prepared.blast.tsv",
         orfs="results/identify_orfs/mikado.orfs.gff3",
         junctions="results/identify_junctions/junctions.bed",
     output:
@@ -128,5 +126,5 @@ rule mikado_compare:
     shell:
         """
         mikado compare -r {input.reference} --index
-        miadko comprae -r {input.reference} -p {input.mikado_out} -o results/mikado_compare/compare 
+        miadko compare -r {input.reference} -p {input.mikado_out} -o results/mikado_compare/compare 
         """
