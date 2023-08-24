@@ -90,6 +90,7 @@ rule identify_orfs:
 
 
 # Run BLAST to get homology data that will help mikado
+### SYNTAX CHECKED ###
 rule mikado_blast:
     input:
         proteins=config["blast_db"],
@@ -112,12 +113,14 @@ rule mikado_blast:
         """
 
 # Create SQLite database with all information mikado needs
+### CHECKED SYNTAX ###
 rule mikado_serialise:
     input:
         mconfig="results/mikado_configure/configuration.yaml",
         blast="results/blast/mikado_prepared.blast.tsv",
         orfs="results/identify_orfs/mikado.orfs.gff3",
         junctions="results/identify_junctions/junctions.bed",
+        blast_db=config["blast_db"]
     output:
         db="results/mikado_serialise/mikado.db",
         slog="results/mikado_serialise/serialise.log",
@@ -131,7 +134,7 @@ rule mikado_serialise:
     shell:
         """
         mikado serialise --json-conf {input.mconfig} --orfs {input.orfs} -od results/mikado_serialise/ \
-        --junctions {input.junctions} {params.extra} 1> {log} 2>&1
+        --junctions {input.junctions} --xml {input.blast} --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
         """
 
 rule mikado_pick:
