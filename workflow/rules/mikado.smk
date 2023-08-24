@@ -21,6 +21,62 @@ rule identify_junctions:
         prepare_portcullis/
         """
 
+### Create list for mikado
+rule make_list:
+    output:
+        config["mikado_list"]
+    params:
+        scallop=config["scallop"],
+        stringtie=config["stringtie"],
+        provided_annotations=config["provided_annotations"],
+        reference=config["reference_gtf"]
+    run:
+
+        scallop = params.scallop
+        stringtie = params.stringtie
+        provided_annotations = params.provided_annotations
+        reference = params.reference
+
+        with open(output[0], 'w') as f:
+
+            if scallop["use_scallop"]:
+
+                scallop.pop("use_scallop")
+
+                row = [str(value) for value in scallop.values()]
+
+                f.write('\t'.join(row) + '\n')
+            
+            if stringtie["use_stringtie"]:
+
+                stringtie.pop("use_stringtie")
+
+                row = [str(value) for value in stringtie.values()]
+
+                f.write('\t'.join(row) + '\n')
+
+            if ~bool(provided_annotations):
+                
+                for key, inner_dict in provided_annotations.items():
+
+                    row = [str(value) for value in inner_dict.values()]
+
+                    row.insert(1, key)
+
+                    f.write('\t'.join(row) + '\n')
+            
+            if ~bool(reference):
+                
+                for key, inner_dict in provided_annotations.items():
+
+                    row = [str(value) for value in inner_dict.values()]
+
+                    row.insert(1, key)
+
+                    f.write('\t'.join(row) + '\n')
+
+
+
 # Create configuration file
 rule mikado_configure:
     input:

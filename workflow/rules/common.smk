@@ -5,6 +5,10 @@ SAMP_NAMES = list(config['samples'].keys())
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
 
+
+
+
+### Sort bam files
 rule sort:
     input:
         get_input_bams,

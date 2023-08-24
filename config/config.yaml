@@ -6,22 +6,31 @@ samples:
   Rep_2: data/bam/WT_replicate_2.bam
   Rep_3: data/bam/WT_replicate_3.bam
 
-# Annotation GTF to compare assemblies to 
-reference_gtf: data/annotation/reference.gtf
-
-# Additional assembled GTFs you want to add?
-additional_gtfs:
 
 ##### PARAMETERS THAT DETERMINE WHICH TRANSCRIPTOME ASSEMBLERS TO USE
 
 # Use Scallop + TACO for annotation building
-use_scallop: True
+scallop: 
+  use_scallop: True
+  label: "sc"
+  strandedness: True
+  score: 0
+  is_reference: False
+  exclude_redundant: False
+  strip_cds: False
 
 # Use StringTie for annotation building
-use_stringtie: False
+stringtie: 
+  use_stringtie: True
+  label: "st"
+  strandedness: True
+  score: 0
+  is_reference: False
+  exclude_redundant: False
+  strip_cds: False
 
 # Use mikado to combine annotations built by multiple tools
-use_mikado: False
+use_mikado: True
 
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
@@ -59,6 +68,35 @@ stringtie_refcomp_params: ""
 
 
 ##### MIKADO PARAMETERS
+
+# Annotation GTF to compare assemblies to 
+reference_gtf: 
+  rf: # Label to give to reference for mikado
+    annotation: data/annotation/reference.gtf # path to reference
+    strandedness: True # strandedness of reference
+    score: 0 # Score assigned to reference
+    is_reference: True # treat this like a reference
+    exclude_redundant: False # exclude redundant gene models
+    strip_cds: False # Skip the chimera split routine
+
+
+# Annotations you are bringing in
+provided_annotations:
+  sq: # Label
+    annotation: path/to/squanti_annotation # Path to annotation
+    strandedness: True # Strandedness
+    score: 0 # Score for Mikado
+    is_reference: False # Treat this as a reference?
+    exclude_redundant: False #
+    strip_cds: False
+  cl: 
+    annotation: path/to/CLASS2_annotation
+    strandedness: True
+    score: 0
+    is_reference: False
+    exclude_redundant: False
+    strip_cds: False
+
 
 # Reference genome fasta
 genome: data/genome/reference.fasta
