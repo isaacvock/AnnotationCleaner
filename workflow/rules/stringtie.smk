@@ -54,7 +54,7 @@ rule stringtie_taco:
         extra_refcomp=config["stringtie_refcomp_params"],
         gtf=config["reference_gtf"]
     conda:
-        "../envs/scallop.yaml"
+        "../envs/stringtie.yaml"
     shell:
         """
         taco_run -o ./results/stringtie_taco/ -p {threads} {params.extra_taco} {input} 1> {log} 2>&1
