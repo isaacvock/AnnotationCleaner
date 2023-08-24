@@ -73,8 +73,10 @@ stringtie_refcomp_params: ""
 
 # Path to mikado list input (must have .txt extension)
   # This is created automatically if not already provided
-mikado_list: data/mikado_list.txt
+mikado_list: data/mikado/mikado_list.txt
 
+# Path to scoring function yaml file
+mikado_scoring: data/mikado/scoring.yaml
 
 # Annotation GTF to compare assemblies to 
 reference_gtf: 

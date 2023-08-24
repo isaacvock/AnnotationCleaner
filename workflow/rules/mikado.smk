@@ -29,19 +29,24 @@ rule mikado_configure:
     input:
         mlist=config["mikado_list"],
         reference=config["genome"],
+        proteins=config["protein_fasta"],
         junctions="results/identify_junctions/junctions.bed",
         get_mikado_input
     output:
         "results/mikado_configure/configuration.yaml"
     params:
         extra=config["mikado_configure_params"]
+        scoring=config["mikado_scoring"]
     threads: 4
     conda:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_configure/mikado_configure.log"
     shell:
-        "mikado configure --list {input.mlist} --reference {input.reference} --junctions {input.junctions} -od results/mikado_configure/ {params.extra} -t {threads} 1> {log} 2>&1"  
+        """
+        mikado configure --list {input.mlist} --scoring {params.scoring} --reference {input.reference} \
+        --junctions {input.junctions} -bt {input.proteins} -od results/mikado_configure/ {params.extra} -t {threads} {output} 1> {log} 2>&1
+        """  
 
 # Create sorted, non-redundant GTF with all input assemblies
 rule mikado_prepare:
