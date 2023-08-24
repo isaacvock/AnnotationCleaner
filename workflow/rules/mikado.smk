@@ -21,68 +21,13 @@ rule identify_junctions:
         prepare_portcullis/
         """
 
-### Create list for mikado
-rule make_list:
-    output:
-        config["mikado_list"]
-    params:
-        scallop=config["scallop"],
-        stringtie=config["stringtie"],
-        provided_annotations=config["provided_annotations"],
-        reference=config["reference_gtf"]
-    run:
-
-        scallop = params.scallop
-        stringtie = params.stringtie
-        provided_annotations = params.provided_annotations
-        reference = params.reference
-
-        with open(output[0], 'w') as f:
-
-            if scallop["use_scallop"]:
-
-                scallop.pop("use_scallop")
-
-                row = [str(value) for value in scallop.values()]
-
-                f.write('\t'.join(row) + '\n')
-            
-            if stringtie["use_stringtie"]:
-
-                stringtie.pop("use_stringtie")
-
-                row = [str(value) for value in stringtie.values()]
-
-                f.write('\t'.join(row) + '\n')
-
-            if ~bool(provided_annotations):
-                
-                for key, inner_dict in provided_annotations.items():
-
-                    row = [str(value) for value in inner_dict.values()]
-
-                    row.insert(1, key)
-
-                    f.write('\t'.join(row) + '\n')
-            
-            if ~bool(reference):
-                
-                for key, inner_dict in provided_annotations.items():
-
-                    row = [str(value) for value in inner_dict.values()]
-
-                    row.insert(1, key)
-
-                    f.write('\t'.join(row) + '\n')
-
-
-
 # Create configuration file
 rule mikado_configure:
     input:
         mlist=config["mikado_list"],
         reference=config["genome"],
-        junctions="results/identify_junctions/junctions.bed"
+        junctions="results/identify_junctions/junctions.bed",
+        get_mikado_input
     output:
         "results/mikado_configure/configuration.yaml"
     params:
@@ -186,3 +131,78 @@ rule mikado_compare:
         mikado compare -r {input.reference} --index
         miadko compare -r {input.reference} -p {input.mikado_out} -o results/mikado_compare/compare 
         """
+
+
+
+### Create list for mikado (sticking down here to avoid cluttering other rules)
+rule make_mikado_list:
+    output:
+        config["mikado_list"]
+    params:
+        scallop=config["scallop"],
+        stringtie=config["stringtie"],
+        provided_annotations=config["provided_annotations"],
+        reference=config["reference_gtf"]
+    log:
+        "logs/make_mikado_list/mikado_list.log"
+    run:
+
+        scallop = params.scallop
+        stringtie = params.stringtie
+        provided_annotations = params.provided_annotations
+        reference = params.reference
+
+        with open(output[0], 'w') as f:
+
+            if scallop["use_scallop"]:
+
+                scallop.pop("use_scallop")
+
+                row = [str(value) for value in scallop.values()]
+
+                row.insert(0, "results/scallop_taco/assembly.gtf")
+
+                f.write('\t'.join(row) + '\n')
+            
+            if stringtie["use_stringtie"]:
+
+                stringtie.pop("use_stringtie")
+                taco = stringtie.pop("use_taco")
+                merge = stringtie.pop("use_merge")
+
+                if taco:
+
+                    row = [str(value) for value in stringtie.values()]
+
+                    row.insert(0, "results/stringtie_taco/assembly.gtf")
+                
+                    f.write('\t'.join(row) + '\n')
+
+                if merge:
+
+                    row = [str(value) for value in stringtie.values()]
+
+                    row.insert(0, "results/stringtie_merge/stringtie_merged.gtf")
+
+                    f.write('\t'.join(row) + '\n')
+                
+
+            if ~bool(provided_annotations):
+                
+                for key, inner_dict in provided_annotations.items():
+
+                    row = [str(value) for value in inner_dict.values()]
+
+                    row.insert(1, key)
+
+                    f.write('\t'.join(row) + '\n')
+            
+            if ~bool(reference):
+                
+                for key, inner_dict in provided_annotations.items():
+
+                    row = [str(value) for value in inner_dict.values()]
+
+                    row.insert(1, key)
+
+                    f.write('\t'.join(row) + '\n')

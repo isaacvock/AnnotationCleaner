@@ -22,6 +22,8 @@ scallop:
 # Use StringTie for annotation building
 stringtie: 
   use_stringtie: True
+  use_taco: True
+  use_merge: False
   label: "st"
   strandedness: True
   score: 0
@@ -68,6 +70,11 @@ stringtie_refcomp_params: ""
 
 
 ##### MIKADO PARAMETERS
+
+# Path to mikado list input (must have .txt extension)
+  # This is created automatically if not already provided
+mikado_list: data/mikado_list.txt
+
 
 # Annotation GTF to compare assemblies to 
 reference_gtf: 

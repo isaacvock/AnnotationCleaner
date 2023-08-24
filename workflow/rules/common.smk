@@ -5,8 +5,21 @@ SAMP_NAMES = list(config['samples'].keys())
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
 
+def get_mikado_input():
+
+    gtfs = []
+
+    if config["scallop"]["use_scallop"]:
+        gtfs.append("results/ignorethisdirectory_scallop/success.txt")
+    
+    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
+        gtfs.append("results/ignorethisdirectory_stringtie/success.txt")
+
+    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_merge"]:
+        gtfs.append("results/stringtie_merge/stringtie_merged.gtf")
 
 
+    return gtfs
 
 ### Sort bam files
 rule sort:
