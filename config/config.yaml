@@ -78,6 +78,12 @@ mikado_list: data/mikado/mikado_list.txt
 # Path to scoring function yaml file
 mikado_scoring: data/mikado/scoring.yaml
 
+# Reference genome fasta
+genome: data/genome/reference.fasta
+
+# Reference proteome fasta
+proteome: data/proteome/reference.fasta
+
 # Annotation GTF to compare assemblies to 
 reference_gtf: 
   rf: # Label to give to reference for mikado
@@ -106,24 +112,22 @@ provided_annotations:
     exclude_redundant: False
     strip_cds: False
 
-
-# Reference genome fasta
-genome: data/genome/reference.fasta
-
-# Reference proteome fasta
-proteome: data/proteome/reference.fasta
-
-portcullis_prep_params: ""
-portcullis_junc_params: ""
+## Required portcullis parameters
 portcullis_strandedness: "firststrand"
 portcullis_orientation: "RF"
 
-mikado_configure_params: ""
 
-mikado_prepare_params: ""
+## Optional portcullis parameters
+portcullis_prep_params: ""
+portcullis_junc_params: ""
 
+
+## Optional TransDecoder parameters
 transdecoder_params: ""
 
-mikado_serialise_params: ""
 
+## Optional mikado pipeline parameters
+mikado_configure_params: ""
+mikado_prepare_params: ""
+mikado_serialise_params: ""
 mikado_pick_params: ""

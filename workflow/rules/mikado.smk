@@ -30,7 +30,7 @@ rule mikado_configure:
     input:
         mlist=config["mikado_list"],
         reference=config["genome"],
-        proteins=config["protein_fasta"],
+        proteins=config["proteome"],
         junctions="results/identify_junctions/junctions.bed",
         get_mikado_input
     output:
@@ -92,7 +92,7 @@ rule identify_orfs:
 # Run BLAST to get homology data that will help mikado
 rule mikado_blast:
     input:
-        proteins=config["protein_fasta"],
+        proteins=config["proteome"],
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
         prepare_log="results/mikado_blast/blast_prepare.log",
@@ -101,7 +101,7 @@ rule mikado_blast:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_blast/mikado_blast.log"
-    threads: 4
+    threads: 10
     shell:
         """
         makeblastdb -in {input.proteins} -dbtype prot -parse_seqids > {output.prepare_log}
