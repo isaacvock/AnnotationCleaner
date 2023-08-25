@@ -1,17 +1,22 @@
 import glob
 
+# Sample names, used in multiple places to help Snakemake infer wildcards
+# and to expand list of bam files
 SAMP_NAMES = list(config['samples'].keys())
 
+# Retrieve input bam files for first steps
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
 
-
+# List of paths to Scallop outputs for Mikado
 if config["scallop"]["use_scallop"]:
     SCALLOP_PATHS = expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES)
 
+# List of paths to Stringtie outputs for Mikado
 if config["stringtie"]["use_stringtie"]:
     STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES)    
 
+# Retrieve lists of files that must get created for mikado to run
 def get_mikado_input():
 
     gtfs = []
@@ -24,7 +29,7 @@ def get_mikado_input():
 
     return gtfs
 
-
+# Target rule (so final output to be looked for)
 def get_target_input():
 
     target = []
