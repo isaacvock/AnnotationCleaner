@@ -5,19 +5,22 @@ SAMP_NAMES = list(config['samples'].keys())
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
 
+
+if config["scallop"]["use_scallop"]:
+    SCALLOP_PATHS = expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES)
+
+if config["stringtie"]["use_stringtie"]:
+    STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES)    
+
 def get_mikado_input():
 
     gtfs = []
 
     if config["scallop"]["use_scallop"]:
-        gtfs.append("results/ignorethisdirectory_scallop/success.txt")
+        gtfs.append(expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES))
     
-    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
-        gtfs.append("results/ignorethisdirectory_stringtie/success.txt")
-
-    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_merge"]:
-        gtfs.append("results/stringtie_merge/stringtie_merged.gtf")
-
+    if config["stringtie"]["use_stringtie"]:
+        gtfs.append(expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES))
 
     return gtfs
 
@@ -30,7 +33,7 @@ def get_target_input():
 
         target.append("results/mikado_pick/mikado.loci.gff3")
 
-    if config["scallop"]["use_scallop"]:
+    if config["scallop"]["use_scallop"]["use_taco"]:
 
         target.append("results/ignorethisdirectory_scallop/success.txt")
 

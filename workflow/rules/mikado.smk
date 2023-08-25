@@ -186,7 +186,6 @@ rule make_mikado_list:
         scallop=config["scallop"],
         stringtie=config["stringtie"],
         provided_annotations=config["provided_annotations"],
-        reference=config["reference_gtf"]
     log:
         "logs/make_mikado_list/mikado_list.log"
     threads: 1
@@ -202,32 +201,37 @@ rule make_mikado_list:
             if scallop["use_scallop"]:
 
                 scallop.pop("use_scallop")
+                taco = scallop.pop("use_taco")
+                paths = SCALLOP_PATHS
 
-                row = [str(value) for value in scallop.values()]
+                counter = 1
+                for p in paths:
+                    
+                    row = [str(value) for value in scallop.values()]
 
-                row.insert(0, "results/scallop_taco/assembly.gtf")
+                    row.insert(0, str(p))
 
-                f.write('\t'.join(row) + '\n')
+                    row[1] = row[1] + str(counter)
+                    counter = counter + 1
+
+                    f.write('\t'.join(row) + '\n')
             
             if stringtie["use_stringtie"]:
 
                 stringtie.pop("use_stringtie")
                 taco = stringtie.pop("use_taco")
                 merge = stringtie.pop("use_merge")
+                paths = STRINGTIE_PATHS
 
-                if taco:
-
+                counter = 1
+                for p in paths:
+                    
                     row = [str(value) for value in stringtie.values()]
 
-                    row.insert(0, "results/stringtie_taco/assembly.gtf")
-                
-                    f.write('\t'.join(row) + '\n')
+                    row.insert(0, str(p))
 
-                if merge:
-
-                    row = [str(value) for value in stringtie.values()]
-
-                    row.insert(0, "results/stringtie_merge/stringtie_merged.gtf")
+                    row[1] = row[1] + str(counter)
+                    counter = counter + 1
 
                     f.write('\t'.join(row) + '\n')
                 

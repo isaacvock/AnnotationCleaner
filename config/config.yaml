@@ -12,6 +12,7 @@ samples:
 # Use Scallop + TACO for annotation building
 scallop: 
   use_scallop: True
+  use_taco: True
   label: "sc"
   strandedness: True
   score: 0
