@@ -86,7 +86,7 @@ rule identify_orfs:
         TransDecoder.LongOrfs -t {input.fasta} --output_dir results/identify_orfs/ {params.extra} 1> {log} 2>&1
         mv transcripts.fasta.transdecoder* results/identify_orfs/
         mv results/identify_orfs/transcripts.fasta.transdecoder.gff3 {output}
-        """"
+        """
 
 
 # Run BLAST to get homology data that will help mikado
