@@ -32,7 +32,7 @@ rule mikado_configure:
         reference=config["genome"],
         proteins=config["blast_db"],
         junctions="results/identify_junctions/junctions.bed",
-        get_mikado_input
+        bams=get_mikado_input,
     output:
         "results/mikado_configure/configuration.yaml"
     params:
