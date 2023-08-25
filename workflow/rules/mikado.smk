@@ -5,7 +5,7 @@ rule identify_junctions:
         fasta=config["genome"],
         bams=expand("results/sorted/sorted_{SID}.bam", SID = SAMP_NAMES),
     output:
-        "results/identify_junctions/junctions.bed"
+        "results/identify_junctions/junctions.junctions.bed"
     params:
         extra_prep=config["portcullis_prep_params"],
         extra_junc=config["portcullis_junc_params"],
@@ -31,7 +31,7 @@ rule mikado_configure:
         mlist=config["mikado_list"],
         reference=config["genome"],
         proteins=config["blast_db"],
-        junctions="results/identify_junctions/junctions.bed",
+        junctions="results/identify_junctions/junctions.junctions.bed",
         bams=get_mikado_input(),
     output:
         "results/mikado_configure/configuration.yaml"
@@ -119,7 +119,7 @@ rule mikado_serialise:
         mconfig="results/mikado_configure/configuration.yaml",
         blast="results/mikado_blast/mikado_prepared.blast.tsv",
         orfs="results/identify_orfs/mikado.orfs.gff3",
-        junctions="results/identify_junctions/junctions.bed",
+        junctions="results/identify_junctions/junctions.junctions.bed",
         blast_db=config["blast_db"]
     output:
         db="results/mikado_serialise/mikado.db",
