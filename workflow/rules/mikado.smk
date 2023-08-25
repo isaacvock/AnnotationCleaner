@@ -242,12 +242,3 @@ rule make_mikado_list:
 
                     f.write('\t'.join(row) + '\n')
             
-            if ~bool(reference):
-                
-                for key, inner_dict in provided_annotations.items():
-
-                    row = [str(value) for value in inner_dict.values()]
-
-                    row.insert(1, key)
-
-                    f.write('\t'.join(row) + '\n')
