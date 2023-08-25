@@ -43,4 +43,4 @@ if config["use_mikado"]:
 
 rule all:
     input:
-        get_target_input
+        get_target_input()
