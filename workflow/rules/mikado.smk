@@ -3,7 +3,7 @@
 rule identify_junctions:
     input:
         fasta=config["genome"],
-        bams=expand("results/sorted/sorted_{SID}.bam", SID = SAMP_NAMES)
+        bams=expand("results/sorted/sorted_{SID}.bam", SID = SAMP_NAMES),
     output:
         "results/identify_junctions/junctions.bed"
     params:
@@ -36,7 +36,7 @@ rule mikado_configure:
     output:
         "results/mikado_configure/configuration.yaml"
     params:
-        extra=config["mikado_configure_params"]
+        extra=config["mikado_configure_params"],
         scoring=config["mikado_scoring"]
     threads: 4
     conda:
