@@ -1,6 +1,7 @@
 channels:
   - bioconda
-  - nodefaults
+  - conda-forge
+  - anaconda
 dependencies:
   - mikado
   - transdecoder
