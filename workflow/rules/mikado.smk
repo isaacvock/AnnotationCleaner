@@ -194,7 +194,6 @@ rule make_mikado_list:
         scallop = params.scallop
         stringtie = params.stringtie
         provided_annotations = params.provided_annotations
-        reference = params.reference
 
         with open(output[0], 'w') as f:
 
