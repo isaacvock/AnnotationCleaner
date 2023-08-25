@@ -117,7 +117,7 @@ rule mikado_blast:
 rule mikado_serialise:
     input:
         mconfig="results/mikado_configure/configuration.yaml",
-        blast="results/blast/mikado_prepared.blast.tsv",
+        blast="results/mikado_blast/mikado_prepared.blast.tsv",
         orfs="results/identify_orfs/mikado.orfs.gff3",
         junctions="results/identify_junctions/junctions.bed",
         blast_db=config["blast_db"]
