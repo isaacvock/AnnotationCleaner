@@ -48,10 +48,10 @@ samtools_params: ""
 ##### SCALLOP PARAMETERS
 
 # Parameters to pass to scallop (other than input and output)
-scallop_params: ""
+scallop_params: "--library_type first"
 
 # Parameters to pass to TACO with Scallop input (other than input, output, and threads)
-scallop_taco_params: ""
+scallop_taco_params: "--gtf-expr-attr RPKM"
 
 # Parameters to pass to TACO refcomp with Scallop input (other than output, reference, and test annotation)
 scallop_refcomp_params: ""
@@ -61,7 +61,7 @@ scallop_refcomp_params: ""
 
 
 # Parameters to pass to Stringtie 
-stringtie_params: ""
+stringtie_params: "--rf"
 
 # Parameters to psas to Stringtie --merge
 stringtie_merge_params: ""
