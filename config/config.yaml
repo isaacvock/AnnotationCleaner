@@ -86,7 +86,7 @@ mikado_scoring: data/mikado/scoring.yaml
 # Reference genome fasta
 genome: data/genome/reference.fasta
 
-# Database to BLAST
+# Reference set of proteins to BLAST
 blast_db: data/blast_db/reference.fasta
 
 
