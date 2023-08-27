@@ -117,7 +117,7 @@ rule mikado_blastdb:
     conda:
         "../envs/mikado.yaml"
     log:
-        "logs/mikado_blast/mikado_blast.log"
+        "logs/mikado_blastdb/mikado_blast.log"
     threads: 1
     shell:
         """
@@ -135,7 +135,7 @@ rule mikado_blastx:
     conda:
         "../envs/mikado.yaml"
     log:
-        "logs/mikado_blast/mikado_blast.log"
+        "logs/mikado_blastx/mikado_blastx.log"
     threads: 20
     shell:
         """
