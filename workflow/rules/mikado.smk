@@ -91,7 +91,7 @@ rule predict_orfs:
         orfs="results/identify_orfs/longest_orfs.gff3",
         transcripts="results/mikado_prepare/mikado_prepared.fasta"
     output:
-        "results/identify_orfs/mikado_prepared.fasta.transdecoder.gff3"
+        "mikado_prepared.fasta.transdecoder.gff3"
     params:
         extra=config["transdecoder_predict_params"]
     conda:
@@ -102,7 +102,6 @@ rule predict_orfs:
     shell:
         """
         TransDecoder.Predict -t {input.transcripts} --output_dir results/identify_orfs/ 1> {log} 2>&1
-        mv mikado_prepared.fasta.transdecoder* results/identify_orfs/
         """
 
 # Run BLAST to get homology data that will help mikado
@@ -150,7 +149,7 @@ rule mikado_serialise:
     input:
         mconfig="results/mikado_configure/configuration.yaml",
         blast="results/mikado_blast/mikado_prepared.blast.tsv",
-        orfs="results/identify_orfs/mikado_prepared.fasta.transdecoder.gff3",
+        orfs="mikado_prepared.fasta.transdecoder.gff3",
         junctions="results/identify_junctions/junctions.junctions.bed",
         blast_db=config["blast_db"]
     output:
