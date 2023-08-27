@@ -111,7 +111,11 @@ rule mikado_blastdb:
         proteins=config["blast_db"],
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
-        db="mikado_blast_db",
+        multiext("results/mikado_blastdb/mikado_blastdb",
+        ".phr",
+        ".pin",
+        ".pos",
+        ".psd")
     params:
         extra=config["makeblastdb_params"],
     conda:
@@ -121,12 +125,12 @@ rule mikado_blastdb:
     threads: 1
     shell:
         """
-        makeblastdb -in {input.proteins} -dbtype prot -parse_seqids {params.extra} -out {output.db} 1> {log} 2>&1
+        makeblastdb -in {input.proteins} -dbtype prot -parse_seqids {params.extra} -out results/mikado_blastdb/mikado_blastdb 1> {log} 2>&1
         """
 
 rule mikado_blastx:
     input:
-        db="mikado_blast_db",
+        db="results/mikado_blastdb/mikado_blastdb.phr",
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
         mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
@@ -140,7 +144,7 @@ rule mikado_blastx:
     shell:
         """
         blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qent sstart send evalue bitscore ppos btop" \
-        -num_threads {threads} -query {input.fasta} -db {input.db} -out {output.mikado_blast} 1> {log} 2>&1
+        -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 1> {log} 2>&1
         """
 
 # Create SQLite database with all information mikado needs
