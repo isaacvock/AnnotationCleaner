@@ -91,12 +91,29 @@ rule identify_orfs:
 
 # Run BLAST to get homology data that will help mikado
 ### SYNTAX CHECKED ###
-rule mikado_blast:
+rule mikado_blastdb:
     input:
         proteins=config["blast_db"],
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
-        prepare_log="results/mikado_blast/blast_prepare.log",
+        db="mikado_blast_db",
+    params:
+        extra=config["makeblastdb_params"],
+    conda:
+        "../envs/mikado.yaml"
+    log:
+        "logs/mikado_blast/mikado_blast.log"
+    threads: 1
+    shell:
+        """
+        makeblastdb -in {input.proteins} -dbtype prot -parse_seqids {params.extra} -out {output.db} 1> {log} 2>&1
+        """
+
+rule mikado_blastx:
+    input:
+        db=mikado_blast_db,
+        fasta="results/mikado_prepare/mikado_prepared.fasta",
+    output:
         mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
     params:
         extra=config["blastx_params"],
@@ -104,12 +121,11 @@ rule mikado_blast:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_blast/mikado_blast.log"
-    threads: 10
+    threads: 20
     shell:
         """
-        makeblastdb -in {input.proteins} -dbtype prot -parse_seqids > {output.prepare_log}
         blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qent sstart send evalue bitscore ppos btop" \
-        -num_threads {threads} -query {input.fasta} -db {input.proteins} -out {output.mikado_blast} 1> {log} 2>&1
+        -num_threads {threads} -query {input.fasta} -db {input.db} -out {output.mikado_blast} 1> {log} 2>&1
         """
 
 # Create SQLite database with all information mikado needs
