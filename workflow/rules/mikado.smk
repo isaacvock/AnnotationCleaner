@@ -111,11 +111,7 @@ rule mikado_blastdb:
         proteins=config["blast_db"],
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
-        multiext("results/mikado_blastdb/mikado_blastdb",
-        ".phr",
-        ".pin",
-        ".pos",
-        ".psd")
+        "results/mikado_blastdb/mikado_blastdb/mikado_blastdb.psi"
     params:
         extra=config["makeblastdb_params"],
     conda:
@@ -130,7 +126,7 @@ rule mikado_blastdb:
 
 rule mikado_blastx:
     input:
-        db="results/mikado_blastdb/mikado_blastdb.phr",
+        db="results/mikado_blastdb/mikado_blastdb/mikado_blastdb.psi",
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
         mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
