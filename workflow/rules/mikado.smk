@@ -112,7 +112,7 @@ rule mikado_blastdb:
         proteins=config["blast_db"],
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
-        "results/mikado_blastdb/mikado_blastdb/mikado_blastdb.psi"
+        "results/mikado_blastdb/mikado_blastdb.psi"
     params:
         extra=config["makeblastdb_params"],
     conda:
