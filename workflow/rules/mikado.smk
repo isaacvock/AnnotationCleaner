@@ -102,6 +102,7 @@ rule predict_orfs:
     shell:
         """
         TransDecoder.Predict -t {input.transcripts} --output_dir results/identify_orfs/ 1> {log} 2>&1
+        mv mikado_prepared.fasta.transdecoder* results/identify_orfs/
         """
 
 # Run BLAST to get homology data that will help mikado
