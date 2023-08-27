@@ -86,7 +86,7 @@ rule identify_orfs:
         TransDecoder.LongOrfs -t {input.fasta} --output_dir results/identify_orfs/ {params.extra} 1> {log} 2>&1
         """
 
-rule predict_orfs
+rule predict_orfs:
     input:
         orfs="results/identify_orfs/longest_orfs.gff3",
         transcripts="results/mikado_prepare/mikado_prepared.fasta"
