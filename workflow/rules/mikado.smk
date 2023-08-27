@@ -126,7 +126,7 @@ rule mikado_blastdb:
 
 rule mikado_blastx:
     input:
-        db=mikado_blast_db,
+        db="mikado_blast_db",
         fasta="results/mikado_prepare/mikado_prepared.fasta",
     output:
         mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
