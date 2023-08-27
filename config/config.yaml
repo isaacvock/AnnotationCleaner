@@ -127,6 +127,7 @@ portcullis_junc_params: ""
 
 ## Optional TransDecoder parameters
 transdecoder_params: ""
+transdecoder_predict_params: ""
 
 ## Optional blastx parameters
 makeblastdb_params: ""
