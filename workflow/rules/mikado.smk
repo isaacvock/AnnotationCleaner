@@ -139,7 +139,7 @@ rule mikado_blastx:
     threads: 20
     shell:
         """
-        blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qent sstart send evalue bitscore ppos btop" \
+        blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
         -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 1> {log} 2>&1
         """
 
