@@ -83,7 +83,7 @@ rule identify_orfs:
     threads: 1
     shell:
         """
-        TransDecoder.LongOrfs -t {input.fasta} --output_dir results/identify_orfs/ {params.extra} 1> {log} 2>&1
+        TransDecoder.LongOrfs -t {input.fasta} --output_dir results/identify_orfs/ {params.extra} 2> {log}
         """
 
 rule predict_orfs:
@@ -101,7 +101,7 @@ rule predict_orfs:
     threads: 1
     shell:
         """
-        TransDecoder.Predict -t {input.transcripts} --output_dir results/identify_orfs/ 1> {log} 2>&1
+        TransDecoder.Predict -t {input.transcripts} --output_dir results/identify_orfs/ 2> {log}
         """
 
 # Run BLAST to get homology data that will help mikado
