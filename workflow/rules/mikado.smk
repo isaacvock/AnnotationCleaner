@@ -136,7 +136,7 @@ rule mikado_blastx:
         "../envs/mikado.yaml"
     log:
         "logs/mikado_blastx/mikado_blastx.log"
-    threads: 20
+    threads: 10
     shell:
         """
         blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
