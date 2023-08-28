@@ -140,7 +140,7 @@ rule mikado_blastx:
     shell:
         """
         blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
-        -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 1> {log} 2>&1
+        -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 2> {log}
         """
 
 # Create SQLite database with all information mikado needs
