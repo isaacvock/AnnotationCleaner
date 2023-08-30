@@ -149,7 +149,7 @@ if config["num_sub"] > 1:
             db="results/mikado_blastdb/mikado_blastdb.psi",
             fasta="results/mikado_prepare/mikado_prepared.{subID}.fasta",
         output:
-            mikado_blast="results/mikado_blast/mikado_prepared.blast.{subID}.tsv",
+            mikado_blast=temp("results/mikado_blast/mikado_prepared.blast.{subID}.tsv"),
         params:
             extra=config["blastx_params"],
         conda:
@@ -168,7 +168,7 @@ if config["num_sub"] > 1:
         input:
             expand("results/mikado_blast/mikado_prepared.blast.{ID}.tsv", ID = SPLIT_IDS),
         output:
-            "results/mikado_mergeblast/mikado_prepared.blast.tsv",
+            "results/mikado_blast/mikado_prepared.blast.tsv",
         conda:
             "../envs/mikado.yaml"
         log:
@@ -176,7 +176,7 @@ if config["num_sub"] > 1:
         threads: 1
         shell:
             """
-            cat {input} > {output}
+            cat {input} > {output} 2> {log}
             """
 
 else:
