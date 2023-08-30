@@ -155,7 +155,7 @@ if config["num_sub"] > 1:
         conda:
             "../envs/mikado.yaml"
         log:
-            "logs/mikado_blastx/mikado_blastx.log"
+            "logs/mikado_blastx/mikado_blastx_{subID}.log"
         threads: 6
         shell:
             """
