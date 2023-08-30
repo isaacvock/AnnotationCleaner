@@ -147,7 +147,7 @@ if config["num_sub"] > 1:
     rule mikado_blastx:
         input:
             db="results/mikado_blastdb/mikado_blastdb.psi",
-            fasta="results/mikado_prepare/mikado_prepared.{subID}.fasta",
+            fasta="results/mikado_splitfasta/mikado_prepared.{subID}.fasta",
         output:
             mikado_blast=temp("results/mikado_blast/mikado_prepared.blast.{subID}.tsv"),
         params:
