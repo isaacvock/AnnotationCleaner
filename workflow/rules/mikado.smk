@@ -131,7 +131,7 @@ if config["num_sub"] > 1:
         input:
             fasta="results/mikado_prepare/mikado_prepared.fasta",
         output:
-            temp(expand("results/mikado_splitfasta/mikado_prepared.{ID}.fasta", ID = SPLIT_IDS)),
+            temp(expand("results/mikado_prepare/mikado_prepared.{ID}.fasta", ID = SPLIT_IDS)),
         log:
             "logs/mikado_splitfasta/mikado_splitfasta.log"
         params:
@@ -147,7 +147,7 @@ if config["num_sub"] > 1:
     rule mikado_blastx:
         input:
             db="results/mikado_blastdb/mikado_blastdb.psi",
-            fasta="results/mikado_splitfasta/mikado_prepared.{subID}.fasta",
+            fasta="results/mikado_prepare/mikado_prepared.{subID}.fasta",
         output:
             mikado_blast=temp("results/mikado_blast/mikado_prepared.blast.{subID}.tsv"),
         params:
