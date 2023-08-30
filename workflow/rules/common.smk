@@ -54,7 +54,9 @@ def get_target_input():
 
 
 # IDs for all split up sub-fasta files
-SPLIT_IDS =  list(range(1, config["num_sub"] + 1))
+num_digits = len(str(config["num_sub"]))
+
+SPLIT_IDS = [str(i).zfill(num_digits) for i in range(1, config["num_sub"] + 1)]
 
 
 ### Sort bam files
