@@ -8,3 +8,4 @@ dependencies:
   - blast
   - prodigal
   - diamond
+  - pyfasta
