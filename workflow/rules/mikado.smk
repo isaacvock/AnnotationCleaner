@@ -131,7 +131,7 @@ if config["num_sub"] > 1:
         input:
             fasta="results/mikado_prepare/mikado_prepared.fasta",
         output:
-            expand("results/mikado_splitfasta/mikado_prepared.{ID}.fasta", ID = SPLIT_IDS),
+            temp(expand("results/mikado_splitfasta/mikado_prepared.{ID}.fasta", ID = SPLIT_IDS)),
         log:
             "logs/mikado_splitfasta/mikado_splitfasta.log"
         params:
@@ -156,7 +156,7 @@ if config["num_sub"] > 1:
             "../envs/mikado.yaml"
         log:
             "logs/mikado_blastx/mikado_blastx.log"
-        threads: 10
+        threads: 6
         shell:
             """
             blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
@@ -168,12 +168,12 @@ if config["num_sub"] > 1:
         input:
             expand("results/mikado_blast/mikado_prepared.blast.{ID}.tsv", ID = SPLIT_IDS),
         output:
-            "results/mikado_blast/mikado_prepared.blast.tsv",
+            "results/mikado_mergeblast/mikado_prepared.blast.tsv",
         conda:
             "../envs/mikado.yaml"
         log:
             "logs/mikado_mergeblast/mikado_mergeblast.log"
-        threads: 10
+        threads: 1
         shell:
             """
             cat {input} > {output}
@@ -193,7 +193,7 @@ else:
             "../envs/mikado.yaml"
         log:
             "logs/mikado_blastx/mikado_blastx.log"
-        threads: 10
+        threads: 6
         shell:
             """
             blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
