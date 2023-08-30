@@ -89,6 +89,9 @@ genome: data/genome/reference.fasta
 # Reference set of proteins to BLAST
 blast_db: data/blast_db/reference.fasta
 
+# Number of sub-fasta files to split mikado prepared fasta into
+  # For further parallelizing blastx steps
+num_sub: 5
 
 # Annotations you are bringing in
 provided_annotations:

@@ -53,6 +53,9 @@ def get_target_input():
     return target
 
 
+# IDs for all split up sub-fasta files
+SPLIT_IDS =  list(range(1, config["num_sub"] + 1))
+
 
 ### Sort bam files
 rule sort:

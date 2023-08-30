@@ -124,24 +124,82 @@ rule mikado_blastdb:
         makeblastdb -in {input.proteins} -dbtype prot -parse_seqids {params.extra} -out results/mikado_blastdb/mikado_blastdb 1> {log} 2>&1
         """
 
-rule mikado_blastx:
-    input:
-        db="results/mikado_blastdb/mikado_blastdb.psi",
-        fasta="results/mikado_prepare/mikado_prepared.fasta",
-    output:
-        mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
-    params:
-        extra=config["blastx_params"],
-    conda:
-        "../envs/mikado.yaml"
-    log:
-        "logs/mikado_blastx/mikado_blastx.log"
-    threads: 10
-    shell:
-        """
-        blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
-        -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 2> {log}
-        """
+
+
+if config["num_sub"] > 1:
+    rule mikado_splitfasta:
+        input:
+            fasta="results/mikado_prepare/mikado_prepared.fasta",
+        output:
+            expand("results/mikado_splitfasta/mikado_prepared.{ID}.fasta", ID = SPLIT_IDS),
+        log:
+            "logs/mikado_splitfasta/mikado_splitfasta.log"
+        params:
+            nsub=config["num_sub"],
+        conda:
+            "../envs/mikado.yaml"
+        threads: 1
+        shell:
+            """
+            pyfasta split -n {params.nsub} {input.fasta}
+            """
+
+    rule mikado_blastx:
+        input:
+            db="results/mikado_blastdb/mikado_blastdb.psi",
+            fasta="results/mikado_prepare/mikado_prepared.{subID}.fasta",
+        output:
+            mikado_blast="results/mikado_blast/mikado_prepared.blast.{subID}.tsv",
+        params:
+            extra=config["blastx_params"],
+        conda:
+            "../envs/mikado.yaml"
+        log:
+            "logs/mikado_blastx/mikado_blastx.log"
+        threads: 10
+        shell:
+            """
+            blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
+            -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 2> {log}
+            """
+
+            
+    rule mikado_mergeblast:
+        input:
+            expand("results/mikado_blast/mikado_prepared.blast.{ID}.tsv", ID = SPLIT_IDS),
+        output:
+            "results/mikado_blast/mikado_prepared.blast.tsv",
+        conda:
+            "../envs/mikado.yaml"
+        log:
+            "logs/mikado_mergeblast/mikado_mergeblast.log"
+        threads: 10
+        shell:
+            """
+            cat {input} > {output}
+            """
+
+else:
+
+    rule mikado_blastx:
+        input:
+            db="results/mikado_blastdb/mikado_blastdb.psi",
+            fasta="results/mikado_prepare/mikado_prepared.fasta",
+        output:
+            mikado_blast="results/mikado_blast/mikado_prepared.blast.tsv",
+        params:
+            extra=config["blastx_params"],
+        conda:
+            "../envs/mikado.yaml"
+        log:
+            "logs/mikado_blastx/mikado_blastx.log"
+        threads: 10
+        shell:
+            """
+            blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
+            -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 2> {log}
+            """
+
 
 # Create SQLite database with all information mikado needs
 ### CHECKED SYNTAX ###
