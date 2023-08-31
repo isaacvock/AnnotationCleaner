@@ -12,7 +12,7 @@ rule identify_junctions:
         strandedness=config["portcullis_strandedness"],
         orientation=config["portcullis_orientation"]
     conda:
-        "../envs/mikado.yaml"
+        "../envs/portcullis.yaml"
     log:
         "logs/identify_junctions/portcullis.log"
     threads: 8
@@ -77,7 +77,7 @@ rule identify_orfs:
     params:
         extra=config["transdecoder_params"],
     conda:
-        "../envs/mikado.yaml"
+        "../envs/transdecoder.yaml"
     log:
         "logs/identify_orfs/TransDecoder.log"
     threads: 1
@@ -95,7 +95,7 @@ rule predict_orfs:
     params:
         extra=config["transdecoder_predict_params"]
     conda:
-        "../envs/mikado.yaml"
+        "../envs/transdecoder.yaml"
     log:
         "logs/predict_orfs/TransDecoder.log"
     threads: 1
@@ -115,7 +115,7 @@ rule mikado_blastdb:
     params:
         extra=config["makeblastdb_params"],
     conda:
-        "../envs/mikado.yaml"
+        "../envs/blast.yaml"
     log:
         "logs/mikado_blastdb/mikado_blast.log"
     threads: 1
@@ -137,7 +137,7 @@ if config["num_sub"] > 1:
         params:
             nsub=config["num_sub"],
         conda:
-            "../envs/mikado.yaml"
+            "../envs/pyfasta.yaml"
         threads: 1
         shell:
             """
@@ -153,7 +153,7 @@ if config["num_sub"] > 1:
         params:
             extra=config["blastx_params"],
         conda:
-            "../envs/mikado.yaml"
+            "../envs/blast.yaml"
         log:
             "logs/mikado_blastx/mikado_blastx_{subID}.log"
         threads: 6
@@ -169,7 +169,7 @@ if config["num_sub"] > 1:
         output:
             "results/mikado_blast/mikado_prepared.blast.tsv",
         conda:
-            "../envs/mikado.yaml"
+            "../envs/pyfasta.yaml"
         log:
             "logs/mikado_mergeblast/mikado_mergeblast.log"
         threads: 1
@@ -189,7 +189,7 @@ else:
         params:
             extra=config["blastx_params"],
         conda:
-            "../envs/mikado.yaml"
+            "../envs/blast.yaml"
         log:
             "logs/mikado_blastx/mikado_blastx.log"
         threads: 6
