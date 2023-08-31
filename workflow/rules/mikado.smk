@@ -176,7 +176,7 @@ if config["num_sub"] > 1:
         threads: 1
         shell:
             """
-            cat {input} > {output} 2> {log}
+            awk "NR==1{{print; next}} FNR>1" {input} > {output} 2> {log}
             """
 
 else:
