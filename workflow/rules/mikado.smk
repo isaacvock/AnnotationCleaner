@@ -156,7 +156,7 @@ if config["num_sub"] > 1:
             "../envs/blast.yaml"
         log:
             "logs/mikado_blastx/mikado_blastx_{subID}.log"
-        threads: 6
+        threads: 4
         shell:
             """
             blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
