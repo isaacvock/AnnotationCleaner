@@ -59,6 +59,12 @@ num_digits = len(str(config["num_sub"]))
 SPLIT_IDS = [str(i).zfill(num_digits) for i in range(0, config["num_sub"])]
 
 
+# Number of threads that can be used for serialization step
+if config["num_sub"] > 1:
+    SERIALISE_THREADS = config["num_sub"]
+else:
+    SERIALISE_THREADS = 1
+
 ### Sort bam files
 rule sort:
     input:

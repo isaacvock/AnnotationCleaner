@@ -11,7 +11,6 @@
             slog="results/mikado_serialise/serialise.log",
         params:
             extra=config["mikado_serialise_params"],
-            blast="--tsv={}".format(os.path.join(BLAST_DIR, "tsv")) if len(BLASTX_TARGET) > 0 else "",
         conda:
             "../envs/mikado.yaml"
         log:
@@ -20,5 +19,5 @@
         shell:
             """
             mikado serialise --json-conf {input.mconfig} --transcripts {input.transcripts} --orfs {input.orfs} -od results/mikado_serialise/ \
-            --junctions {input.junctions} --tsv {input.blast} --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
+            --junctions {input.junctions} --tsv results/mikado_blast/ --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
             """

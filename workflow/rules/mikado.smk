@@ -162,21 +162,45 @@ if config["num_sub"] > 1:
             blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
             -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 2> {log}
             """
-            
-    rule mikado_mergeblast:
+
+    rule mikado_serialise:
         input:
-            expand("results/mikado_blast/mikado_prepared.blast.{ID}.tsv", ID = SPLIT_IDS),
+            mconfig="results/mikado_configure/configuration.yaml",
+            blast=expand("results/mikado_blast/mikado_prepared.blast.{ID}.tsv", ID = SPLIT_IDS),
+            orfs="mikado_prepared.fasta.transdecoder.bed",
+            junctions="results/identify_junctions/junctions.junctions.bed",
+            blast_db=config["blast_db"],
+            transcripts="results/mikado_prepare/mikado_prepared.fasta"
         output:
-            "results/mikado_blast/mikado_prepared.blast.tsv",
+            db="results/mikado_serialise/mikado.db",
+            slog="results/mikado_serialise/serialise.log",
+        params:
+            extra=config["mikado_serialise_params"],
         conda:
-            "../envs/pyfasta.yaml"
+            "../envs/mikado.yaml"
         log:
-            "logs/mikado_mergeblast/mikado_mergeblast.log"
-        threads: 1
+            "logs/mikado_serialise/mikado_serialise.log"
+        threads: SERIALISE_THREADS
         shell:
             """
-            awk "NR==1{{print; next}} FNR>1" {input} > {output} 2> {log}
+            mikado serialise --json-conf {input.mconfig} --transcripts {input.transcripts} --orfs {input.orfs} -od results/mikado_serialise/ \
+            --junctions {input.junctions} -p {threads} --tsv results/mikado_blast/ --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
             """
+            
+    #rule mikado_mergeblast:
+    #    input:
+    #        expand("results/mikado_blast/mikado_prepared.blast.{ID}.tsv", ID = SPLIT_IDS),
+    #    output:
+    #        "results/mikado_blast/mikado_prepared.blast.tsv",
+    #    conda:
+    #        "../envs/pyfasta.yaml"
+    #    log:
+    #        "logs/mikado_mergeblast/mikado_mergeblast.log"
+    #    threads: 1
+    #    shell:
+    #        """
+    #        awk "NR==1{{print; next}} FNR>1" {input} > {output} 2> {log}
+    #        """
 
 else:
 
@@ -192,7 +216,7 @@ else:
             "../envs/blast.yaml"
         log:
             "logs/mikado_blastx/mikado_blastx.log"
-        threads: 6
+        threads: 4
         shell:
             """
             blastx {params.extra} -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore ppos btop" \
@@ -200,31 +224,31 @@ else:
             """
 
 
-# Create SQLite database with all information mikado needs
-### CHECKED SYNTAX ###
-rule mikado_serialise:
-    input:
-        mconfig="results/mikado_configure/configuration.yaml",
-        blast="results/mikado_blast/mikado_prepared.blast.tsv",
-        orfs="mikado_prepared.fasta.transdecoder.bed",
-        junctions="results/identify_junctions/junctions.junctions.bed",
-        blast_db=config["blast_db"],
-        transcripts="results/mikado_prepare/mikado_prepared.fasta"
-    output:
-        db="results/mikado_serialise/mikado.db",
-        slog="results/mikado_serialise/serialise.log",
-    params:
-        extra=config["mikado_serialise_params"]
-    conda:
-        "../envs/mikado.yaml"
-    log:
-        "logs/mikado_serialise/mikado_serialise.log"
-    threads: 4
-    shell:
-        """
-        mikado serialise --json-conf {input.mconfig} --transcripts {input.transcripts} --orfs {input.orfs} -od results/mikado_serialise/ \
-        --junctions {input.junctions} --tsv {input.blast} --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
-        """
+    # Create SQLite database with all information mikado needs
+    ### CHECKED SYNTAX ###
+    rule mikado_serialise:
+        input:
+            mconfig="results/mikado_configure/configuration.yaml",
+            blast="results/mikado_blast/mikado_prepared.blast.tsv",
+            orfs="mikado_prepared.fasta.transdecoder.bed",
+            junctions="results/identify_junctions/junctions.junctions.bed",
+            blast_db=config["blast_db"],
+            transcripts="results/mikado_prepare/mikado_prepared.fasta"
+        output:
+            db="results/mikado_serialise/mikado.db",
+            slog="results/mikado_serialise/serialise.log",
+        params:
+            extra=config["mikado_serialise_params"]
+        conda:
+            "../envs/mikado.yaml"
+        log:
+            "logs/mikado_serialise/mikado_serialise.log"
+        threads: 4
+        shell:
+            """
+            mikado serialise --json-conf {input.mconfig} --transcripts {input.transcripts} --orfs {input.orfs} -od results/mikado_serialise/ \
+            --junctions {input.junctions} --tsv {input.blast} --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
+            """
 
 # Identify probable transcripts
 ### CHECKED SYNTAX ###
