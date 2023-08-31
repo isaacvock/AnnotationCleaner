@@ -163,6 +163,28 @@ if config["num_sub"] > 1:
             -num_threads {threads} -query {input.fasta} -db results/mikado_blastdb/mikado_blastdb -out {output.mikado_blast} 2> {log}
             """
 
+
+        rule mikado_serialise:
+            input: 
+                blast=rules.blast_all.output,
+                orfs=orf_out,
+                fai=rules.genome_index.output,
+                transcripts=rules.mikado_prepare.output.fa
+            output: db=os.path.join(MIKADO_DIR, "mikado.db")
+            log: os.path.join(MIKADO_DIR, "mikado_serialise.log")
+            params:
+                cfg=CFG,
+                blast="--tsv={}".format(os.path.join(BLAST_DIR, "tsv")) if len(BLASTX_TARGET) > 0 else "",
+                load=loadPre(config, "mikado"),
+                blast_target="--blast-targets={}".format(os.path.join(BLAST_DIR, "index", "blastdb-proteins.fa")) if len(BLASTX_TARGET) > 0 else "",
+                orfs=orfs,
+                no_start_adj="-nsa" if config.get("mikado", dict()).get("use_prodigal", False) is False else ""
+            threads: THREADS
+            # conda: os.path.join(envdir, "mikado.yaml")
+            shell: "{params.load} mikado serialise {params.blast} {params.blast_target} --start-method=spawn \
+        --transcripts={input.transcripts} --genome_fai={input.fai} --configuration={params.cfg} {params.no_start_adj} \
+        {params.orfs} -od {MIKADO_DIR} --procs={threads} -l {log}" 
+
             
     rule mikado_mergeblast:
         input:
