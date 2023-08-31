@@ -149,7 +149,7 @@ if config["num_sub"] > 1:
             db="results/mikado_blastdb/mikado_blastdb.psi",
             fasta="results/mikado_prepare/mikado_prepared.{subID}.fasta",
         output:
-            mikado_blast=temp("results/mikado_blast/mikado_prepared.blast.{subID}.tsv"),
+            mikado_blast="results/mikado_blast/mikado_prepared.blast.{subID}.tsv",
         params:
             extra=config["blastx_params"],
         conda:
