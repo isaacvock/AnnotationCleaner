@@ -3,4 +3,5 @@ channels:
   - conda-forge
   - anaconda
 dependencies:
-  - mikado
+  - pyfasta
+  - gawk
