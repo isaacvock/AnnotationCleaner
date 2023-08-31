@@ -224,7 +224,7 @@ rule mikado_serialise:
     shell:
         """
         mikado serialise --json-conf {input.mconfig} --transcripts {input.transcripts} --orfs {input.orfs} -od results/mikado_serialise/ \
-        --junctions {input.junctions} --xml {input.blast} --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
+        --junctions {input.junctions} --tsv {input.blast} --blast_targets {input.blast_db} {params.extra} 1> {log} 2>&1
         """
 
 # Identify probable transcripts
