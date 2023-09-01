@@ -1,6 +1,6 @@
 channels:
-  - bioconda
-  - conda-forge
   - anaconda
+  - conda-forge
+  - bioconda
 dependencies:
-  - mikado>=2.3.4
+  - mikado>=2.3.0

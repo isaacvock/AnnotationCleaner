@@ -1,6 +1,6 @@
 channels:
-  - bioconda
-  - conda-forge
   - anaconda
+  - conda-forge
+  - bioconda
 dependencies:
   - portcullis
