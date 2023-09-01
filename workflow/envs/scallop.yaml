@@ -1,7 +1,7 @@
 channels:
-  - anaconda
   - conda-forge
   - bioconda
+  - nodefaults
 dependencies:
   - scallop=0.10.5
   - taco=0.7.3

@@ -1,7 +1,7 @@
 channels:
-  - anaconda
   - conda-forge
   - bioconda
+  - nodefaults
 dependencies:
   - stringtie
   - taco=0.7.3
