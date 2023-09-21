@@ -37,6 +37,14 @@ def get_target_input():
     if config["use_mikado"]:
 
         target.append("results/mikado_pick/mikado.loci.gff3")
+    
+    if config["stringtie"]["use_stringtie"]:
+
+        target.append(expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES))
+
+    if config["scallop"]["use_scallop"]:
+
+        target.append(expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES))
 
     if config["scallop"]["use_scallop"] and config["scallop"]["use_taco"]:
 
