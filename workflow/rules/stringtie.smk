@@ -8,11 +8,10 @@ rule stringtie:
     threads: 10
     params:
         extra=config["stringtie_params"],
-        gtf=config["reference_gtf"]
     conda:
         "../envs/stringtie.yaml",
     shell:
-        "stringtie -o {output} -p {threads} -G {params.gtf} {params.extra} {input} 1> {log} 2>&1"
+        "stringtie -o {output} -p {threads} {params.extra} {input} 1> {log} 2>&1"
 
 rule stringtie_merge:
     input:
@@ -24,11 +23,10 @@ rule stringtie_merge:
     threads: 10
     params:
         extra=config["stringtie_merge_params"],
-        gtf=config["reference_gtf"],
     conda:
         "../envs/stringtie.yaml"
     shell:
-        "stringtie --merge -p {threads} -G {params.gtf} -o {output} {params.extra} {input}"
+        "stringtie --merge -p {threads} -o {output} {params.extra} {input}"
 
 rule stringtie_tacoinput:
     input:
