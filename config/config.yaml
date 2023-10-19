@@ -23,8 +23,10 @@ scallop:
 # Use StringTie for annotation building
 stringtie: 
   use_stringtie: True
-  use_taco: True
-  use_merge: False
+  use_reference: True # Use reference as a guide
+  use_taco: False # Use TACO to merge assemblies
+  use_merge: True # Use Stringtie-merge to merge assemblies
+  clean_then_merge: True # clean separate assemblies and then merged; otherwise, merged assembly is cleaned
   label: "st"
   strandedness: True
   score: 0
@@ -40,6 +42,10 @@ use_mikado: True
 
 # Annotation GTF to compare assemblies to
 reference_gtf: data/annotation/reference.gtf
+
+
+# Remove low-coverage/non-existent isoforms from reference to use as a guide for StringTie
+clean_reference: True
 
 
 # Parameters to pass to samtools (other than input, output, -m, and -T)
@@ -64,7 +70,7 @@ scallop_refcomp_params: ""
 # Parameters to pass to Stringtie 
 stringtie_params: "--rf"
 
-# Parameters to psas to Stringtie --merge
+# Parameters to pass to Stringtie --merge
 stringtie_merge_params: ""
 
 # Parameters to pass to TACO with Stringtie input
