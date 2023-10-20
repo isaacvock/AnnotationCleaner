@@ -21,7 +21,7 @@ if config["stringtie"]["clean_then_merge"]:
         output:
             "results/flattened_assembly/{sample}_flat_genome_exonID.gtf",
         log:
-            "logs/add_exon_reference/add_exon.log",
+            "logs/add_exon_assembly/{sample}.log",
         params:
             shellscript=workflow.source_path("../scripts/exon_ID.sh")
         conda:
@@ -55,7 +55,7 @@ if config["stringtie"]["clean_then_merge"]:
             """
 
     # Exon bin quantification for each gene in StringTie assemblies
-    rule quantify_reference_exonbin:
+    rule quantify_assembly_exonbin:
         input:
             bam="results/sorted/sorted_{sample}.bam",
             gtf="results/flattened_assembly/{sample}_flat_genome_exonID.gtf"
@@ -76,7 +76,7 @@ if config["stringtie"]["clean_then_merge"]:
             """
 
     # Exonic quantification for each gene in StringTie assemblies
-    rule quantify_reference_exonic:
+    rule quantify_assembly_exonic:
         input:
             bam="results/sorted/sorted_{sample}.bam",
             gtf="results/flattened_assembly/{sample}_flat_genome_exonID.gtf"
@@ -111,7 +111,7 @@ if config["stringtie"]["clean_then_merge"]:
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_reference/{sample}.log"
+            "logs/clean_assembly/{sample}.log"
         threads: 1
         shell:
             """
@@ -143,7 +143,7 @@ else:
         output:
             "results/flattened_assembly/flat_genome_exonID.gtf",
         log:
-            "logs/add_exon_reference/add_exon.log",
+            "logs/add_exon_assembly/add_exon.log",
         params:
             shellscript=workflow.source_path("../scripts/exon_ID.sh")
         conda:
@@ -177,7 +177,7 @@ else:
             """
 
     # Exon bin quantification for each gene in StringTie assemblies
-    rule quantify_reference_exonbin:
+    rule quantify_assembly_exonbin:
         input:
             bam="results/sorted/sorted_{sample}.bam",
             gtf="results/flattened_assembly/flat_genome_exonID.gtf"
@@ -198,7 +198,7 @@ else:
             """
 
     # Exonic quantification for each gene in StringTie assemblies
-    rule quantify_reference_exonic:
+    rule quantify_assembly_exonic:
         input:
             bam="results/sorted/sorted_{sample}.bam",
             gtf="results/flattened_assembly/flat_genome_exonID.gtf"
@@ -234,7 +234,7 @@ else:
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_reference/{sample}.log"
+            "logs/clean_assembly/{sample}.log"
         threads: 1
         shell:
             """
