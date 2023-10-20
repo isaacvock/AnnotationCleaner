@@ -49,7 +49,7 @@ option_list <- list(
   make_option(c("-p", "--priorvar", type = "double"),
               default = 2,
               help = "Variance of prior on intronic RPK"),
-  make_option(c("-b", "--slope", type = "double"),
+  make_option(c("-s", "--slope", type = "double"),
               default = 5,
               help = "Non-linear slope parameter for coverage vs. dispersion trend"),
   make_option(c("-i", "--intercept", type = "double"),
