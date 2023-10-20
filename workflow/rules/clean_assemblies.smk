@@ -109,7 +109,7 @@ if config["stringtie"]["clean_then_merge"]:
             rscript=workflow.source_path("../scripts/clean_reference.R"),
             extra=config["pruning_assembly_params"]
         conda:
-            "../envs/clean.yaml"
+            "../envs/cleaning.yaml"
         log:
             "logs/clean_reference/{sample}.log"
         threads: 1
@@ -232,7 +232,7 @@ else:
             rscript=workflow.source_path("../scripts/clean_reference.R"),
             extra=config["pruning_assembly_params"]
         conda:
-            "../envs/clean.yaml"
+            "../envs/cleaning.yaml"
         log:
             "logs/clean_reference/{sample}.log"
         threads: 1

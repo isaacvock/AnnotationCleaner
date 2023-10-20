@@ -103,7 +103,7 @@ rule clean_reference:
         rscript=workflow.source_path("../scripts/clean_reference.R"),
         extra=config["pruning_reference_params"]
     conda:
-        "../envs/clean.yaml"
+        "../envs/cleaning.yaml"
     log:
         "logs/clean_reference/{sample}.log"
     threads: 1

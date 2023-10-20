@@ -61,21 +61,21 @@ def get_target_input():
     return target
 
 
-# IDs for all split up sub-fasta files
-num_digits = len(str(config["num_sub"]))
+# # IDs for all split up sub-fasta files
+# num_digits = len(str(config["num_sub"]))
 
-SPLIT_IDS = [str(i).zfill(num_digits) for i in range(0, config["num_sub"])]
+# SPLIT_IDS = [str(i).zfill(num_digits) for i in range(0, config["num_sub"])]
 
 
-# Number of threads that can be used for serialization step
-if config["num_sub"] > 1:
-    SERIALISE_THREADS = config["num_sub"]
+# # Number of threads that can be used for serialization step
+# if config["num_sub"] > 1:
+#     SERIALISE_THREADS = config["num_sub"]
 
-    if SERIALISE_THREADS > workflow.cores:
-        SERIALISE_THREADS = workflow.cores
+#     if SERIALISE_THREADS > workflow.cores:
+#         SERIALISE_THREADS = workflow.cores
 
-else:
-    SERIALISE_THREADS = 1
+# else:
+#     SERIALISE_THREADS = 1
 
 ### Sort bam files
 rule sort:
