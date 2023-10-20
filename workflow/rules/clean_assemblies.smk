@@ -115,7 +115,7 @@ if config["stringtie"]["clean_then_merge"]:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} 1> {log} 2>&1
+            {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} -o {output.clean_ref} 1> {log} 2>&1
             """
 
 else:
@@ -236,5 +236,5 @@ else:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -d results/quantify_assembly/ 1> {log} 2>&1
+            {params.rscript} -r {input.ref} -d results/quantify_assembly/ -o {output.clean_ref} 1> {log} 2>&1
             """
