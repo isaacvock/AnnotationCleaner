@@ -100,6 +100,7 @@ if config["stringtie"]["clean_then_merge"]:
     rule stringtie_clean_assembly:
         input:
             ref="results/separate_stringties/{sample}.gtf",
+            flatref="results/flattened_assembly/{sample}_flat_genome_exonID.gtf",
             cnts_exonic="results/quantify_assembly/{sample}_exonic.csv",
             cnts_exonbin="results/quantify_assembly/{sample}_exonbin.csv",
             cnts_total="results/quantify_assembly/{sample}_total.csv",
@@ -116,7 +117,7 @@ if config["stringtie"]["clean_then_merge"]:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} \
+            {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} \
             -d ./results/clean_assembly -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
 
@@ -223,6 +224,7 @@ else:
     rule stringtie_clean_assembly:
         input:
             ref="results/stringtie_merge/stringtie_merged.gtf",
+            flatref="results/flattened_assembly/flat_genome_exonID.gtf",
             cnts_exonic=expand("results/quantify_assembly/{SID}_exonic.csv", SID = SAMP_NAMES),
             cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.csv", SID = SAMP_NAMES),
             cnts_total=expand("results/quantify_assembly/{SID}_total.csv", SID = SAMP_NAMES),
@@ -239,5 +241,5 @@ else:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -d results/quantify_assembly/ -o {output.clean_ref} {params.extra} 1> {log} 2>&1
+            {params.rscript} -r {input.ref} -f {input.flatref} -d results/quantify_assembly/ -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """

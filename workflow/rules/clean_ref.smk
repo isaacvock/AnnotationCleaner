@@ -94,6 +94,7 @@ rule quantify_reference_exonic:
 rule clean_reference:
     input:
         ref=config["reference_gtf"],
+        flatref=config["flat_ref"],
         cnts_exonic="results/quantify_reference/{sample}_exonic.csv",
         cnts_exonbin="results/quantify_reference/{sample}_exonbin.csv",
         cnts_total="results/quantify_reference/{sample}_total.csv",
@@ -110,6 +111,6 @@ rule clean_reference:
     shell:
         """
         chmod +x {params.rscript}
-        {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} \
+        {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} \
         -t {input.cnts_total} -o {output.clean_ref} -d ./results/clean_reference/ {params.extra} 1> {log} 2>&1
         """
