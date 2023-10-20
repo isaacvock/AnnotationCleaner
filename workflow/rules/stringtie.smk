@@ -19,7 +19,7 @@ if config["clean_reference"] and config["stringtie"]["use_reference"]:
 
 
 # Use provided reference as guide
-else if not config["clean_reference"] and config["stringtie"]["use_reference"]:
+elif not config["clean_reference"] and config["stringtie"]["use_reference"]:
 
     rule stringtie:
         input:
