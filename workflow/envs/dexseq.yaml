@@ -3,5 +3,5 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - python =3.8.6
+  - python >=3.9
   - htseq =2.0.1
