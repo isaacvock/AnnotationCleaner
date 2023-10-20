@@ -10,6 +10,17 @@ samples:
   WT_ctl_3: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_3.bam
 
 
+# Annotation GTF to compare assemblies to or guide assembly
+reference_gtf: data/annotation/CHESS.gtf
+
+# Strandedness of library
+  # set to "reverse", "yes", or "no"
+  # reverse means that read 2 represents 5' to 3' sequence of original RNA (read 1 thus represents its reverse complement)
+  # yes means that read 1 represents 5' to 3' sequence of original RNA
+  # no means unstranded
+  # Used by HTSeq (see https://htseq.readthedocs.io/en/master/htseqcount.html for details)
+strandedness: "reverse"
+
 ##### PARAMETERS THAT DETERMINE WHICH TRANSCRIPTOME ASSEMBLERS TO USE
 
 # Use Scallop + TACO for annotation building
@@ -43,10 +54,6 @@ use_mikado: True
 
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
-
-# Annotation GTF to compare assemblies to
-reference_gtf: data/annotation/CHESS.gtf
-
 
 # Remove low-coverage/non-existent isoforms from reference to use as a guide for StringTie
 clean_reference: True
@@ -118,10 +125,10 @@ stringtie_refcomp_params: ""
 #               of low coverage exon bins at ends of transcripts.
 
 # Pruning parameters for StringTie assemblies
-pruning_assembly_params: ""
+pruning_assembly_params: "--fdr 0.01"
 
 # Pruning parameters for reference
-pruning_reference_params: ""
+pruning_reference_params: "--fdr 0.001"
 
 
 
