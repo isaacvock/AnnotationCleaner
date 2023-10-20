@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 ### PURPOSE OF THIS SCRIPT
 ## Remove transcripts from annotation that are not supported by read coverage
 ## relative to intronic background coverage
