@@ -13,6 +13,9 @@ samples:
 # Annotation GTF to compare assemblies to or guide assembly
 reference_gtf: data/annotation/CHESS.gtf
 
+# Flattened reference (only relevant if cleaning reference)
+flat_ref: data/annotation/CHESS_flat.gtf
+
 # Strandedness of library
   # set to "reverse", "yes", or "no"
   # reverse means that read 2 represents 5' to 3' sequence of original RNA (read 1 thus represents its reverse complement)

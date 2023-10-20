@@ -15,7 +15,7 @@ rule add_exon_reference:
     input:
         "results/raw_flattened_reference/flat_genome.gtf",
     output:
-        "results/flattened_reference/flat_genome_exonID.gtf",
+        config["flat_ref"],
     log:
         "logs/add_exon_reference/add_exon.log",
     params:
@@ -33,7 +33,7 @@ rule add_exon_reference:
 rule quantify_reference_total:
     input:
         bam="results/sorted/sorted_{sample}.bam",
-        gtf="results/flattened_reference/flat_genome_exonID.gtf"
+        gtf=config["flat_ref"]
     output:
         counts="results/quantify_reference/{sample}_total.csv",
     params:
@@ -54,7 +54,7 @@ rule quantify_reference_total:
 rule quantify_reference_exonbin:
     input:
         bam="results/sorted/sorted_{sample}.bam",
-        gtf="results/flattened_reference/flat_genome_exonID.gtf"
+        gtf=config["flat_ref"]
     output:
         counts="results/quantify_reference/{sample}_exonbin.csv",
     params:
@@ -74,7 +74,7 @@ rule quantify_reference_exonbin:
 rule quantify_reference_exonic:
     input:
         bam="results/sorted/sorted_{sample}.bam",
-        gtf="results/flattened_reference/flat_genome_exonID.gtf"
+        gtf=config["flat_ref"]
     output:
         counts="results/quantify_reference/{sample}_exonic.csv",
     params:
