@@ -50,7 +50,7 @@ stringtie:
 
 # Use mikado to combine annotations built by multiple tools
   # NOT CURRENTLY IMPLEMENTED
-use_mikado: True
+use_mikado: False
 
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
