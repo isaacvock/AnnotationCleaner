@@ -2,16 +2,19 @@
 
 # Path to bam files, relative to directory that AnnotationCleaner was deployed to
 samples:
-  Rep_1: data/bam/WT_replicate_1.bam
-  Rep_2: data/bam/WT_replicate_2.bam
-  Rep_3: data/bam/WT_replicate_3.bam
+  NMD11j_ctl_1: ../THE_Aligner/twopass_hogg_star/align/NMD11j_ctl_1.bam
+  NMD11j_ctl_2: ../THE_Aligner/twopass_hogg_star/align/NMD11j_ctl_2.bam
+  NMD11j_ctl_3: ../THE_Aligner/twopass_hogg_star/align/NMD11j_ctl_3.bam
+  WT_ctl_1: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_1.bam
+  WT_ctl_2: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_2.bam
+  WT_ctl_3: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_3.bam
 
 
 ##### PARAMETERS THAT DETERMINE WHICH TRANSCRIPTOME ASSEMBLERS TO USE
 
 # Use Scallop + TACO for annotation building
 scallop: 
-  use_scallop: True
+  use_scallop: False
   use_taco: True
   label: "sc"
   strandedness: True
@@ -42,7 +45,7 @@ use_mikado: True
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
 
 # Annotation GTF to compare assemblies to
-reference_gtf: data/annotation/reference.gtf
+reference_gtf: data/annotation/CHESS.gtf
 
 
 # Remove low-coverage/non-existent isoforms from reference to use as a guide for StringTie
@@ -69,7 +72,7 @@ scallop_refcomp_params: ""
 
 
 # Parameters to pass to Stringtie 
-stringtie_params: "--rf"
+stringtie_params: "--rf -f 0.05 -j 10 -c 10 -s 10 -g 1"
 
 # Parameters to pass to Stringtie --merge
 stringtie_merge_params: ""
