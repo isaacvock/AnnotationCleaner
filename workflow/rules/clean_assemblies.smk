@@ -12,7 +12,7 @@ if config["stringtie"]["clean_then_merge"]:
             "../envs/dexseq.yaml"
         threads: 1
         script:
-            "../scripts/dexseq_prepare_annotation.py 2> {log}"
+            "../scripts/dexseq_prepare_annotation.py"
 
     # Add useful exon ID column to flattened StringTie assemblies
     rule add_exon_assembly:
@@ -134,7 +134,7 @@ else:
             "../envs/dexseq.yaml"
         threads: 1
         script:
-            "../scripts/dexseq_prepare_annotation.py 2> {log}"
+            "../scripts/dexseq_prepare_annotation.py"
 
     # Add useful exon ID column to flattened StringTie assemblies
     rule add_exon_assembly:
