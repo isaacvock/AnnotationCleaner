@@ -102,7 +102,8 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
                         exp_ids, intronic_background = NULL,
                         FDR = 0.05, coverage_floor = 3,
                         read_length = 100, tau2 = 2,
-                        a1 = 5, a0 = 0.01, debug = FALSE){
+                        a1 = 5, a0 = 0.01, sampleID = "",
+                        debug = FALSE){
   
   if(debug){
     browser()
@@ -233,9 +234,9 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
                          relationship = "many-to-many")
   
   write_csv(EF_to_TF, 
-            file = paste(dir, "EF_to_TF.csv", sep = "/"))
+            file = paste(dir, paste0(sampleID, "EF_to_TF.csv"), sep = "/"))
   write_csv(intronic_background,
-            file = paste(dir, "intronic_background.csv", sep = "/"))
+            file = paste(dir, paste0(sampleID, "intronic_background.csv"), sep = "/"))
   
   
   ### Calculate coverage over exonic bins
@@ -354,7 +355,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   exon_check <- inner_join(exon_check, exp_ids, by = "sample")
   
   write_csv(exon_check,
-            file = paste(dir, "exon_check.csv", sep = "/"))
+            file = paste(dir, paste0(sampleID, "exon_check.csv"), sep = "/"))
   
   
   # Make sure it passes filter in all samples
@@ -379,9 +380,9 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   
   
   write_csv(crap_exons,
-            file = paste(dir, "unsupported_exons.csv", sep = "/"))
+            file = paste(dir, paste0(sampleID, "unsupported_exons.csv"), sep = "/"))
   write_csv(real_exons,
-            file = paste(dir, "supported_exons.csv", sep = "/"))
+            file = paste(dir, paste0(sampleID, "supported_exons.csv"), sep = "/"))
   
   
 }
@@ -956,18 +957,27 @@ if(opt$bins == ""){
 
 ### Score exons
 dir <- dirname(opt$output)
+
+# sample ID
+if(length(samps) == 1){
+  sampleID <- samps
+}else{
+  sampleID <- ""
+}
+
 score_exons(exonbins, flat_gtf = flat_gtf,
             gtf = gtf, dir = dir,
             exp_ids = exp_id, intronic_background = intronic_background,
             FDR = opt$fdr, coverage_floor = opt$floor, 
             read_length = opt$readlength, tau2 = opt$priorvar,
-            a1 = opt$slope, a0 = opt$intercept)
+            a1 = opt$slope, a0 = opt$intercept,
+            sampleID = sampleID)
 
 ### Prune annotation
 
-EF_to_TF_file <- paste0(dir, "/", "EF_to_TF.csv")
-crap_exons_file <- paste0(dir, "/", "unsupported_exons.csv")
-exon_check_file <- paste0(dir, "/", "exon_check.csv")
+EF_to_TF_file <- paste0(dir, "/", paste0(sampleID, "EF_to_TF.csv"))
+crap_exons_file <- paste0(dir, "/", paste0(sampleID, "unsupported_exons.csv"))
+exon_check_file <- paste0(dir, "/", paste0(sampleID, "exon_check.csv"))
 
 EF_to_TF <- fread(EF_to_TF_file)
 crap_exons <- fread(crap_exons_file)
