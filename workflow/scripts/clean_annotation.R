@@ -62,10 +62,13 @@ option_list <- list(
               default = 50,
               help = "Mininmum exonic:intronic RPK ratio of most well covered exon bin to keep a transcript from a gene with no good transcripts"),
   make_option(c("-v", "--discardgenes", action = "store_false"),
+              default = TRUE,
               help = "If included, genes with no good transcripts will be completely discarded"),
   make_option(c("-n", "--ignoreends", action = "store_false"),
+              default = TRUE,
               help = "If included, bins at end of transcripts are not considered when deciding if isoform exists"),
   make_option(c("-g", "--notrimming", action = "store_false"),
+              default = TRUE,
               help = "If included, ends of transcripts are not trimmed"))
 
 opt_parser <- OptionParser(option_list = option_list)
