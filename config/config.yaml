@@ -26,7 +26,7 @@ stringtie:
   use_reference: True # Use reference as a guide
   use_taco: False # Use TACO to merge assemblies
   use_merge: True # Use Stringtie-merge to merge assemblies
-  clean_then_merge: True # clean separate assemblies and then merged; otherwise, merged assembly is cleaned
+  clean_then_merge: True # clean separate assemblies and then merged; otherwise, merged assembly is cleaned (latter not currently implemented)
   label: "st"
   strandedness: True
   score: 0
@@ -35,6 +35,7 @@ stringtie:
   strip_cds: False
 
 # Use mikado to combine annotations built by multiple tools
+  # NOT CURRENTLY IMPLEMENTED
 use_mikado: True
 
 
@@ -80,7 +81,48 @@ stringtie_taco_params: ""
 stringtie_refcomp_params: ""
 
 
-##### MIKADO PARAMETERS
+
+##### ANNOTATION PRUNING RSCRIPT PARAMETERS
+
+### Options are:
+# -c (--fdr): False-exon-discovery rate (default = 0.05)
+# -l (--floor): Min. factor diference between exonic and 
+#               intronic RPK to call a region exonic (default = 3)
+# -a (--readlength): Total effective read length. E.g., if PE-50 data
+#               this should be 100 (50*2) You can also increase this
+#               above the actual read length to increase conservativeness
+#               of exonic RPK estimate (default = 100).
+# -p (--priorvar): Variance of prior on intronic RPK trend. Decrease this
+#               to increase the amount of intronic RPK regualrization.
+#               (default = 2)
+# -m (--meancutoff): If a gene has no transcripts that pass filtering, then
+#               the highest coverage transcript will be kept as long as its
+#               average exonic RPK is a factor of -m higher than the intronic RPK.
+#               Only relevant if --discardgenes flag is NOT set.
+#               (default = 10)
+# -x (--maxcutoff): If a gene has no transcripts that pass filtering, then
+#               the highest coverage transcript will be kept as long as its 
+#               maximum exonic RPK is a factor of -x higher than the intronic RPK.
+#               Only relevant if --discardgenes flag is NOT set.
+#               (default = 50)
+# -v (--discardgenes): If a gene has no transcripts that pass filtering,
+#               it will be completely discarded if this flag is set.
+# -n (--ignoreends): If this flag is set, don't consider first and last exonic bin when deciding
+#               if a transcript is good or not. This can help deal with overextension
+#               of UTRs. This will eventually be removed in favor of higher resolution
+#               binning of ends of transcripts to improve trimming.
+# -g (--notrimming): If this flag is set, don't trim ends of transcripts via removal
+#               of low coverage exon bins at ends of transcripts.
+
+# Pruning parameters for StringTie assemblies
+pruning_assembly_params: ""
+
+# Pruning parameters for reference
+pruning_reference_params: ""
+
+
+
+##### MIKADO (not currently implemented) PARAMETERS
 
 # Path to mikado list input (must have .txt extension)
   # This is created automatically if not already provided

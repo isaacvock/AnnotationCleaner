@@ -100,7 +100,8 @@ rule clean_reference:
     output:
         clean_ref="results/clean_reference/{sample}.gtf"
     params:
-        rscript=workflow.source_path("../scripts/clean_reference.R")
+        rscript=workflow.source_path("../scripts/clean_reference.R"),
+        extra=config["pruning_reference_params"]
     conda:
         "../envs/clean.yaml"
     log:
@@ -109,5 +110,6 @@ rule clean_reference:
     shell:
         """
         chmod +x {params.rscript}
-        {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} -o {output.clean_ref} 1> {log} 2>&1
+        {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} \
+        -t {input.cnts_total} -o {output.clean_ref} -d ./results/clean_reference/ {params.extra} 1> {log} 2>&1
         """

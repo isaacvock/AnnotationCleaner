@@ -106,7 +106,8 @@ if config["stringtie"]["clean_then_merge"]:
         output:
             clean_ref="results/clean_assembly/{sample}.gtf"
         params:
-            rscript=workflow.source_path("../scripts/clean_reference.R")
+            rscript=workflow.source_path("../scripts/clean_reference.R"),
+            extra=config["pruning_assembly_params"]
         conda:
             "../envs/clean.yaml"
         log:
@@ -115,7 +116,8 @@ if config["stringtie"]["clean_then_merge"]:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} -o {output.clean_ref} 1> {log} 2>&1
+            {params.rscript} -r {input.ref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} \
+            -d ./results/clean_assembly -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
 
 else:
@@ -227,7 +229,8 @@ else:
         output:
             clean_ref="results/clean_assembly/stringtie_merged.gtf"
         params:
-            rscript=workflow.source_path("../scripts/clean_reference.R")
+            rscript=workflow.source_path("../scripts/clean_reference.R"),
+            extra=config["pruning_assembly_params"]
         conda:
             "../envs/clean.yaml"
         log:
@@ -236,5 +239,5 @@ else:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -d results/quantify_assembly/ -o {output.clean_ref} 1> {log} 2>&1
+            {params.rscript} -r {input.ref} -d results/quantify_assembly/ -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
