@@ -1,5 +1,8 @@
 import sys, collections, itertools, os.path, optparse
 
+sys.stdout.write("Starting the whole shebang")
+sys.stderr.write("Just making sure I can write to stderr")
+
 args = [snakemake.input.gtf, snakemake.output.flatgtf]
 
 if len( args ) != 2:
