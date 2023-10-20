@@ -35,6 +35,10 @@ if config["scallop"]["use_scallop"]:
 
 if config["stringtie"]["use_stringtie"]:
     include: "rules/stringtie.smk"
+    include: "rules/clean_assemblies.smk"
+
+if config["clean_reference"]:
+    include: "clean_ref.smk"
 
 if config["use_mikado"]:
     include: "rules/mikado.smk"
