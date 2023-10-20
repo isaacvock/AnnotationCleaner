@@ -1,7 +1,5 @@
 import sys, collections, itertools, os.path, optparse
 
-sys.stdout.write("Starting the whole shebang")
-
 args = [snakemake.input.gtf, snakemake.output.flatgtf]
 
 if len( args ) != 2:
@@ -28,7 +26,6 @@ aggregateGenes = True
 
 # Step 1: Store all exons with their gene and transcript ID 
 # in a GenomicArrayOfSets
-sys.stdout.write("Starting Step 1")
 
 exons = HTSeq.GenomicArrayOfSets( "auto", stranded=True )
 for f in HTSeq.GFF_Reader( gtf_file ):
@@ -45,7 +42,6 @@ for f in HTSeq.GFF_Reader( gtf_file ):
 # The keys of 'gene_sets' are the IDs of all genes, and each key refers to
 # the set that contains the gene.
 # Each gene set forms an 'aggregate gene'.
-sys.stdout.write("Starting Step 2")
 
 if aggregateGenes == True:
    gene_sets = collections.defaultdict( lambda: set() )
@@ -70,7 +66,6 @@ if aggregateGenes == True:
 # and a transcript set, containing all transcripts that occur in the step.
 # The results are stored in the dict 'aggregates', which contains, for each
 # aggregate ID, a list of all its exonic_part features.
-sys.stdout.write("Starting Step 3")
 
 aggregates = collections.defaultdict( lambda: list() )
 for iv, s in exons.steps( ):
@@ -104,8 +99,6 @@ for iv, s in exons.steps( ):
 
 
 # Step 4: For each aggregate, number the exonic parts
-sys.stdout.write("Starting Step 4")
-
 aggregate_features = []
 for l in list(aggregates.values()):
    for i in range( len(l)-1 ):
@@ -126,8 +119,6 @@ for l in list(aggregates.values()):
       
       
 # Step 5: Sort the aggregates, then write everything out
-sys.stdout.write("Starting Step 5")
-
 aggregate_features.sort( key = lambda f: ( f.iv.chrom, f.iv.start ) )
 
 fout = open( out_file, "w" ) 
