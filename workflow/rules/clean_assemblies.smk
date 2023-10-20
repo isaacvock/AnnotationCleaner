@@ -106,7 +106,7 @@ if config["stringtie"]["clean_then_merge"]:
         output:
             clean_ref="results/clean_assembly/{sample}.gtf"
         params:
-            rscript=workflow.source_path("../scripts/clean_reference.R"),
+            rscript=workflow.source_path("../scripts/clean_annotation.R"),
             extra=config["pruning_assembly_params"]
         conda:
             "../envs/cleaning.yaml"
@@ -229,7 +229,7 @@ else:
         output:
             clean_ref="results/clean_assembly/stringtie_merged.gtf"
         params:
-            rscript=workflow.source_path("../scripts/clean_reference.R"),
+            rscript=workflow.source_path("../scripts/clean_annotation.R"),
             extra=config["pruning_assembly_params"]
         conda:
             "../envs/cleaning.yaml"

@@ -100,7 +100,7 @@ rule clean_reference:
     output:
         clean_ref="results/clean_reference/{sample}.gtf"
     params:
-        rscript=workflow.source_path("../scripts/clean_reference.R"),
+        rscript=workflow.source_path("../scripts/clean_annotation.R"),
         extra=config["pruning_reference_params"]
     conda:
         "../envs/cleaning.yaml"
