@@ -9,7 +9,7 @@ rule flatten_reference:
         "../envs/dexseq.yaml"
     threads: 1
     script:
-        "../scripts/dexseq_prepare_annotation.py 1> {log} 2>&1"
+        "../scripts/dexseq_prepare_annotation.py"
 
 rule add_exon_reference:
     input:
