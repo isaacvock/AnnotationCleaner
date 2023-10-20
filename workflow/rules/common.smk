@@ -84,7 +84,7 @@ rule sort:
     output:
         "results/sorted/sorted_{sample}.bam"
     log:
-        "logs/sorted/{sample}.log"
+        "logs/sort/{sample}.log"
     threads: 8
     params:
         extra=config["samtools_params"],
