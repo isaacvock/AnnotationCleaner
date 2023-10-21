@@ -1,9 +1,28 @@
+rule remove_unstranded:
+    input:
+        gtf="results/separate_stringties/{sample}.gtf"
+    output:
+        stranded="results/remove_unstranded/{sample}.gtf"
+    log:
+        "logs/remove_unstranded/{sample}.log",
+    conda:
+        "../envs/cleaning.yaml"
+    params:
+        rscript=workflow.source_path("../scripts/remove_unstranded.R")
+    threads: 1
+    shell:
+        """
+        chmod +x {params.rscript}
+        {params.rscript} -i {input.gtf} -o {output.stranded} 1> {log} 2>&1
+        """
+
+
 if config["stringtie"]["clean_then_merge"]:
 
     # DEXSeq flatten individual StringTie assemblies
     rule flatten_assembly:
         input:
-            gtf="results/separate_stringties/{sample}.gtf"
+            gtf="results/remove_unstranded/{sample}.gtf"
         output:
             flatgtf="results/raw_flattened_assembly/{sample}_flat_genome.gtf",
         log:
@@ -99,7 +118,7 @@ if config["stringtie"]["clean_then_merge"]:
     # Clean StringTie assemblies with custom R script
     rule stringtie_clean_assembly:
         input:
-            ref="results/separate_stringties/{sample}.gtf",
+            ref="results/remove_unstranded/{sample}.gtf",
             flatref="results/flattened_assembly/{sample}_flat_genome_exonID.gtf",
             cnts_exonic="results/quantify_assembly/{sample}_exonic.csv",
             cnts_exonbin="results/quantify_assembly/{sample}_exonbin.csv",
@@ -126,7 +145,7 @@ else:
     # DEXSeq flatten merged StringTie assembly
     rule flatten_assembly:
         input:
-            gtf="results/stringtie_merge/stringtie_merged.gtf"
+            gtf="results/remove_unstranded/{sample}.gtf"
         output:
             flatgtf="results/raw_flattened_assembly/flat_genome.gtf",
         log:
@@ -223,7 +242,7 @@ else:
         # I am imagining a parameter d that if set, loads sets of csvs as I normally do
     rule stringtie_clean_assembly:
         input:
-            ref="results/stringtie_merge/stringtie_merged.gtf",
+            ref="results/remove_unstranded/{sample}.gtf"
             flatref="results/flattened_assembly/flat_genome_exonID.gtf",
             cnts_exonic=expand("results/quantify_assembly/{SID}_exonic.csv", SID = SAMP_NAMES),
             cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.csv", SID = SAMP_NAMES),
