@@ -242,7 +242,7 @@ else:
         # I am imagining a parameter d that if set, loads sets of csvs as I normally do
     rule stringtie_clean_assembly:
         input:
-            ref="results/remove_unstranded/{sample}.gtf"
+            ref="results/remove_unstranded/{sample}.gtf",
             flatref="results/flattened_assembly/flat_genome_exonID.gtf",
             cnts_exonic=expand("results/quantify_assembly/{SID}_exonic.csv", SID = SAMP_NAMES),
             cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.csv", SID = SAMP_NAMES),
