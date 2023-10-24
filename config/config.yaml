@@ -134,6 +134,16 @@ pruning_assembly_params: "--fdr 0.01"
 pruning_reference_params: "--fdr 0.001"
 
 
+##### Exonic bin splitting parmaters
+
+### Options are:
+# -s (--size): Largest exonic bin allowed (in # of nucleotides). Bins larger than this will be split
+#               up into smaller exonic bins to increase resolution of end trimming and prevent loss 
+#               of isoforms due to overextended UTRs.
+#               (default 200)
+
+splitting_bins_params: ""
+
 
 ##### MIKADO (not currently implemented) PARAMETERS
 

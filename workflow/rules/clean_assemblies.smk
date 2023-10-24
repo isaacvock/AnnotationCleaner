@@ -33,10 +33,30 @@ if config["stringtie"]["clean_then_merge"]:
         script:
             "../scripts/dexseq_prepare_annotation.py"
 
+    # Decrease size of exonic bins
+    rule smaller_bins_assembly:
+        input:
+            gtf="results/raw_flattened_assembly/{sample}_flat_genome.gtf",
+        output:
+            higherres="results/smaller_bins_reference/{sample}_flat_genome.gtf",
+        log:
+            "logs/smaller_bins_assembly/{sample}.log"
+        params:
+            rscript=workflow.source_path("../scripts/split_bins.R"),
+            extra=config["splitting_bins_params"]
+        conda:
+            "../envs/cleaning.yaml"
+        threads: 1
+        shell:
+            """
+            chmod +x {params.rscript}
+            {params.rscript} -i {input.gtf} -o {output.higherres} {params.extra} 1> {log} 2>&1
+            """
+
     # Add useful exon ID column to flattened StringTie assemblies
     rule add_exon_assembly:
         input:
-            "results/raw_flattened_assembly/{sample}_flat_genome.gtf",
+            "results/smaller_bins_reference/{sample}_flat_genome.gtf",
         output:
             "results/flattened_assembly/{sample}_flat_genome_exonID.gtf",
         log:
@@ -145,21 +165,41 @@ else:
     # DEXSeq flatten merged StringTie assembly
     rule flatten_assembly:
         input:
-            gtf="results/remove_unstranded/{sample}.gtf"
+            gtf="results/stringtie_merge/stringtie_merged.gtf"
         output:
             flatgtf="results/raw_flattened_assembly/flat_genome.gtf",
         log:
-            "logs/flatten_assembly/{sample}.log",
+            "logs/flatten_assembly/flatten.log",
         conda: 
             "../envs/dexseq.yaml"
         threads: 1
         script:
             "../scripts/dexseq_prepare_annotation.py"
 
+    # Decrease size of exonic bins
+    rule smaller_bins_assembly:
+        input:
+            gtf="results/raw_flattened_assembly/flat_genome.gtf",
+        output:
+            higherres="results/smaller_bins_reference/flat_genome.gtf",
+        log:
+            "logs/smaller_bins_assembly/{sample}.log"
+        params:
+            rscript=workflow.source_path("../scripts/split_bins.R"),
+            extra=config["splitting_bins_params"]
+        conda:
+            "../envs/cleaning.yaml"
+        threads: 1
+        shell:
+            """
+            chmod +x {params.rscript}
+            {params.rscript} -i {input.gtf} -o {output.higherres} {params.extra} 1> {log} 2>&1
+            """
+
     # Add useful exon ID column to flattened StringTie assemblies
     rule add_exon_assembly:
         input:
-            "results/raw_flattened_assembly/flat_genome.gtf",
+            "results/smaller_bins_reference/flat_genome.gtf",
         output:
             "results/flattened_assembly/flat_genome_exonID.gtf",
         log:

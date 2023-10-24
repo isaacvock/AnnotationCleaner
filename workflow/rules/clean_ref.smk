@@ -11,9 +11,29 @@ rule flatten_reference:
     script:
         "../scripts/dexseq_prepare_annotation.py"
 
+rule smaller_bins_reference:
+    input:
+        gtf="results/raw_flattened_reference/flat_genome.gtf",
+    output:
+        higherres="results/smaller_bins_reference/flat_genome.gtf",
+    log:
+        "logs/smaller_bins_reference/smaller_bins.log"
+    params:
+        rscript=workflow.source_path("../scripts/split_bins.R"),
+        extra=config["splitting_bins_params"]
+    conda:
+        "../envs/cleaning.yaml"
+    threads: 1
+    shell:
+        """
+        chmod +x {params.rscript}
+        {params.rscript} -i {input.gtf} -o {output.higherres} {params.extra} 1> {log} 2>&1
+        """
+    
+
 rule add_exon_reference:
     input:
-        "results/raw_flattened_reference/flat_genome.gtf",
+        "results/smaller_bins_reference/flat_genome.gtf",
     output:
         config["flat_ref"],
     log:
