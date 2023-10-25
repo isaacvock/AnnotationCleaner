@@ -137,6 +137,7 @@ final_gtf <- bind_rows(final_gtf %>%
 
 # Add back exonic part number
 final_gtf <- final_gtf %>%
+  arrange(gene_id, start) %>%
   group_by(gene_id, type) %>%
   mutate(exonic_part_number = ifelse(type == "aggregate_gene", NA,
                                      1:n()))

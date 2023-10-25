@@ -69,7 +69,10 @@ option_list <- list(
               help = "If included, bins at end of transcripts are not considered when deciding if isoform exists"),
   make_option(c("-g", "--notrimming", action = "store_false"),
               default = TRUE,
-              help = "If included, ends of transcripts are not trimmed"))
+              help = "If included, ends of transcripts are not trimmed"),
+  make_option(c("-z", "--minreads", type = "double"),
+              default = 10.0,
+              help = "A bin must contain this many reads to be valid"))
 
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser) # Load options from command line.
@@ -83,12 +86,12 @@ opt <- parse_args(opt_parser) # Load options from command line.
 #          "G:/Shared drives/Matthew_Simon/IWV/FlatStacks/with_htseq/st_justin_v1/quantify/NMD11j_ctl_1_exonbin.csv",
 #          "G:/Shared drives/Matthew_Simon/IWV/FlatStacks/with_htseq/st_justin_v1/quantify/NMD11j_ctl_1_total.csv",
 #          "G:/Shared drives/Matthew_Simon/IWV/FlatStacks/with_htseq/st_justin_v1/quantify/",
-#          0.05, 3, 100, 2, 5, 0.01, 10, 50, TRUE, TRUE, TRUE)
+#          0.05, 3, 100, 2, 5, 0.01, 10, 50, TRUE, TRUE, TRUE, 10)
 # 
 # names(opt) <- c("reference", "flatref", "output", "exonic", "bins", 
 #                 "total", "directory", "fdr", "floor", "readlength",
 #                 "priorvar", "slope", "intercept", "meancutoff", "maxcutoff",
-#                 "discardgenes", "ignoreends", "notrimming")
+#                 "discardgenes", "ignoreends", "notrimming", "minreads")
 # 
 # # Source functions for testing purposes
 # source("C:/Users/isaac/Documents/Simon_Lab/AnnotationPruneR/scripts/Pruners.R")
@@ -104,7 +107,7 @@ inv_logit <- function(x) exp(x)/(1+exp(x))
 score_exons <- function(cB, flat_gtf, gtf, dir,
                         exp_ids, intronic_background = NULL,
                         FDR = 0.05, coverage_floor = 3,
-                        read_length = 100, tau2 = 2,
+                        read_length = 100, tau2 = 2, minreads = 10,
                         a1 = 5, a0 = 0.01, sampleID = "",
                         debug = FALSE){
   
@@ -351,7 +354,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   
   # Make sure it has good coverage
   exon_check <- exon_check %>%
-    mutate(pass = ifelse(padj < FDR & RPK_exon > coverage_floor*RPK_post, 
+    mutate(pass = ifelse(padj < FDR & RPK_exon > coverage_floor*RPK_post & reads > minreads, 
                          TRUE, FALSE))
   
   
