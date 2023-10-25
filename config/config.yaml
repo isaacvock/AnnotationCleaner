@@ -126,6 +126,9 @@ stringtie_refcomp_params: ""
 #               binning of ends of transcripts to improve trimming.
 # -g (--notrimming): If this flag is set, don't trim ends of transcripts via removal
 #               of low coverage exon bins at ends of transcripts.
+# -z (--minreads): Minimum number of reads which an exonic bin must contain in order for it to
+#               be considered valid.
+#               (default = 10)
 
 # Pruning parameters for StringTie assemblies
 pruning_assembly_params: "--fdr 0.01"
