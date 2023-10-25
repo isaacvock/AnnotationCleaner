@@ -22,7 +22,7 @@ option_list <- list(
   make_option(c("-o", "--output", type="chracter"),
               help = "Path to output flat gtf"),
   make_option(c("-s", "--sizelimit"),
-              default = 200,
+              default = 300,
               help = "Largest exon bin size allowed. Larger bins will be split up into smaller bins."))
 
 opt_parser <- OptionParser(option_list = option_list)
@@ -60,7 +60,7 @@ exon_binning <- function(df, size_limit = 200,
     # Current bin dimensions
     original_start <- df$start
     original_end <- df$end
-    width <- original_end - original_start
+    width <- original_end - original_start + 1
     
     ## Create starts and ends for new set of bins
     # Number of bins is such that new bins will be as close to the size limit
@@ -69,9 +69,9 @@ exon_binning <- function(df, size_limit = 200,
     # first new bin. Ends should range from the original start + the size limit
     # to the original end. 
     
-    num_bins <- ceiling(width/size_limit)
+    num_bins <- ceiling(width/size_limit) + 1
     
-    ends <- ceiling(seq(from = original_start + size_limit,
+    ends <- ceiling(seq(from = original_start + round(size_limit/2),
                         to = original_end,
                         length.out = num_bins))
     
@@ -87,7 +87,7 @@ exon_binning <- function(df, size_limit = 200,
                             score = df$phase,
                             gene_id = df$gene_id,
                             transcripts = df$transcripts) %>%
-      mutate(width = end - start)
+      mutate(width = end - start + 1)
     
     
     return(final_gtf)
