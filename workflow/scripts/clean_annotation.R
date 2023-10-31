@@ -106,8 +106,8 @@ inv_logit <- function(x) exp(x)/(1+exp(x))
 ### Function to score exons as likely intronic or not
 score_exons <- function(cB, flat_gtf, gtf, dir,
                         exp_ids, intronic_background = NULL,
-                        FDR = 0.05, coverage_floor = 2.0,
-                        read_length = 100, tau2 = 2, minreads = 10,
+                        FDR = 0.05, coverage_floor = 2,
+                        read_length = 100, tau2 = 2,
                         a1 = 5, a0 = 0.01, sampleID = "",
                         debug = FALSE){
   
@@ -344,7 +344,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   exon_check <- regularized %>%
     mutate(pval = pnbinom(q = reads,
                           mu = RPK_post*((exon_length + ((read_length - 1)))/1000),
-                          size = (a1/(RPK_post*((exon_length + ((read_length - 1)))/1000))) + a0,
+                          size = 1/((a1/(RPK_post*((exon_length + ((read_length - 1)))/1000))) + a0),
                           lower.tail = FALSE)) %>%
     ungroup() %>%
     mutate(padj = stats::p.adjust(pval, method = "BH"))
@@ -354,7 +354,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   
   # Make sure it has good coverage
   exon_check <- exon_check %>%
-    mutate(pass = ifelse(padj < FDR & RPK_exon > coverage_floor*RPK_post & reads > minreads, 
+    mutate(pass = ifelse(padj < FDR & RPK_exon > coverage_floor*RPK_post, 
                          TRUE, FALSE))
   
   
