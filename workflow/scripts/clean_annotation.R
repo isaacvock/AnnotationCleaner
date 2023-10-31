@@ -41,7 +41,7 @@ option_list <- list(
               default = 0.05,
               help = "Conservativeness of exon bin removal (FDR for true exon bins)"),
   make_option(c("-l", "--floor", type = "double"),
-              default = 3.0,
+              default = 2.0,
               help = "Minimum factor difference between exonic and intronic RPK"),
   make_option(c("-a", "--readlength", type = "integer"),
               default = 100,
@@ -106,7 +106,7 @@ inv_logit <- function(x) exp(x)/(1+exp(x))
 ### Function to score exons as likely intronic or not
 score_exons <- function(cB, flat_gtf, gtf, dir,
                         exp_ids, intronic_background = NULL,
-                        FDR = 0.05, coverage_floor = 3,
+                        FDR = 0.05, coverage_floor = 2.0,
                         read_length = 100, tau2 = 2, minreads = 10,
                         a1 = 5, a0 = 0.01, sampleID = "",
                         debug = FALSE){
