@@ -38,7 +38,7 @@ if config["stringtie"]["clean_then_merge"]:
         input:
             gtf="results/raw_flattened_assembly/{sample}_flat_genome.gtf",
         output:
-            higherres="results/smaller_bins_reference/{sample}_flat_genome.gtf",
+            higherres="results/smaller_bins_assembly/{sample}_flat_genome.gtf",
         log:
             "logs/smaller_bins_assembly/{sample}.log"
         params:
@@ -56,7 +56,7 @@ if config["stringtie"]["clean_then_merge"]:
     # Add useful exon ID column to flattened StringTie assemblies
     rule add_exon_assembly:
         input:
-            "results/smaller_bins_reference/{sample}_flat_genome.gtf",
+            "results/smaller_bins_assembly/{sample}_flat_genome.gtf",
         output:
             "results/flattened_assembly/{sample}_flat_genome_exonID.gtf",
         log:
@@ -181,7 +181,7 @@ else:
         input:
             gtf="results/raw_flattened_assembly/flat_genome.gtf",
         output:
-            higherres="results/smaller_bins_reference/flat_genome.gtf",
+            higherres="results/smaller_bins_assembly/flat_genome.gtf",
         log:
             "logs/smaller_bins_assembly/{sample}.log"
         params:
@@ -199,7 +199,7 @@ else:
     # Add useful exon ID column to flattened StringTie assemblies
     rule add_exon_assembly:
         input:
-            "results/smaller_bins_reference/flat_genome.gtf",
+            "results/smaller_bins_assembly/flat_genome.gtf",
         output:
             "results/flattened_assembly/flat_genome_exonID.gtf",
         log:
