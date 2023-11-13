@@ -1,0 +1,10 @@
+name: quantify
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - python =3.8.6
+  - pip
+  - pip:
+    - splam
