@@ -252,8 +252,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   
   
   
-  # Note, intronless transcripts will get filtered out of exon_check
-  # They are still in EF_to_TF, used later to identify which transcripts to keep
+  # Add intronic coverage info
   exon_check <- inner_join(cB, intronic_background %>%
                              dplyr::mutate(intronic_mutrate = mutrate) %>%
                              dplyr::select(sample, GF, intronic_mutrate, RPK, intron_length),
@@ -335,6 +334,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
                             mu_post_num/mu_post_den)) %>%
     ungroup() %>%
     mutate(RPK_post = 10^mu_post) %>%
+    mutate(RPK_post = ifelse(RPK_post > RPK, RPK_post, RPK)) %>%
     dplyr::select(-mu_post_den,
                   -mu_post_num,
                   -sig2,
