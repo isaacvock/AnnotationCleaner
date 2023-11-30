@@ -9,4 +9,7 @@ dependencies:
   - r-readr
   - r-tidyr
   - r-data.table
+  - r-purrr
+  - r-furrr
   - bioconductor-rtracklayer
+  - bioconductor-genomicranges
