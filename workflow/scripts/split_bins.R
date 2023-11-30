@@ -211,10 +211,10 @@ final_gtf <- final_gtf %>%
 
 # Add exon and intron IDs
 final_gtf <- final_gtf %>%
-  mutate(exon_ID = ifelse(type == "exonic_part", 
+  mutate(exon_id = ifelse(type == "exonic_part", 
                           paste0("E", gene_id, exonic_part_number),
                           NA),
-         intron_ID = ifelse(type == "intronic_part",
+         intron_id = ifelse(type == "intronic_part",
                             paste0("I", gene_id, intronic_part_number),
                             NA))
 
