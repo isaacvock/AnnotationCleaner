@@ -209,6 +209,14 @@ final_gtf <- final_gtf %>%
   mutate(exonic_part_number = to_string_with_zeros(exonic_part_number, num_digits_e),
          intronic_part_number = to_string_with_zeros(intronic_part_number, num_digits_i))
 
+# Add exon and intron IDs
+final_gtf <- final_gtf %>%
+  mutate(exon_ID = ifelse(type == "exonic_part", 
+                          paste0("E", gene_id, exonic_part_number),
+                          NA),
+         intron_ID = ifelse(type == "intronic_part",
+                            paste0("I", gene_id, intronic_part_number),
+                            NA))
 
 # Export as gtf
 final_gr <- GRanges(seqnames = Rle(final_gtf$seqnames),
