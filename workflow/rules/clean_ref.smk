@@ -23,11 +23,11 @@ rule smaller_bins_reference:
         extra=config["splitting_bins_params"]
     conda:
         "../envs/cleaning.yaml"
-    threads: 1
+    threads: 6
     shell:
         """
         chmod +x {params.rscript}
-        {params.rscript} -i {input.gtf} -o {output.higherres} {params.extra} 1> {log} 2>&1
+        {params.rscript} -i {input.gtf} -o {output.higherres} -t {threads} {params.extra} 1> {log} 2>&1
         """
     
 
