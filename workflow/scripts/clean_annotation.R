@@ -35,6 +35,9 @@ option_list <- list(
   make_option(c("-t", "--total", type = "character"),
               default = "",
               help = "Path to total counts csv from HTSeq"),
+  make_option(c("-u", "--intronbins", type = "character"),
+              default = "",
+              help = "Path to intron bin counts csv from HTSeq"),
   make_option(c("-d", "--directory", type = "character"),
               help = "Path to directory containing all HTSeq count files"),
   make_option(c("-c", "--fdr", type = "double"),
@@ -191,35 +194,76 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
     
     gc(cB_i)
     
+    # Get intron lengths to normalize
+    intron_sizes <- flat_gtf %>%
+      group_by(gene_id) %>%
+      summarise(total_length = width[type == "aggregate_gene"],
+                exon_length = sum(width[type == "exonic_part"])) %>%
+      mutate(intron_length = total_length - exon_length) %>%
+      filter(intron_length >= 0)
+    colnames(intron_sizes) <- c("GF", "total_length", "exon_length", "intron_length")
+    
+    intronic_background <- inner_join(intronic_background, intron_sizes, by = c("GF"))
+    
+    
+    # # Let's just filter out 0 intron length stuff 
+    # # with the caveat that we can't say anything about validity of its annotation
+    #   # ACTUALLY, with hierarchical modeling of intronic RPK estimates, we can!
+    # intronic_background <- intronic_background[intron_length > 0]
+    
+    
+    # RPM normalize
+    intronic_background <- intronic_background %>%
+      filter(reads > 0) %>%
+      mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000))
+    
+    
+    
+  }else{
+    
+    # Get intron lengths to normalize
+    intron_sizes <- flat_gtf %>%
+      filter(type == "intronic_part") %>%
+      dplyr::mutate(intron_length = width) %>%
+      dplyr::select(gene_id, intron_id, intron_length)
+    
+    # Intronless genes  
+    intronless_genes <- flat_gtf %>%
+      group_by(gene_id) %>%
+      summarise(total_length = width[type == "aggregate_gene"],
+                exon_length = sum(width[type == "exonic_part"])) %>%
+      mutate(intron_length = total_length - exon_length) %>%
+      filter(intron_length == 0) %>%
+      mutate(RPK = 0,
+             mutrate = 0) %>%
+      dplyr::select(gene_id, RPK, intron_length)
+      
+    colnames(intronless_genes) <- c("GF", "RPK", "intron_length")
+    
+    intronic_background <- inner_join(intronic_background, intron_sizes, by = c("GF", "all_IF"))
+    
+    
+    
+    # RPK normalize
+      # Use median RPK as RPK estimate
+    intronic_background <- intronic_background %>%
+      filter(reads > 0) %>%
+      mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000)) %>%
+      group_by(sample, GF) %>%
+      summarise(RPK = median(RPK),
+                intron_length = sum(intron_length))
+    
+    
+    intronic_background <- bind_rows(intronic_background,
+                                     intronless)
+    
+    
   }
   
   
   
   
-  # Get intron lengths to normalize
-  intron_sizes <- flat_gtf %>%
-    group_by(gene_id) %>%
-    summarise(total_length = width[type == "aggregate_gene"],
-              exon_length = sum(width[type == "exonic_part"])) %>%
-    mutate(intron_length = total_length - exon_length) %>%
-    filter(intron_length >= 0)
-  colnames(intron_sizes) <- c("GF", "total_length", "exon_length", "intron_length")
-  
-  intronic_background <- inner_join(intronic_background, intron_sizes, by = c("GF"))
-  
-  
-  # # Let's just filter out 0 intron length stuff 
-  # # with the caveat that we can't say anything about validity of its annotation
-  #   # ACTUALLY, with hierarchical modeling of intronic RPK estimates, we can!
-  # intronic_background <- intronic_background[intron_length > 0]
-  
-  
-  # RPM normalize
-  intronic_background <- intronic_background %>%
-    filter(reads > 0) %>%
-    mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000))
-  
-  
+
   
   ### Now save a map from EFs to transcripts for use later
   
@@ -824,6 +868,15 @@ feature_dict <- flat_gtf %>%
                 all_EF = exon_id) %>%
   dplyr::select(GF, XF, all_EF)
 
+
+intron_dict <- flat_gtf %>%
+  dplyr::filter(type == "intronic_part") %>%
+  dplyr::select(gene_id, intron_id) %>%
+  dplyr::distinct() %>%
+  dplyr::mutate(GF = gene_id,
+                all_IF = intron_id) %>%
+  dplyr::select(GF, XF, all_IF)
+
 ### Extract and process HTSeq output
 
 ## Exonic bin quantification
@@ -933,17 +986,44 @@ for(i in seq_along(samps)){
     
   }
   
+  
+  ### Intron bin quantification
+  
+  # File to extract
+  filename <- paste0(opt$directory, "/", samps[i], "_intronbin.csv")
+  
+  # Import file and modify column names
+  intronbins_temp <- fread(filename)
+  colnames(intronbins_temp) <- c("all_IF", "rname", "reads")
+  
+  # Filter out last couple meta information rows
+  intronbins_temp <- intronbins_temp %>%
+    filter(!grepl("__", all_IF))
+  
+  # Add GF info
+  intronbins_temp <- intronbins_temp %>%
+    inner_join(intron_dict %>%
+                 dplyr::select(GF, all_IF), by  = "all_IF")
+  
+  # Add mutation rate and sample ID columns
+  intronbins_temp <- intronbins_temp %>%
+    mutate(mutrate = 0,
+           sample = samps[i])
+  
+  # Add it to growing final table
+  if(i == 1){
+    
+    intronic_background  <- intronbins_temp
+    
+  }else{
+    
+    intronic_background  <- bind_rows(intronbins, intronbins_temp)
+    
+  }
+  
 }
 
 ### Make dataframes to pass to pruner
-
-# Intronic coverage
-intronic_background <- inner_join(gene, exonic, 
-                                  by = c("GF", "rname", "sample")) %>%
-  mutate(reads = total_reads - exonic_reads) %>%
-  filter(reads > 0) %>%
-  dplyr::select(GF, rname, reads, sample) %>%
-  dplyr::mutate(mutrate = 0)
 
 # Map each sample to an ID corresponding to treatment condition
 if(opt$bins == ""){

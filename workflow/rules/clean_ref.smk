@@ -72,26 +72,6 @@ rule quantify_reference_exonbin:
         -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
         """
 
-rule quantify_reference_exonic:
-    input:
-        bam="results/sorted/sorted_{sample}.bam",
-        gtf=config["flat_ref"]
-    output:
-        counts="results/quantify_reference/{sample}_exonic.csv",
-    params:
-        strand=config["strandedness"]
-    conda:
-        "../envs/quantify.yaml"
-    log:
-        "logs/quantify_reference_exonic/{sample}.log"
-    threads: 1
-    shell:
-        """
-        htseq-count -t exonic_part -m intersection-strict -s {params.strand} \
-        -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
-        -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-        """   
-
 rule quantify_reference_intronbin:
     input:
         bam="results/sorted/sorted_{sample}.bam",
@@ -112,6 +92,26 @@ rule quantify_reference_intronbin:
         -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
         """  
 
+rule quantify_reference_exonic:
+    input:
+        bam="results/sorted/sorted_{sample}.bam",
+        gtf=config["flat_ref"]
+    output:
+        counts="results/quantify_reference/{sample}_exonic.csv",
+    params:
+        strand=config["strandedness"]
+    conda:
+        "../envs/quantify.yaml"
+    log:
+        "logs/quantify_reference_exonic/{sample}.log"
+    threads: 1
+    shell:
+        """
+        htseq-count -t exonic_part -m intersection-strict -s {params.strand} \
+        -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
+        -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
+        """   
+
 
 rule clean_reference:
     input:
@@ -120,6 +120,7 @@ rule clean_reference:
         cnts_exonic="results/quantify_reference/{sample}_exonic.csv",
         cnts_exonbin="results/quantify_reference/{sample}_exonbin.csv",
         cnts_total="results/quantify_reference/{sample}_total.csv",
+        cnts_intronbin="results/quantify_reference/{sample}_intronbin.csv"
     output:
         clean_ref="results/clean_reference/{sample}.gtf"
     params:
