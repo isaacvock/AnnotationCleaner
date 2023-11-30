@@ -196,7 +196,7 @@ max_bin_count_e <- max(final_gtf$exonic_part_number[final_gtf$type == "exonic_pa
 num_digits_e <- floor(log10(max_bin_count_e)) + 1
 
 max_bin_count_i <- max(final_gtf$intronic_part_number[final_gtf$type == "intronic_part"])
-num_digits_i <- floor(log10(max_bin_count)) + 1
+num_digits_i <- floor(log10(max_bin_count_i)) + 1
 
 
 

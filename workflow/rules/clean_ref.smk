@@ -15,7 +15,7 @@ rule smaller_bins_reference:
     input:
         gtf="results/raw_flattened_reference/flat_genome.gtf",
     output:
-        higherres="results/smaller_bins_reference/flat_genome.gtf",
+        higherres=config["flat_ref"],
     log:
         "logs/smaller_bins_reference/smaller_bins.log"
     params:
@@ -28,25 +28,6 @@ rule smaller_bins_reference:
         """
         chmod +x {params.rscript}
         {params.rscript} -i {input.gtf} -o {output.higherres} -t {threads} {params.extra} 1> {log} 2>&1
-        """
-    
-
-rule add_exon_reference:
-    input:
-        "results/smaller_bins_reference/flat_genome.gtf",
-    output:
-        config["flat_ref"],
-    log:
-        "logs/add_exon_reference/add_exon.log",
-    params:
-        shellscript=workflow.source_path("../scripts/exon_ID.sh")
-    conda:
-        "../envs/add_exon.yaml",
-    threads: 1
-    shell:
-        """
-        chmod +x {params.shellscript}
-        {params.shellscript} {input} {output} 1> {log} 2>&1
         """
 
 
@@ -110,6 +91,27 @@ rule quantify_reference_exonic:
         -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
         -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
         """   
+
+rule quantify_reference_intronbin:
+    input:
+        bam="results/sorted/sorted_{sample}.bam",
+        gtf=config["flat_ref"]
+    output:
+        counts="results/quantify_reference/{sample}_intronbin.csv",
+    params:
+        strand=config["strandedness"]
+    conda:
+        "../envs/quantify.yaml"
+    log:
+        "logs/quantify_reference_intronbin/{sample}.log"
+    threads: 1
+    shell:
+        """
+        htseq-count -t intronic_part -m union -s {params.strand} \
+        -r pos -p bam --add-chromosome-info -i intron_id --nonunique=all \
+        -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
+        """  
+
 
 rule clean_reference:
     input:

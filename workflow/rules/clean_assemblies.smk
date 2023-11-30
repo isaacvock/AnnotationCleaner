@@ -38,7 +38,7 @@ if config["stringtie"]["clean_then_merge"]:
         input:
             gtf="results/raw_flattened_assembly/{sample}_flat_genome.gtf",
         output:
-            higherres="results/smaller_bins_assembly/{sample}_flat_genome.gtf",
+            higherres="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
         log:
             "logs/smaller_bins_assembly/{sample}.log"
         params:
@@ -53,30 +53,11 @@ if config["stringtie"]["clean_then_merge"]:
             {params.rscript} -i {input.gtf} -o {output.higherres} -t {threads} {params.extra} 1> {log} 2>&1
             """
 
-    # Add useful exon ID column to flattened StringTie assemblies
-    rule add_exon_assembly:
-        input:
-            "results/smaller_bins_assembly/{sample}_flat_genome.gtf",
-        output:
-            "results/flattened_assembly/{sample}_flat_genome_exonID.gtf",
-        log:
-            "logs/add_exon_assembly/{sample}.log",
-        params:
-            shellscript=workflow.source_path("../scripts/exon_ID.sh")
-        conda:
-            "../envs/add_exon.yaml",
-        threads: 1
-        shell:
-            """
-            chmod +x {params.shellscript}
-            {params.shellscript} {input} {output} 2> {log}
-            """
-
     # Total read count quantification for each gene in StringTie assemblies
     rule quantify_assembly_total:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/{sample}_flat_genome_exonID.gtf"
+            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
         output:
             counts="results/quantify_assembly/{sample}_total.csv",
         params:
@@ -97,7 +78,7 @@ if config["stringtie"]["clean_then_merge"]:
     rule quantify_assembly_exonbin:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/{sample}_flat_genome_exonID.gtf"
+            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
         output:
             counts="results/quantify_assembly/{sample}_exonbin.csv",
         params:
@@ -118,7 +99,7 @@ if config["stringtie"]["clean_then_merge"]:
     rule quantify_assembly_exonic:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/{sample}_flat_genome_exonID.gtf"
+            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
         output:
             counts="results/quantify_assembly/{sample}_exonic.csv",
         params:
@@ -139,7 +120,7 @@ if config["stringtie"]["clean_then_merge"]:
     rule stringtie_clean_assembly:
         input:
             ref="results/remove_unstranded/{sample}.gtf",
-            flatref="results/flattened_assembly/{sample}_flat_genome_exonID.gtf",
+            flatref="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
             cnts_exonic="results/quantify_assembly/{sample}_exonic.csv",
             cnts_exonbin="results/quantify_assembly/{sample}_exonbin.csv",
             cnts_total="results/quantify_assembly/{sample}_total.csv",
@@ -181,7 +162,7 @@ else:
         input:
             gtf="results/raw_flattened_assembly/flat_genome.gtf",
         output:
-            higherres="results/smaller_bins_assembly/flat_genome.gtf",
+            higherres="results/flattened_assembly/flat_genome_binID.gtf",
         log:
             "logs/smaller_bins_assembly/{sample}.log"
         params:
@@ -196,30 +177,11 @@ else:
             {params.rscript} -i {input.gtf} -o {output.higherres} -t {threads} {params.extra} 1> {log} 2>&1
             """
 
-    # Add useful exon ID column to flattened StringTie assemblies
-    rule add_exon_assembly:
-        input:
-            "results/smaller_bins_assembly/flat_genome.gtf",
-        output:
-            "results/flattened_assembly/flat_genome_exonID.gtf",
-        log:
-            "logs/add_exon_assembly/add_exon.log",
-        params:
-            shellscript=workflow.source_path("../scripts/exon_ID.sh")
-        conda:
-            "../envs/add_exon.yaml",
-        threads: 1
-        shell:
-            """
-            chmod +x {params.shellscript}
-            {params.shellscript} {input} {output} 2> {log}
-            """
-
     # Total read count quantification for each gene in StringTie assemblies
     rule quantify_assembly_total:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/flat_genome_exonID.gtf"
+            gtf="results/flattened_assembly/flat_genome_binID.gtf"
         output:
             counts="results/quantify_assembly/{sample}_total.csv",
         params:
@@ -240,7 +202,7 @@ else:
     rule quantify_assembly_exonbin:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/flat_genome_exonID.gtf"
+            gtf="results/flattened_assembly/flat_genome_binID.gtf"
         output:
             counts="results/quantify_assembly/{sample}_exonbin.csv",
         params:
@@ -261,7 +223,7 @@ else:
     rule quantify_assembly_exonic:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/flat_genome_exonID.gtf"
+            gtf="results/flattened_assembly/flat_genome_binID.gtf"
         output:
             counts="results/quantify_assembly/{sample}_exonic.csv",
         params:
@@ -283,7 +245,7 @@ else:
     rule stringtie_clean_assembly:
         input:
             ref="results/remove_unstranded/{sample}.gtf",
-            flatref="results/flattened_assembly/flat_genome_exonID.gtf",
+            flatref="results/flattened_assembly/flat_genome_binID.gtf",
             cnts_exonic=expand("results/quantify_assembly/{SID}_exonic.csv", SID = SAMP_NAMES),
             cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.csv", SID = SAMP_NAMES),
             cnts_total=expand("results/quantify_assembly/{SID}_total.csv", SID = SAMP_NAMES),
