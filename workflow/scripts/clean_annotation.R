@@ -224,8 +224,10 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
     # Get intron lengths to normalize
     intron_sizes <- flat_gtf %>%
       filter(type == "intronic_part") %>%
-      dplyr::mutate(intron_length = width) %>%
-      dplyr::select(gene_id, intron_id, intron_length)
+      dplyr::mutate(intron_length = width,
+                    GF = gene_id,
+                    all_IF = intron_id) %>%
+      dplyr::select(GF, all_IF, intron_length)
     
     # Intronless genes  
     intronless_genes <- flat_gtf %>%
