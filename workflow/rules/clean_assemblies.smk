@@ -53,99 +53,61 @@ if config["stringtie"]["clean_then_merge"]:
             {params.rscript} -i {input.gtf} -o {output.higherres} -t {threads} {params.extra} 1> {log} 2>&1
             """
 
-    # Total read count quantification for each gene in StringTie assemblies
-    rule quantify_assembly_total:
-        input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
-        output:
-            counts="results/quantify_assembly/{sample}_total.csv",
-        params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
-        log:
-            "logs/quantify_assembly_total/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t aggregate_gene -m intersection-strict -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """
-
-    # Exon bin quantification for each gene in StringTie assemblies
+    # Quantify exonic bins
     rule quantify_assembly_exonbin:
         input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
+            # list of sam or bam files
+            samples="results/sorted/sorted_{sample}.bam",
+            annotation="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
+            # optional input
+            #chr_names="",           # implicitly sets the -A flag
+            #fasta="genome.fasta"    # implicitly sets the -G flag
         output:
-            counts="results/quantify_assembly/{sample}_exonbin.csv",
+            multiext(
+                "results/quantify_assembly/{sample}_exonbin",
+                ".featureCounts",
+                ".featureCounts.summary",
+            ),
+        threads: 10
         params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
+            strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+            extra=FC_EXTRA_EB,
         log:
-            "logs/quantify_assembly_exonbin/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t exonic_part -m union -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i exon_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """
+            "logs/quantify_assembly_exonbin/{sample}.log",
+        wrapper:
+            "v3.0.2/bio/subread/featurecounts"
 
-    # Intron bin quantification for each gene in StringTie assemblies
+    # Quantify intronic bins
     rule quantify_assembly_intronbin:
         input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
+            # list of sam or bam files
+            samples="results/sorted/sorted_{sample}.bam",
+            annotation="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
+            # optional input
+            #chr_names="",           # implicitly sets the -A flag
+            #fasta="genome.fasta"    # implicitly sets the -G flag
         output:
-            counts="results/quantify_assembly/{sample}_intronbin.csv",
+            multiext(
+                "results/quantify_assembly/{sample}_intronbin",
+                ".featureCounts",
+                ".featureCounts.summary",
+            ),
+        threads: 10
         params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
+            strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+            extra=FC_EXTRA_IB,
         log:
-            "logs/quantify_assembly_intronbin/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t intronic_part -m union -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i intron_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """
-
-    # Exonic quantification for each gene in StringTie assemblies
-    rule quantify_assembly_exonic:
-        input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
-        output:
-            counts="results/quantify_assembly/{sample}_exonic.csv",
-        params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
-        log:
-            "logs/quantify_assembly_exonic/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t exonic_part -m intersection-strict -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """ 
+            "logs/quantify_assembly_intronbin/{sample}.log",
+        wrapper:
+            "v3.0.2/bio/subread/featurecounts"
 
     # Clean StringTie assemblies with custom R script
     rule stringtie_clean_assembly:
         input:
             ref="results/remove_unstranded/{sample}.gtf",
             flatref="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
-            cnts_exonic="results/quantify_assembly/{sample}_exonic.csv",
-            cnts_exonbin="results/quantify_assembly/{sample}_exonbin.csv",
-            cnts_total="results/quantify_assembly/{sample}_total.csv",
-            cnts_intronbin="results/quantify_assembly/{sample}_intronbin.csv",
+            cnts_exonbin="results/quantify_assembly/{sample}_exonbin.featureCounts",
+            cnts_intronbin="results/quantify_assembly/{sample}_intronbin.featureCounts",
         output:
             clean_ref="results/clean_assembly/{sample}.gtf"
         params:
@@ -159,7 +121,7 @@ if config["stringtie"]["clean_then_merge"]:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} \
+            {params.rscript} -r {input.ref} -f {input.flatref} -b {input.cnts_exonbin} \
             -d ./results/quantify_assembly/ -u {input.cnts_intronbin} -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
 
@@ -199,89 +161,53 @@ else:
             {params.rscript} -i {input.gtf} -o {output.higherres} -t {threads} {params.extra} 1> {log} 2>&1
             """
 
-    # Total read count quantification for each gene in StringTie assemblies
-    rule quantify_assembly_total:
-        input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/flat_genome_binID.gtf"
-        output:
-            counts="results/quantify_assembly/{sample}_total.csv",
-        params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
-        log:
-            "logs/quantify_assembly_total/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t aggregate_gene -m intersection-strict -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """
-
-    # Exon bin quantification for each gene in StringTie assemblies
+    # Quantify exonic bins
     rule quantify_assembly_exonbin:
         input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/flat_genome_binID.gtf"
+            # list of sam or bam files
+            samples="results/sorted/sorted_{sample}.bam",
+            annotation="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
+            # optional input
+            #chr_names="",           # implicitly sets the -A flag
+            #fasta="genome.fasta"    # implicitly sets the -G flag
         output:
-            counts="results/quantify_assembly/{sample}_exonbin.csv",
+            multiext(
+                "results/quantify_assembly/{sample}_exonbin",
+                ".featureCounts",
+                ".featureCounts.summary",
+            ),
+        threads: 10
         params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
+            strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+            extra=FC_EXTRA_EB,
         log:
-            "logs/quantify_assembly_exonbin/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t exonic_part -m union -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i exon_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """
+            "logs/quantify_assembly_exonbin/{sample}.log",
+        wrapper:
+            "v3.0.2/bio/subread/featurecounts"
 
-    # Intron bin quantification for each gene in StringTie assemblies
+    # Quantify intronic bins
     rule quantify_assembly_intronbin:
         input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/flat_genome_binID.gtf"
+            # list of sam or bam files
+            samples="results/sorted/sorted_{sample}.bam",
+            annotation="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
+            # optional input
+            #chr_names="",           # implicitly sets the -A flag
+            #fasta="genome.fasta"    # implicitly sets the -G flag
         output:
-            counts="results/quantify_assembly/{sample}_intronbin.csv",
+            multiext(
+                "results/quantify_assembly/{sample}_intronbin",
+                ".featureCounts",
+                ".featureCounts.summary",
+            ),
+        threads: 10
         params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
+            strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+            extra=FC_EXTRA_IB,
         log:
-            "logs/quantify_assembly_exonbin/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t intronic_part -m union -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i intron_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """
-
-    # Exonic quantification for each gene in StringTie assemblies
-    rule quantify_assembly_exonic:
-        input:
-            bam="results/sorted/sorted_{sample}.bam",
-            gtf="results/flattened_assembly/flat_genome_binID.gtf"
-        output:
-            counts="results/quantify_assembly/{sample}_exonic.csv",
-        params:
-            strand=config["strandedness"]
-        conda:
-            "../envs/quantify.yaml"
-        log:
-            "logs/quantify_assembly_exonic/{sample}.log"
-        threads: 1
-        shell:
-            """
-            htseq-count -t exonic_part -m intersection-strict -s {params.strand} \
-            -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
-            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-            """ 
+            "logs/quantify_assembly_intronbin/{sample}.log",
+        wrapper:
+            "v3.0.2/bio/subread/featurecounts"
 
     # Clean StringTie assemblies with custom R script
         # I am imagining a parameter d that if set, loads sets of csvs as I normally do
@@ -289,10 +215,8 @@ else:
         input:
             ref="results/remove_unstranded/{sample}.gtf",
             flatref="results/flattened_assembly/flat_genome_binID.gtf",
-            cnts_exonic=expand("results/quantify_assembly/{SID}_exonic.csv", SID = SAMP_NAMES),
-            cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.csv", SID = SAMP_NAMES),
-            cnts_total=expand("results/quantify_assembly/{SID}_total.csv", SID = SAMP_NAMES),
-            cnts_intronbin=expand("results/quantify_assembly/{SID}_intronbin.csv", SID = SAMP_NAMES)
+            cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.featureCounts", SID = SAMP_NAMES),
+            cnts_intronbin=expand("results/quantify_assembly/{SID}_intronbin.featureCounts", SID = SAMP_NAMES)
         output:
             clean_ref="results/clean_assembly/stringtie_merged.gtf"
         params:
