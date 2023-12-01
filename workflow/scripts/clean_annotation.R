@@ -875,7 +875,7 @@ intron_dict <- flat_gtf %>%
   dplyr::distinct() %>%
   dplyr::mutate(GF = gene_id,
                 all_IF = intron_id) %>%
-  dplyr::select(GF, XF, all_IF)
+  dplyr::select(GF, all_IF)
 
 ### Extract and process HTSeq output
 
