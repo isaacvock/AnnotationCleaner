@@ -242,8 +242,6 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       
     colnames(intronless_genes) <- c("GF", "RPK", "mutrate", "intron_length")
     
-    intronic_background <- inner_join(intronic_background, intron_sizes, by = c("GF", "all_IF"))
-    
     
     
     # RPK normalize
@@ -861,25 +859,6 @@ gtf <- as_tibble(rtracklayer::import(opt$reference))
 flat_gtf <- as_tibble(rtracklayer::import(opt$flatref))
 
 
-### Make feature dictionary to relate all feature types to each other
-feature_dict <- flat_gtf %>%
-  dplyr::filter(type == "exonic_part") %>%
-  dplyr::select(gene_id, transcripts, exon_id) %>%
-  dplyr::distinct() %>%
-  dplyr::mutate(GF = gene_id,
-                XF = transcripts,
-                all_EF = exon_id) %>%
-  dplyr::select(GF, XF, all_EF)
-
-
-intron_dict <- flat_gtf %>%
-  dplyr::filter(type == "intronic_part") %>%
-  dplyr::select(gene_id, intron_id) %>%
-  dplyr::distinct() %>%
-  dplyr::mutate(GF = gene_id,
-                all_IF = intron_id) %>%
-  dplyr::select(GF, all_IF)
-
 ### Extract and process HTSeq output
 
 ## Exonic bin quantification
@@ -911,21 +890,16 @@ for(i in seq_along(samps)){
   
   # Import file and modify column names
   exonbins_temp <- fread(filename)
-  colnames(exonbins_temp) <- c("all_EF", "rname", "reads")
+  colnames(exonbins_temp) <- c("all_EF", "rname", "start", "end", "strand", "length", "GF", "reads")
   
   # Filter out last couple meta information rows
   exonbins_temp <- exonbins_temp %>%
     filter(!grepl("__", all_EF))
   
-  # Add GF info
-  exonbins_temp <- exonbins_temp %>%
-    inner_join(feature_dict %>%
-                 dplyr::select(GF, all_EF), by  = "all_EF")
-  
   # Add mutation rate and sample ID columns
   exonbins_temp <- exonbins_temp %>%
     mutate(mutrate = 0,
-           sample = samps[i])
+           sample = samps[i]) 
   
   # Add it to growing final table
   if(i == 1){
@@ -937,58 +911,9 @@ for(i in seq_along(samps)){
     exonbins <- bind_rows(exonbins, exonbins_temp)
     
   }
-  
-  ### Exonic quantification
-  
-  # File to extract
-  filename <- paste0(opt$directory, "/", samps[i], "_exonic.csv")
-  
-  # Import file and modify column names
-  exonic_temp <- fread(filename)
-  colnames(exonic_temp) <- c("GF", "rname", "exonic_reads")
-  
-  # Filter out last couple meta information rows
-  exonic_temp <- exonic_temp %>%
-    filter(!grepl("__", GF)) %>%
-    mutate(sample = samps[i])
-  
-  # Add it to growing final table
-  if(i == 1){
-    
-    exonic <- exonic_temp
-    
-  }else{
-    
-    exonic <- bind_rows(exonic, exonic_temp)
-    
-  }
-  
-  
-  ### Total gene quantification
-  
-  # File to extract
-  filename <- paste0(opt$directory, "/", samps[i], "_total.csv")
-  
-  # Import file and modify column names
-  gene_temp <- fread(filename)
-  colnames(gene_temp) <- c("GF", "rname", "total_reads")
-  
-  # Filter out last couple meta information rows
-  gene_temp <- gene_temp %>%
-    filter(!grepl("__", GF)) %>%
-    mutate(sample = samps[i])
-  
-  # Add it to growing final table
-  if(i == 1){
-    
-    gene <- gene_temp
-    
-  }else{
-    
-    gene <- bind_rows(gene, gene_temp)
-    
-  }
-  
+
+  exonbins <- exonbins %>%
+    dplyr::select(sample, GF, all_EF, reads, mutrate)
   
   ### Intron bin quantification
   
@@ -997,22 +922,17 @@ for(i in seq_along(samps)){
   
   # Import file and modify column names
   intronbins_temp <- fread(filename)
-  colnames(intronbins_temp) <- c("all_IF", "rname", "reads")
+  colnames(intronbins_temp) <- c("all_IF", "rname", "start", "end", "strand", "length", "GF", "reads")
   
   # Filter out last couple meta information rows
   intronbins_temp <- intronbins_temp %>%
     filter(!grepl("__", all_IF))
   
-  # Add GF info
-  intronbins_temp <- intronbins_temp %>%
-    inner_join(intron_dict %>%
-                 dplyr::select(GF, all_IF), by  = "all_IF")
-  
+
   # Add mutation rate and sample ID columns
   intronbins_temp <- intronbins_temp %>%
     mutate(mutrate = 0,
-           sample = samps[i])
-  
+           sample = samps[i]) 
   # Add it to growing final table
   if(i == 1){
     
@@ -1023,6 +943,11 @@ for(i in seq_along(samps)){
     intronic_background  <- bind_rows(intronbins, intronbins_temp)
     
   }
+  
+  intronic_background <- intronic_background %>%
+    dplyr::mutate(intron_length = length) %>%
+    dplyr::select(sample, GF, all_IF, reads, mutrate, intron_length)
+  
   
 }
 
