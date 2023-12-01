@@ -108,12 +108,12 @@ if config["PE"]:
 
 else:
 
-    FC_EXTRA = FC_EXTRA + " -O -f -p"
+    FC_EXTRA = FC_EXTRA + " -O -f"
 
 
 
-FC_EXTRA_IB = config["feature_counts_params"] + "-t intronic_part"
-FC_EXTRA_EB = config["feature_counts_params"] + "-t exonic_part"
+FC_EXTRA_IB = config["feature_counts_params"] + "-g intron_id -t intronic_part"
+FC_EXTRA_EB = config["feature_counts_params"] + "-g exon_id -t exonic_part"
 
 
 
