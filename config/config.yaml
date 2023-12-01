@@ -24,6 +24,9 @@ flat_ref: data/annotation/CHESS_flat.gtf
   # Used by HTSeq (see https://htseq.readthedocs.io/en/master/htseqcount.html for details)
 strandedness: "reverse"
 
+# Paired-end data?
+PE: True
+
 ##### PARAMETERS THAT DETERMINE WHICH TRANSCRIPTOME ASSEMBLERS TO USE
 
 # Use Scallop + TACO for annotation building
@@ -137,7 +140,7 @@ pruning_assembly_params: "--fdr 0.01"
 pruning_reference_params: "--fdr 0.001"
 
 
-##### Exonic bin splitting parmaters
+##### Exonic bin splitting parmaters #####
 
 ### Options are:
 # -s (--size): Largest exonic bin allowed (in # of nucleotides). Bins larger than this will be split
@@ -146,6 +149,12 @@ pruning_reference_params: "--fdr 0.001"
 #               (default 200)
 
 splitting_bins_params: ""
+
+
+##### FeatureCounts parameters #####
+
+feature_counts_params: ""
+
 
 
 ##### MIKADO (not currently implemented) PARAMETERS

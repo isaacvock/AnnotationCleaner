@@ -81,6 +81,44 @@ def get_target_input():
 # else:
 #     SERIALISE_THREADS = 1
 
+
+### FeatureCounts helpers
+
+# Strandedness inference
+if config["strandedness"] == "yes":
+
+    STRANDEDNESS = 1
+
+elif config["strandedness"] == "reverse":
+
+    STRANDEDNESS = 2
+
+else:
+
+    STRANDEDNESS = 0
+
+
+# Extra parameters
+
+FC_EXTRA = config["feature_counts_params"]
+
+if config["PE"]:
+
+    FC_EXTRA = FC_EXTRA + " -O -f -p"
+
+else:
+
+    FC_EXTRA = FC_EXTRA + " -O -f -p"
+
+
+
+FC_EXTRA_IB = config["feature_counts_params"] + "-t intronic_part"
+FC_EXTRA_EB = config["feature_counts_params"] + "-t exonic_part"
+
+
+
+
+
 ### Sort bam files
 rule sort:
     input:

@@ -161,8 +161,7 @@ rule quantify_reference_exonbin:
     threads: 10
     params:
         strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
-        r_path="",  # implicitly sets the --Rpath flag
-        extra=config["feature_counts_params_exonbin"],
+        extra=FC_EXTRA_EB,
     log:
         "logs/quantify_reference_exonbin/{sample}.log",
     wrapper:
@@ -187,8 +186,7 @@ rule quantify_reference_intronbin:
     threads: 10
     params:
         strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
-        r_path="",  # implicitly sets the --Rpath flag
-        extra=config["feature_counts_params_exonbin"],
+        extra=FC_EXTRA_IB,
     log:
         "logs/quantify_reference_exonbin/{sample}.log",
     wrapper:
