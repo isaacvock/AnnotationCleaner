@@ -31,96 +31,60 @@ rule smaller_bins_reference:
         """
 
 
-rule quantify_reference_total:
-    input:
-        bam="results/sorted/sorted_{sample}.bam",
-        gtf=config["flat_ref"]
-    output:
-        counts="results/quantify_reference/{sample}_total.csv",
-    params:
-        strand=config["strandedness"]
-    conda:
-        "../envs/quantify.yaml"
-    log:
-        "logs/quantify_reference_total/{sample}.log"
-    threads: 1
-    shell:
-        """
-        htseq-count -t aggregate_gene -m intersection-strict -s {params.strand} \
-        -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
-        -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-        """
-
-
+# Quantify exonic bins
 rule quantify_reference_exonbin:
     input:
-        bam="results/sorted/sorted_{sample}.bam",
-        gtf=config["flat_ref"]
+        # list of sam or bam files
+        samples="results/sorted/sorted_{sample}.bam",
+        annotation=config["flat_ref"],
+        # optional input
+        #chr_names="",           # implicitly sets the -A flag
+        #fasta="genome.fasta"    # implicitly sets the -G flag
     output:
-        counts="results/quantify_reference/{sample}_exonbin.csv",
+        multiext(
+            "results/quantify_reference/{sample}_exonbin",
+            ".featureCounts",
+            ".featureCounts.summary",
+        ),
+    threads: 10
     params:
-        strand=config["strandedness"]
-    conda:
-        "../envs/quantify.yaml"
+        strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+        extra=FC_EXTRA_EB,
     log:
-        "logs/quantify_reference_exonbin/{sample}.log"
-    threads: 1
-    shell:
-        """
-        htseq-count -t exonic_part -m union -s {params.strand} \
-        -r pos -p bam --add-chromosome-info -i exon_id --nonunique=all \
-        -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-        """
+        "logs/quantify_reference_exonbin/{sample}.log",
+    wrapper:
+        "v3.0.2/bio/subread/featurecounts"
 
+# Quantify intronic bins
 rule quantify_reference_intronbin:
     input:
-        bam="results/sorted/sorted_{sample}.bam",
-        gtf=config["flat_ref"]
+        # list of sam or bam files
+        samples="results/sorted/sorted_{sample}.bam",
+        annotation=config["flat_ref"],
+        # optional input
+        #chr_names="",           # implicitly sets the -A flag
+        #fasta="genome.fasta"    # implicitly sets the -G flag
     output:
-        counts="results/quantify_reference/{sample}_intronbin.csv",
+        multiext(
+            "results/quantify_reference/{sample}_intronbin",
+            ".featureCounts",
+            ".featureCounts.summary",
+        ),
+    threads: 10
     params:
-        strand=config["strandedness"]
-    conda:
-        "../envs/quantify.yaml"
+        strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+        extra=FC_EXTRA_IB,
     log:
-        "logs/quantify_reference_intronbin/{sample}.log"
-    threads: 1
-    shell:
-        """
-        htseq-count -t intronic_part -m union -s {params.strand} \
-        -r pos -p bam --add-chromosome-info -i intron_id --nonunique=all \
-        -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-        """  
-
-rule quantify_reference_exonic:
-    input:
-        bam="results/sorted/sorted_{sample}.bam",
-        gtf=config["flat_ref"]
-    output:
-        counts="results/quantify_reference/{sample}_exonic.csv",
-    params:
-        strand=config["strandedness"]
-    conda:
-        "../envs/quantify.yaml"
-    log:
-        "logs/quantify_reference_exonic/{sample}.log"
-    threads: 1
-    shell:
-        """
-        htseq-count -t exonic_part -m intersection-strict -s {params.strand} \
-        -r pos -p bam --add-chromosome-info -i gene_id --nonunique=all \
-        -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
-        """   
-
+        "logs/quantify_reference_intronbin/{sample}.log",
+    wrapper:
+        "v3.0.2/bio/subread/featurecounts"
 
 rule clean_reference:
     input:
         ref=config["reference_gtf"],
         flatref=config["flat_ref"],
-        cnts_exonic="results/quantify_reference/{sample}_exonic.csv",
-        cnts_exonbin="results/quantify_reference/{sample}_exonbin.csv",
-        cnts_total="results/quantify_reference/{sample}_total.csv",
-        cnts_intronbin="results/quantify_reference/{sample}_intronbin.csv"
+        cnts_exonbin="results/quantify_reference/{sample}_exonbin.featureCounts",
+        cnts_intronbin="results/quantify_reference/{sample}_intronbin.featureCounts"
     output:
         clean_ref="results/clean_reference/{sample}.gtf"
     params:
@@ -134,8 +98,8 @@ rule clean_reference:
     shell:
         """
         chmod +x {params.rscript}
-        {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} \
-        -t {input.cnts_total} -u {input.cnts_intronbin} -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
+        {params.rscript} -r {input.ref} -f {input.flatref} -b {input.cnts_exonbin} \
+        -u {input.cnts_intronbin} -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
         """
 
 
