@@ -112,8 +112,8 @@ else:
 
 
 
-FC_EXTRA_IB = config["feature_counts_params"] + "-g intron_id -t intronic_part"
-FC_EXTRA_EB = config["feature_counts_params"] + "-g exon_id -t exonic_part"
+FC_EXTRA_IB = FC_EXTRA + "-g intron_id -t intronic_part"
+FC_EXTRA_EB = FC_EXTRA + "-g exon_id -t exonic_part"
 
 
 
