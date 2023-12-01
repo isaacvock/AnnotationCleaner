@@ -153,17 +153,16 @@ rule quantify_reference_exonbin_fc:
         #fasta="genome.fasta"    # implicitly sets the -G flag
     output:
         multiext(
-            "results/quantify_reference/{sample}_exonbin",
+            "results/quantify_reference_fc/{sample}_exonbin",
             ".featureCounts",
             ".featureCounts.summary",
-            ".featureCounts.jcounts",
         ),
     threads: 10
     params:
         strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
         extra=FC_EXTRA_EB,
     log:
-        "logs/quantify_reference_exonbin/{sample}.log",
+        "logs/quantify_reference_exonbin_fc/{sample}.log",
     wrapper:
         "v3.0.2/bio/subread/featurecounts"
 
@@ -178,16 +177,15 @@ rule quantify_reference_intronbin_fc:
         #fasta="genome.fasta"    # implicitly sets the -G flag
     output:
         multiext(
-            "results/quantify_reference/{sample}_intronbin",
+            "results/quantify_reference_fc/{sample}_intronbin",
             ".featureCounts",
             ".featureCounts.summary",
-            ".featureCounts.jcounts",
         ),
     threads: 10
     params:
         strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
         extra=FC_EXTRA_IB,
     log:
-        "logs/quantify_reference_exonbin/{sample}.log",
+        "logs/quantify_reference_intronbin_fc/{sample}.log",
     wrapper:
         "v3.0.2/bio/subread/featurecounts"
