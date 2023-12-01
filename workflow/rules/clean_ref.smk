@@ -137,3 +137,59 @@ rule clean_reference:
         {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} \
         -t {input.cnts_total} -u {input.cnts_intronbin} -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
         """
+
+
+
+### FEATURECOUNTS  
+
+# Quantify exonic bins
+rule quantify_reference_exonbin:
+    input:
+        # list of sam or bam files
+        samples="results/sorted/sorted_{sample}.bam",
+        annotation=config["flat_ref"],
+        # optional input
+        #chr_names="",           # implicitly sets the -A flag
+        #fasta="genome.fasta"    # implicitly sets the -G flag
+    output:
+        multiext(
+            "results/quantify_reference/{sample}_exonbin",
+            ".featureCounts",
+            ".featureCounts.summary",
+            ".featureCounts.jcounts",
+        ),
+    threads: 10
+    params:
+        strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+        r_path="",  # implicitly sets the --Rpath flag
+        extra=config["feature_counts_params_exonbin"],
+    log:
+        "logs/quantify_reference_exonbin/{sample}.log",
+    wrapper:
+        "v3.0.2/bio/subread/featurecounts"
+
+# Quantify intronic bins
+rule quantify_reference_intronbin:
+    input:
+        # list of sam or bam files
+        samples="results/sorted/sorted_{sample}.bam",
+        annotation=config["flat_ref"],
+        # optional input
+        #chr_names="",           # implicitly sets the -A flag
+        #fasta="genome.fasta"    # implicitly sets the -G flag
+    output:
+        multiext(
+            "results/quantify_reference/{sample}_intronbin",
+            ".featureCounts",
+            ".featureCounts.summary",
+            ".featureCounts.jcounts",
+        ),
+    threads: 10
+    params:
+        strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
+        r_path="",  # implicitly sets the --Rpath flag
+        extra=config["feature_counts_params_exonbin"],
+    log:
+        "logs/quantify_reference_exonbin/{sample}.log",
+    wrapper:
+        "v3.0.2/bio/subread/featurecounts"

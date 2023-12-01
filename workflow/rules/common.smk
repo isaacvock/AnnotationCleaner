@@ -34,6 +34,10 @@ def get_target_input():
 
     target = []
 
+    # Add featureCounts output for testing using that instead of HTSeq
+    target.append(expand("results/quantify_reference/{SID}_exonbin.featureCounts", SID = SAMP_NAMES))
+    target.append(expand("results/quantify_reference/{SID}_intronbin.featureCounts", SID = SAMP_NAMES))
+
     if config["use_mikado"]:
 
         target.append("results/mikado_pick/mikado.loci.gff3")
