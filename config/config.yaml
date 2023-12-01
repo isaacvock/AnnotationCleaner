@@ -21,7 +21,7 @@ flat_ref: data/annotation/CHESS_flat.gtf
   # reverse means that read 2 represents 5' to 3' sequence of original RNA (read 1 thus represents its reverse complement)
   # yes means that read 1 represents 5' to 3' sequence of original RNA
   # no means unstranded
-  # Used by HTSeq (see https://htseq.readthedocs.io/en/master/htseqcount.html for details)
+  # Used by FeatureCounts, though naming convention is from HTSeq (see https://htseq.readthedocs.io/en/master/htseqcount.html for details)
 strandedness: "reverse"
 
 # Paired-end data?
