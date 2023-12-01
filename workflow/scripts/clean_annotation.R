@@ -238,9 +238,9 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       filter(intron_length == 0) %>%
       mutate(RPK = 0,
              mutrate = 0) %>%
-      dplyr::select(gene_id, RPK, intron_length)
+      dplyr::select(gene_id, RPK, mutrate, intron_length)
       
-    colnames(intronless_genes) <- c("GF", "RPK", "intron_length")
+    colnames(intronless_genes) <- c("GF", "RPK", "mutrate", "intron_length")
     
     intronic_background <- inner_join(intronic_background, intron_sizes, by = c("GF", "all_IF"))
     
@@ -253,7 +253,8 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000)) %>%
       group_by(sample, GF) %>%
       summarise(RPK = median(RPK),
-                intron_length = sum(intron_length))
+                intron_length = sum(intron_length),
+                mutrate = mean(mutrate))
     
     
     intronic_background <- bind_rows(intronic_background,
