@@ -143,7 +143,7 @@ rule clean_reference:
 ### FEATURECOUNTS  
 
 # Quantify exonic bins
-rule quantify_reference_exonbin:
+rule quantify_reference_exonbin_fc:
     input:
         # list of sam or bam files
         samples="results/sorted/sorted_{sample}.bam",
@@ -168,7 +168,7 @@ rule quantify_reference_exonbin:
         "v3.0.2/bio/subread/featurecounts"
 
 # Quantify intronic bins
-rule quantify_reference_intronbin:
+rule quantify_reference_intronbin_fc:
     input:
         # list of sam or bam files
         samples="results/sorted/sorted_{sample}.bam",
