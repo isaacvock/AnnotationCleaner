@@ -257,7 +257,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
     
     
     intronic_background <- bind_rows(intronic_background,
-                                     intronless)
+                                     intronless_genes)
     
     
   }
