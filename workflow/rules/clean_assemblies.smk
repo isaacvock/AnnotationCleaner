@@ -95,6 +95,27 @@ if config["stringtie"]["clean_then_merge"]:
             -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
             """
 
+    # Intron bin quantification for each gene in StringTie assemblies
+    rule quantify_assembly_intronbin:
+        input:
+            bam="results/sorted/sorted_{sample}.bam",
+            gtf="results/flattened_assembly/{sample}_flat_genome_binID.gtf"
+        output:
+            counts="results/quantify_assembly/{sample}_intronbin.csv",
+        params:
+            strand=config["strandedness"]
+        conda:
+            "../envs/quantify.yaml"
+        log:
+            "logs/quantify_assembly_intronbin/{sample}.log"
+        threads: 1
+        shell:
+            """
+            htseq-count -t intronic_part -m union -s {params.strand} \
+            -r pos -p bam --add-chromosome-info -i intron_id --nonunique=all \
+            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
+            """
+
     # Exonic quantification for each gene in StringTie assemblies
     rule quantify_assembly_exonic:
         input:
@@ -124,6 +145,7 @@ if config["stringtie"]["clean_then_merge"]:
             cnts_exonic="results/quantify_assembly/{sample}_exonic.csv",
             cnts_exonbin="results/quantify_assembly/{sample}_exonbin.csv",
             cnts_total="results/quantify_assembly/{sample}_total.csv",
+            cnts_intronbin="results/quantify_assembly/{sample}_intronbin.csv",
         output:
             clean_ref="results/clean_assembly/{sample}.gtf"
         params:
@@ -138,7 +160,7 @@ if config["stringtie"]["clean_then_merge"]:
             """
             chmod +x {params.rscript}
             {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} \
-            -d ./results/quantify_assembly/ -o {output.clean_ref} {params.extra} 1> {log} 2>&1
+            -d ./results/quantify_assembly/ -u {output.cnts_intronbin} -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
 
 else:
@@ -219,6 +241,27 @@ else:
             -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
             """
 
+    # Intron bin quantification for each gene in StringTie assemblies
+    rule quantify_assembly_intronbin:
+        input:
+            bam="results/sorted/sorted_{sample}.bam",
+            gtf="results/flattened_assembly/flat_genome_binID.gtf"
+        output:
+            counts="results/quantify_assembly/{sample}_intronbin.csv",
+        params:
+            strand=config["strandedness"]
+        conda:
+            "../envs/quantify.yaml"
+        log:
+            "logs/quantify_assembly_exonbin/{sample}.log"
+        threads: 1
+        shell:
+            """
+            htseq-count -t intronic_part -m union -s {params.strand} \
+            -r pos -p bam --add-chromosome-info -i intron_id --nonunique=all \
+            -c {output.counts} {input.bam} {input.gtf} 1> {log} 2>&1
+            """
+
     # Exonic quantification for each gene in StringTie assemblies
     rule quantify_assembly_exonic:
         input:
@@ -249,6 +292,7 @@ else:
             cnts_exonic=expand("results/quantify_assembly/{SID}_exonic.csv", SID = SAMP_NAMES),
             cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.csv", SID = SAMP_NAMES),
             cnts_total=expand("results/quantify_assembly/{SID}_total.csv", SID = SAMP_NAMES),
+            cnts_intronbin=expand("results/quantify_assembly/{SID}_intronbin.csv", SID = SAMP_NAMES)
         output:
             clean_ref="results/clean_assembly/stringtie_merged.gtf"
         params:

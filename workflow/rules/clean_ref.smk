@@ -135,5 +135,5 @@ rule clean_reference:
         """
         chmod +x {params.rscript}
         {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} \
-        -t {input.cnts_total} -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
+        -t {input.cnts_total} -u {output.cnts_intronbin} -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
         """
