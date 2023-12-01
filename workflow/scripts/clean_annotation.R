@@ -871,7 +871,7 @@ if(opt$bins == ""){
 }
 
 
-samps <- gsub("_exonbin.csv", "", files)
+samps <- gsub("_exonbin.featureCounts", "", files)
 
 # Create necessary combined table of all relevant quantifications
 # for all samples.
@@ -880,7 +880,7 @@ for(i in seq_along(samps)){
   ### Exon bin quantification
   
   # File to extract
-  filename <- paste0(opt$directory, "/", samps[i], "_exonbin.csv")
+  filename <- paste0(opt$directory, "/", samps[i], "_exonbin.featureCounts")
   
   # Import file and modify column names
   exonbins_temp <- fread(filename)
@@ -912,7 +912,7 @@ for(i in seq_along(samps)){
   ### Intron bin quantification
   
   # File to extract
-  filename <- paste0(opt$directory, "/", samps[i], "_intronbin.csv")
+  filename <- paste0(opt$directory, "/", samps[i], "_intronbin.featureCounts")
   
   # Import file and modify column names
   intronbins_temp <- fread(filename)
