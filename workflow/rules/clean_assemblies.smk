@@ -160,7 +160,7 @@ if config["stringtie"]["clean_then_merge"]:
             """
             chmod +x {params.rscript}
             {params.rscript} -r {input.ref} -f {input.flatref} -e {input.cnts_exonic} -b {input.cnts_exonbin} -t {input.cnts_total} \
-            -d ./results/quantify_assembly/ -u {output.cnts_intronbin} -o {output.clean_ref} {params.extra} 1> {log} 2>&1
+            -d ./results/quantify_assembly/ -u {input.cnts_intronbin} -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
 
 else:
