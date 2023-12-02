@@ -74,7 +74,7 @@ option_list <- list(
               default = 10.0,
               help = "A bin must contain this many reads to be valid"),
   make_option(c("-y", "--ifactor", type = "double"),
-              default = 1.5,
+              default = 1,
               help = "Intronic RPK estimate = pmin(median(RPK) + ifactor*mad(RPK), max(RPK))"))
 
 opt_parser <- OptionParser(option_list = option_list)
