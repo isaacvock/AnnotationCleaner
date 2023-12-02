@@ -72,7 +72,10 @@ option_list <- list(
               help = "If included, ends of transcripts are not trimmed"),
   make_option(c("-z", "--minreads", type = "double"),
               default = 10.0,
-              help = "A bin must contain this many reads to be valid"))
+              help = "A bin must contain this many reads to be valid"),
+  make_option(c("-y", "--ifactor", type = "double"),
+              default = 1.5,
+              help = "Intronic RPK estimate = pmin(median(RPK) + ifactor*mad(RPK), max(RPK))"))
 
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser) # Load options from command line.
@@ -107,7 +110,7 @@ inv_logit <- function(x) exp(x)/(1+exp(x))
 score_exons <- function(cB, flat_gtf, gtf, dir,
                         exp_ids, intronic_background = NULL,
                         FDR = 0.05, coverage_floor = 2,
-                        read_length = 100, tau2 = 2,
+                        read_length = 100, tau2 = 2, ifactor=1.5,
                         a1 = 5, a0 = 0.01, sampleID = "",
                         debug = FALSE){
   
@@ -239,12 +242,18 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
     
     
     # RPK normalize
-      # Use median RPK as RPK estimate
+      # If there is more than 1 intronic bin, use the minimum of either the
+      # max RPK of all bins or the median RPK plus some constant (user-defined, default of 1) times
+      # the mad of RPKs (mad calculated on log-scale). Captures uncertainty in the intronic
+      # RPK estimate that the negative binomial model downstream of this 
+      # does not currently account for.
     intronic_background <- intronic_background %>%
       filter(reads > 0) %>%
       mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000)) %>%
       group_by(sample, GF) %>%
-      summarise(RPK = mean(RPK),
+      summarise(RPK = ifelse(n() < 2, 
+                             mean(RPK),
+                             pmin(median(RPK) + ifactor*stats::mad(RPK), max(RPK)),
                 intron_length = sum(intron_length),
                 mutrate = mean(mutrate))
     
@@ -979,7 +988,7 @@ if(length(samps) == 1){
 score_exons(exonbins, flat_gtf = flat_gtf,
             gtf = gtf, dir = dir,
             exp_ids = exp_id, intronic_background = intronic_background,
-            FDR = opt$fdr, coverage_floor = opt$floor, 
+            FDR = opt$fdr, coverage_floor = opt$floor, ifactor = opt$ifactor, 
             read_length = opt$readlength, tau2 = opt$priorvar,
             a1 = opt$slope, a0 = opt$intercept,
             sampleID = sampleID)
