@@ -58,6 +58,9 @@ def get_target_input():
     
         target.append("results/stringtie_merge/stringtie_merged.gtf")
 
+    # Filtered annotation
+    target.append("results/final_annotation/final_annotation.gtf")
+
     return target
 
 
