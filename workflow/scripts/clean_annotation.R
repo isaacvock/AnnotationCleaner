@@ -243,7 +243,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
     
     # RPK normalize
       # If there is more than 1 intronic bin, use the minimum of either the
-      # max RPK of all bins or the median RPK plus some constant (user-defined, default of 1) times
+      # max RPK of all bins or the median RPK plus some constant (user-defined, default of 1.5) times
       # the mad of RPKs (mad calculated on log-scale). Captures uncertainty in the intronic
       # RPK estimate that the negative binomial model downstream of this 
       # does not currently account for.
@@ -253,7 +253,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       group_by(sample, GF) %>%
       summarise(RPK = ifelse(n() < 2, 
                              mean(RPK),
-                             pmin(median(RPK) + ifactor*stats::mad(RPK), max(RPK)),
+                             pmin(median(RPK) + ifactor*stats::mad(RPK), max(RPK))),
                 intron_length = sum(intron_length),
                 mutrate = mean(mutrate))
     

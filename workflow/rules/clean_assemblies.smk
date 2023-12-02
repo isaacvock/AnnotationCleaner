@@ -232,3 +232,22 @@ else:
             chmod +x {params.rscript}
             {params.rscript} -r {input.ref} -f {input.flatref} -d results/quantify_assembly/ -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
+
+
+### Remove small transcripts from including SpliceWiz novel targets
+rule filter_annotation:
+    input:
+        "results/clean_assembly/stringtie_merged.gtf"
+    output:
+        "results/final_annotation/final_annotation.gtf"
+    params:
+        extra=config["filter_params"],
+        rscript=workflow.source_path("../scripts/filter_annotation.R")
+    log:
+        "logs/filter_annotation/filter.log"
+    threads: 1
+    shell:
+        """
+        chmod +x {params.rscript}
+        {params.rscript} -i {input} -o {output} {params.extra} 1> {log} 2>&1
+        """
