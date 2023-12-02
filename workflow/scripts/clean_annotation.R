@@ -244,7 +244,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       filter(reads > 0) %>%
       mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000)) %>%
       group_by(sample, GF) %>%
-      summarise(RPK = median(RPK),
+      summarise(RPK = mean(RPK),
                 intron_length = sum(intron_length),
                 mutrate = mean(mutrate))
     
