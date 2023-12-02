@@ -34,7 +34,7 @@ opt <- parse_args(opt_parser) # Load options from command line.
 
 
 # Load
-gtf <- rtracklayer::import(opt$i)
+gtf <- rtracklayer::import(opt$input)
 
 # Find transcripts of an acceptable length
 Transcripts_keep <- as_tibble(gtf) %>%
@@ -47,4 +47,4 @@ Transcripts_keep <- as_tibble(gtf) %>%
 gtf_filter <- gtf[mcols(gtf)$transcript_id %in% unique(Transcripts_keep$transcript_id)]
 
 # Export
-rtracklayer::export(gtf_filter, opt$o)
+rtracklayer::export(gtf_filter, opt$output)
