@@ -245,6 +245,8 @@ rule filter_annotation:
         rscript=workflow.source_path("../scripts/filter_annotation.R")
     log:
         "logs/filter_annotation/filter.log"
+    conda: 
+        "../envs/cleaning.yaml"
     threads: 1
     shell:
         """
