@@ -237,7 +237,7 @@ else:
 ### Remove small transcripts from including SpliceWiz novel targets
 rule filter_annotation:
     input:
-        "results/clean_assembly/stringtie_merged.gtf"
+        "results/stringtie_merge/stringtie_merged.gtf"
     output:
         "results/final_annotation/final_annotation.gtf"
     params:
