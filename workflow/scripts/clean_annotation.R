@@ -211,7 +211,6 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
     
     # RPM normalize
     intronic_background <- intronic_background %>%
-      filter(reads > 0) %>%
       mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000))
     
     
@@ -249,7 +248,6 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       # RPK estimate that the negative binomial model downstream of this 
       # does not currently account for.
     intronic_background <- intronic_background %>%
-      filter(reads > 0) %>%
       mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000)) %>%
       group_by(sample, GF) %>%
       summarise(RPK = ifelse(n() < 2, 
@@ -339,8 +337,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   # exon length as number of start bases that could yield an overlap AND the number
   # of end bases that could yield an overlap. Gotta choose one definition or the other,
   # not both.
-  exon_check <- inner_join(exon_check %>%
-                             filter(reads > 0), exon_sizes, by = "all_EF")
+  exon_check <- inner_join(exon_check , exon_sizes, by = "all_EF")
   exon_check <- exon_check %>%
     mutate(RPK_exon = reads/((exon_length + ((read_length - 1)))/1000))
   
