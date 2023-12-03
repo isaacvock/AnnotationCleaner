@@ -25,8 +25,11 @@ option_list <- list(
   make_option(c("-o", "--output", type="chracter"),
               help = "Path to output flat gtf"),
   make_option(c("-s", "--sizelimit"),
-              default = 300,
+              default = 50,
               help = "Largest exon bin size allowed. Larger bins will be split up into smaller bins."),
+  make_option(c("-n", "--intronsize"),
+              default = 300,
+              help = "Largest intron bin size allowed. Larger bins will be split up into smaller bins."),
   make_option(c("-t", "--threads"),
               default = 1,
               help = "Number of threads to use. Binning is parallelized over the intronic/exonic parts using furrr"))
@@ -160,13 +163,13 @@ plan(multisession, workers = opt$threads)
 # Bin intronic regions
 list_of_higher_res_introns <- future_map(seq_len(nrow(large_introns)), ~binning(large_introns[.x, ], 
                                                                                 type = "intronic_part",
-                                                                                size_limit = size_limit))
+                                                                                size_limit = opt$sizelimit))
 higher_res_introns <- bind_rows(list_of_higher_res_introns)
 
 
 # Bin exonic regions
 list_of_higher_res_exons <- future_map(seq_len(nrow(large_exons)), ~binning(large_exons[.x, ], 
-                                                                                     size_limit = size_limit))
+                                                                                     size_limit = opt$intronsize))
 higher_res_exons <- bind_rows(list_of_higher_res_exons)
 
 
