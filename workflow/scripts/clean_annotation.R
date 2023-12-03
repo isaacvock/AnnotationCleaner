@@ -238,7 +238,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
              sample = sampleID) %>%
       dplyr::select(sample, gene_id, RPK, mutrate, intron_length)
       
-    colnames(intronless_genes) <- c("GF", "RPK", "mutrate", "intron_length")
+    colnames(intronless_genes) <- c("sample", "GF", "RPK", "mutrate", "intron_length")
     
     
     
