@@ -354,6 +354,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
   
   # Fit linear model and extract parameters of interest
   trend <- exon_vs_intron %>%
+    filter(intronic_avg > 0 & exonic_max > 0) %>%
     group_by(sample) %>%
     do(fit = lm(log10(intronic_avg) ~ log10(exonic_max), 
                 data = .)) %>%
