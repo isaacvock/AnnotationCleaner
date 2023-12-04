@@ -380,6 +380,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
                             (slope*log10(exonic_max) + intercept),
                             mu_post_num/mu_post_den)) %>%
     ungroup() %>%
+    mutate(RPK_post = 10^mu_post) %>%
     mutate(RPK_post = ifelse(RPK_post > RPK, RPK_post, RPK)) %>%
     dplyr::select(-mu_post_den,
                   -mu_post_num,
