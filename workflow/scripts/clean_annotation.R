@@ -248,7 +248,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       # RPK estimate that the negative binomial model downstream of this 
       # does not currently account for.
     intronic_background <- intronic_background %>%
-      mutate(RPK = reads/((intron_length + ((read_length - 1)))/1000)) %>%
+      mutate(RPK = (reads + 1)/((intron_length + ((read_length - 1)))/1000)) %>%
       group_by(sample, GF) %>%
       summarise(RPK = ifelse(n() < 2, 
                              mean(RPK),
@@ -380,7 +380,6 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
                             (slope*log10(exonic_max) + intercept),
                             mu_post_num/mu_post_den)) %>%
     ungroup() %>%
-    mutate(RPK_post = 10^mu_post) %>%
     mutate(RPK_post = ifelse(RPK_post > RPK, RPK_post, RPK)) %>%
     dplyr::select(-mu_post_den,
                   -mu_post_num,
