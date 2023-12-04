@@ -572,12 +572,19 @@ clean_annotation <- function(EF_to_TF,
                                      reverse = FALSE,
                                      intronless = FALSE) {
     
+    
     if(length(v) == 0){
       return(TRUE)
     }
     
+    # Overwrite reverse if intronless transcript
+    if(intronless){
+      reverse <- FALSE
+    }
+    
     
     if(reverse){
+      
       if (v[1] != n ) {
         return(FALSE)
       }
@@ -589,16 +596,17 @@ clean_annotation <- function(EF_to_TF,
       all(differences == -1)
       
     }else if(intronless){
-      if (v[1] != m ) {
-        return(FALSE)
-      }
+      
       
       differences <- diff(v)
       
       
       # Check if all differences are 1
       all(abs(differences) == 1)
+      
+      
     }else{
+      
       if (v[1] != m ) {
         return(FALSE)
       }
@@ -615,6 +623,7 @@ clean_annotation <- function(EF_to_TF,
     
     
   }
+  
   
   ## Transcript is trash if:
   # 1) any interior bin is removed. Interior bins are those including the first bin
