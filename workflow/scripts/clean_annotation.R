@@ -679,6 +679,10 @@ clean_annotation <- function(EF_to_TF,
     
   }
   
+  write_csv(check,
+            file = paste(dir, paste0(sampleID, "flag_bad_transcripts.csv"), sep = "/"))
+  write_csv(pruned,
+            file = paste(dir, paste0(sampleID, "pruned.csv"), sep = "/"))
   
   
   # Return intermediate table with info about which transcripts are garbage
