@@ -468,6 +468,24 @@ clean_annotation <- function(EF_to_TF,
     browser()
   }
   
+  
+  # Find intronless genes.
+  # Handled differently when trimming ends and determining if "trash
+  transcript_lengths <- gtf %>%
+    filter(type == "transcript") %>%
+    dplyr::select(transcript_id, width) 
+  
+  intronless_genes <- gtf %>%
+    filter(type == "exon") %>%
+    dplyr::group_by(transcript_id) %>%
+    summarise(exonic_length = sum(width)) %>%
+    inner_join(transcript_lengths, by = "transcript_id") %>%
+    mutate(intron_length = width - exonic_length) %>%
+    filter(intron_length == 0) %>%
+    dplyr::select(transcript_id) %>%
+    dplyr::distinct()
+  
+  
   # Flag exonic bins preceding first sj and proceding last sj
   sj_annotated <- flat_annotation %>%
     filter(type == "exonic_part") %>%
@@ -526,6 +544,14 @@ clean_annotation <- function(EF_to_TF,
   
   pruned <- inner_join(pruned, unpruned, by = c("all_XF", "GF"))
   
+  
+  # Is transcript intronless?
+  pruned <- pruned %>%
+    mutate(is_intronless = ifelse(all_XF %in% intronless_genes$transcript_id,
+                                  TRUE,
+                                  FALSE))
+  
+  
   # Score = -# of bins removed; 
   # used to determine transcript names if identical transcripts exist after pruning
   # Higher score is preferred.
@@ -543,7 +569,8 @@ clean_annotation <- function(EF_to_TF,
   ## sequence (min exon ID):(exon ID of exonic part followed by 1st sj) or 
   ## (exon ID of exonic part preceded by last sj):(max exon ID).
   is_integer_subsequence <- function(v, m, n,
-                                     reverse = FALSE) {
+                                     reverse = FALSE,
+                                     intronless = FALSE) {
     
     if(length(v) == 0){
       return(TRUE)
@@ -561,6 +588,16 @@ clean_annotation <- function(EF_to_TF,
       # Check if all differences are 1
       all(differences == -1)
       
+    }else if(intronless){
+      if (v[1] != m ) {
+        return(FALSE)
+      }
+      
+      differences <- diff(v)
+      
+      
+      # Check if all differences are 1
+      all(abs(differences) == 1)
     }else{
       if (v[1] != m ) {
         return(FALSE)
@@ -608,11 +645,13 @@ clean_annotation <- function(EF_to_TF,
                                    ifelse(length(pruned_graph) == 0, TRUE,
                                           ifelse(is_integer_subsequence(missing[missing < unpruned_1st_sj],
                                                                         min(unlist(unpruned_graph)),
-                                                                        unpruned_1st_sj - 1),
+                                                                        unpruned_1st_sj - 1,
+                                                                        intronless = is_intronless),
                                                  ifelse(is_integer_subsequence(rev(missing[missing > unpruned_last_sj]),
                                                                                unpruned_last_sj + 1,
                                                                                max(unlist(unpruned_graph)),
-                                                                               reverse = TRUE), FALSE, TRUE ), TRUE))))) %>%
+                                                                               reverse = TRUE,
+                                                                               intronless = is_intronless), FALSE, TRUE ), TRUE))))) %>%
       dplyr::select(all_XF, GF, pruned_graph, unpruned_graph, unpruned_1st_sj,
                     unpruned_last_sj, score, trash, missing) %>%
       dplyr::group_by(GF) %>%
