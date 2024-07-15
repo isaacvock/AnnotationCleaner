@@ -52,27 +52,6 @@ option_list <- list(
   make_option(c("-i", "--intercept", type = "double"),
               default = 0.01,
               help = "Non-linear intercept parameter for coverage vs. dispersion trend"),
-  make_option(c("-m", "--meancutoff", type = "double"),
-              default = 10,
-              help = "Average exonic:intronic RPK ratio required to keep a transcript from a gene with no good transcripts"),
-  make_option(c("-x", "--maxcutoff", type = "double"),
-              default = 50,
-              help = "Mininmum exonic:intronic RPK ratio of most well covered exon bin to keep a transcript from a gene with no good transcripts"),
-  make_option(c("-v", "--discardgenes"),
-              action = "store_false",
-              default = TRUE,
-              help = "If included, genes with no good transcripts will be completely discarded"),
-  make_option(c("-n", "--ignoreends"),
-              action = "store_false",
-              default = TRUE,
-              help = "If included, bins at end of transcripts are not considered when deciding if isoform exists"),
-  make_option(c("-g", "--notrimming"),
-              action = "store_false",
-              default = TRUE,
-              help = "If included, ends of transcripts are not trimmed"),
-  make_option(c("-z", "--minreads", type = "double"),
-              default = 10.0,
-              help = "A bin must contain this many reads to be valid"),
   make_option(c("-y", "--ifactor", type = "double"),
               default = 1,
               help = "Intronic RPK estimate = pmin(median(RPK) + ifactor*mad(RPK), max(RPK))"))
@@ -451,13 +430,7 @@ clean_annotation <- function(EF_to_TF,
                              gtf,
                              output_path,
                              exon_check = NULL,
-                             preserve_genes = TRUE,
-                             debug = FALSE,
-                             trim = TRUE,
-                             ConsiderEnds = TRUE,
-                             CreateNewGTF = TRUE,
-                             ReturnTranscriptQuality = FALSE,
-                             mean_cutoff = 10, max_cutoff = 50){
+                             debug = FALSE){
   
   
   if(is.null(exon_check) & preserve_genes){
@@ -470,14 +443,14 @@ clean_annotation <- function(EF_to_TF,
   
   
   ##### PRUNE
-
-
+  
+  
   # Find intronless genes.
   # Handled differently when trimming ends and determining if "trash
   transcript_lengths <- gtf %>%
     filter(type == "transcript") %>%
     dplyr::select(transcript_id, width) 
-
+  
   intronless_genes <- gtf %>%
     filter(type == "exon") %>%
     dplyr::group_by(transcript_id) %>%
@@ -487,43 +460,49 @@ clean_annotation <- function(EF_to_TF,
     filter(intron_length == 0) %>%
     dplyr::select(transcript_id) %>%
     dplyr::distinct()
-
-
+  
+  
   # Flag exonic bins preceding first sj and proceding last sj
   sj_annotated <- flat_annotation %>%
     filter(type == "exonic_part") %>%
     inner_join(EF_to_TF %>%
-                dplyr::mutate(transcripts = XF) %>%
-                dplyr::select(all_XF, transcripts) %>%
-                dplyr::distinct(),
-              by = "transcripts",
-              relationship = "many-to-many") %>%
+                 dplyr::mutate(transcripts = XF) %>%
+                 dplyr::select(all_XF, transcripts) %>%
+                 dplyr::distinct(),
+               by = "transcripts",
+               relationship = "many-to-many") %>%
     mutate(exonic_part_number = as.numeric(exonic_part_number)) %>%
     group_by(all_XF) %>%
     mutate(followed_by_sj = ifelse(exonic_part_number != max(exonic_part_number), 
-                                  ifelse(lead(start, order_by = exonic_part_number) == (end + 1),
+                                   ifelse(lead(start, order_by = exonic_part_number) == (end + 1),
                                           FALSE,
                                           TRUE), FALSE),
-          preceded_by_sj = ifelse(exonic_part_number != min(exonic_part_number), 
-                                  ifelse(lag(end, order_by = exonic_part_number) == (start - 1),
+           preceded_by_sj = ifelse(exonic_part_number != min(exonic_part_number), 
+                                   ifelse(lag(end, order_by = exonic_part_number) == (start - 1),
                                           FALSE,
                                           TRUE), FALSE)) 
-
-
-
+  # Technically followed_by_sj will be true whenever an exonic bin is followed by
+  # a splice junction. I think I want to account for edge case where I split exonic bins
+  # into smaller bins and thus want to just identify any bin that is at risk of getting
+  # pruned and is after the first splice junction and before the last
+  
+  
   # Add exonic bin number and prune crap bins
   EF_test <- EF_to_TF %>% #filter(GF == "SNRNP70") %>%
     inner_join(sj_annotated %>% 
-                ungroup() %>%
-                filter(type == "exonic_part") %>%
-                dplyr::mutate(all_EF = exon_id) %>%
-                dplyr::select(start, end, all_EF, exonic_part_number, all_XF, 
-                              followed_by_sj, preceded_by_sj) %>%
-                dplyr::distinct(),
-              by = c("all_EF", "all_XF"),
-              relationship = "many-to-many")
-
-
+                 ungroup() %>%
+                 filter(type == "exonic_part") %>%
+                 dplyr::mutate(all_EF = exon_id) %>%
+                 dplyr::select(start, end, all_EF, exonic_part_number, all_XF, 
+                               followed_by_sj, preceded_by_sj) %>%
+                 dplyr::distinct(),
+               by = c("all_EF", "all_XF"),
+               relationship = "many-to-many")
+  
+  
+  ### TO-DO: NEED TO HAVE AN INTRONLESS EDGE CASE HANDLE WHERE I DO A BETTER JOB
+  ### OF NOT PRUNING ANY BINS WHICH WOULD INTRODUCE A NEW SPLICE JUNCTION
+  
   ### Can I do it all from EF_test?
   # I think so! And it was stupid easy...
   EF_test2 <- EF_test %>%
@@ -532,28 +511,42 @@ clean_annotation <- function(EF_to_TF,
     # annotate which bins are prunable
     group_by(GF, all_XF) %>%
     mutate(first_good = ifelse(
-            all(likely_intronic), Inf,
-            min(exonic_part_number[!likely_intronic])
-            ),
-          last_good = ifelse(
-            all(likely_intronic), 0,
-            max(exonic_part_number[!likely_intronic])
-            )) %>%
+      all(likely_intronic), Inf,
+      min(exonic_part_number[!likely_intronic])
+    ),
+    last_good = ifelse(
+      all(likely_intronic), 0,
+      max(exonic_part_number[!likely_intronic])
+    ),
+    last_bin_b4_1st_sj = ifelse(!any(followed_by_sj),
+                                Inf,
+                                min(exonic_part_number[followed_by_sj])),
+    first_bin_after_last_sj = ifelse(!any(preceded_by_sj),
+                                     1,
+                                     max(exonic_part_number[preceded_by_sj]))) %>%
     ungroup() %>%
     mutate(cannot_prune = case_when(
-      first_good > min(exonic_part_number[!followed_by_sj]) ~ TRUE, # None of the 5' UTR exons pass filtering
-      last_good < max(exonic_part_number[!preceded_by_sj]) ~ TRUE, # None of the 3' UTR exons pass filtering
+      first_good > last_bin_b4_1st_sj ~ TRUE, # None of the 5' UTR exons pass filtering
+      is.infinite(first_good) ~ TRUE,
+      last_good < first_bin_after_last_sj ~ TRUE, # None of the 3' UTR exons pass filtering
       .default = FALSE
     )) %>%
+    ungroup() %>%
     # Annotate which bins should be pruned
     mutate(prune = ((exonic_part_number < first_good) |
-            (exonic_part_number > last_good)) & !cannot_prune) %>% # Don't flag any exonic bins as prunable if pruning introduces splice junctions
-    mutate(problematic = case_when(
-      likely_intronic & (followed_by_sj | preceded_by_sj) ~ TRUE, # There are likely intronic exons with putative splice junctions
-      cannot_prune ~ TRUE,
-      .default = FALSE
-    ))
-      
+                      (exonic_part_number > last_good)) & !cannot_prune) %>% # Don't flag any exonic bins as prunable if pruning introduces splice junctions
+    group_by(GF, all_XF) %>%
+    mutate(problematic = cannot_prune |
+             (any(exonic_part_number[likely_intronic] >= unique(last_bin_b4_1st_sj) & exonic_part_number[likely_intronic] <= unique(first_bin_after_last_sj))) |
+             is.infinite(unique(first_good))) # Catch transcripts with bad internal bins or no good bins at all
+  
+  
+  EF_test2 %>%
+    group_by(GF, all_XF) %>%
+    summarise(problematic = all(problematic)) %>%
+    dplyr::group_by(problematic) %>%
+    dplyr::count()
+  
   # Collapse exon bin graph to allow for cute string grepping
   # trick in next step
   check2 <- EF_test2 %>%
@@ -562,8 +555,8 @@ clean_annotation <- function(EF_to_TF,
     dplyr::filter(!prune) %>%
     summarise(collapsed_graph = paste(exonic_part_number, collapse = ","),
               score = mean(score))
-
-
+  
+  
   ## Function to identify if one string is contained in another  
   # Since transcripts are converted to string representation in last step,
   # this is identical to finding instances where one transcript is 
@@ -579,12 +572,12 @@ clean_annotation <- function(EF_to_TF,
       }))
     })
   }
-
+  
   # Filter out modified transcripts that are now subsets of other transcripts
   check2 <- check2 %>%
     group_by(GF) %>%
     filter(!is_contained(collapsed_graph) | score == 0)
-
+  
   # Keep only the maximum score transcript of a set of identical transcripts
   # If multiple max score transcripts in a set, then just choose one at random
   check2 <- check2 %>%
@@ -595,55 +588,57 @@ clean_annotation <- function(EF_to_TF,
               GF = GF[1],
               collapsed_graph = collapsed_graph[1],
               score = score[1])
-
-
+  
+  
   ## Now clean out annotation
-
+  
   # 1) Remove garbage transcripts
   check <- EF_test2 %>%
     dplyr::filter(!prune) %>%
-    inner_join(check2 %>% dplyr::select(GF, all_XF),
-              by = c("GF", "all_XF")) %>%
+    inner_join(check2 %>% dplyr::select(GF, all_XF) %>% dplyr::distinct(),
+               by = c("GF", "all_XF")) %>%
     group_by(GF, all_XF) %>%
     summarise(new_start_base = start[exonic_part_number == min(exonic_part_number)], # DO I NEED TO ASSESS STRANDEDNESS?
-          new_end_base = end[exonic_part_number == max(exonic_part_number)])
-
-
+              new_end_base = end[exonic_part_number == max(exonic_part_number)],
+              problematic = any(problematic))
+  
+  
   ### NOTE: CURRENTLY THERE IS A WARNING WHEN I INNER JOIN BECAUSE CHECK HAS
   ### ONE ROW FOR EACH RETAINED EXONIC BIN
-
+  
   # Filter out bogus transcripts and prune ends of real transcripts
   transcript_annotation <- gtf %>%
     filter(type == "transcript") %>%
     inner_join(check %>%
-                ungroup() %>%
-                mutate(transcript_id = all_XF) %>%
-                dplyr::select(transcript_id, new_start_base, new_end_base),
-              by = "transcript_id") %>%
+                 ungroup() %>%
+                 mutate(transcript_id = all_XF) %>%
+                 dplyr::select(transcript_id, new_start_base, new_end_base, problematic),
+               by = "transcript_id") %>%
     mutate(start = new_start_base,
-          end = new_end_base) %>%
+           end = new_end_base) %>%
     mutate(width = end - start)  %>%
     dplyr::select(-new_start_base, -new_end_base)
-
-
+  
+  
   ### TO-DO: fix fact that all exons are getting the new start and ends
   # Filter out bogus exons and prune ends of real exons
   exon_annotation <- gtf %>%
     filter(type == "exon") %>%
     inner_join(check %>%
-                mutate(transcript_id = all_XF) %>%
-                dplyr::select(transcript_id, new_start_base, new_end_base),
-              by = "transcript_id") %>%
+                 ungroup() %>%
+                 mutate(transcript_id = all_XF) %>%
+                 dplyr::select(transcript_id, new_start_base, new_end_base, problematic),
+               by = "transcript_id") %>%
     mutate(start = ifelse(start < new_start_base,
                           new_start_base,
                           start),
-          end = ifelse(end > new_end_base,
+           end = ifelse(end > new_end_base,
                         new_end_base,
                         end)) %>%
     mutate(width = end - start)  %>%
     dplyr::select(-new_start_base, -new_end_base)
-
-
+  
+  
   ### Stringtie annotation will never have CDS, and I changed AnnotationCleaner
   ### to only operate on stringtie annotation
   # # Filter out bogus CDSs and prune ends of real CDSs
@@ -667,26 +662,26 @@ clean_annotation <- function(EF_to_TF,
   #          end = new_end_base) %>%
   #   mutate(width = end - start)  %>%
   #   dplyr::select(-new_start_base, -new_end_base)
-
-
+  
+  
   # Combine transcript, exon, and CDS information
   new_annotation <- bind_rows(list(transcript_annotation,
-                                  exon_annotation)) %>%
+                                   exon_annotation)) %>%
     arrange(transcript_id)
-
+  
   # Convert to GenomicRanges object and export
   new_GR <- GRanges(seqnames = Rle(new_annotation$seqnames),
                     ranges = IRanges(new_annotation$start, end = new_annotation$end, 
-                                    names = 1:nrow(new_annotation)),
+                                     names = 1:nrow(new_annotation)),
                     strand = Rle(new_annotation$strand))
-
+  
   mcols(new_GR) <- new_annotation %>%
     dplyr::select(-seqnames, -start, -end, -strand)
-
+  
   rtracklayer::export(new_GR,
                       con = output_path)
-
-    
+  
+  
   
   
 }
@@ -855,9 +850,4 @@ clean_annotation(EF_to_TF = EF_to_TF,
                  flat_annotation = flat_annotation,
                  gtf = gtf,
                  exon_check = exon_check,
-                 output_path = output_path,
-                 trim = opt$notrimming,
-                 mean_cutoff = opt$meancutoff,
-                 max_cutoff = opt$maxcutoff,
-                 preserve_genes = opt$discardgenes,
-                 ConsiderEnds = opt$ignoreends)
+                 output_path = output_path)
