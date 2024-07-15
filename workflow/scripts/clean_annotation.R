@@ -638,6 +638,12 @@ clean_annotation <- function(EF_to_TF,
     mutate(width = end - start)  %>%
     dplyr::select(-new_start_base, -new_end_base)
   
+
+  ### TO-DO: IMPLEMENT OPTION TO FILTER OUT PROBLEMATIC TRANSCRIPTS
+  ### BUT KEEP AT LEAST ONE TRANSCRIPT FROM GENES THAT SEEMS TO
+  ### HAVE GOOD EVIDENCE OF EXPRESSION.
+    ### I essentially had this implemented in a previous version, so
+    ### would just need to reimplement.
   
   ### Stringtie annotation will never have CDS, and I changed AnnotationCleaner
   ### to only operate on stringtie annotation
