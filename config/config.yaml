@@ -27,18 +27,7 @@ strandedness: "reverse"
 # Paired-end data?
 PE: True
 
-##### PARAMETERS THAT DETERMINE WHICH TRANSCRIPTOME ASSEMBLERS TO USE
-
-# Use Scallop + TACO for annotation building
-scallop: 
-  use_scallop: False
-  use_taco: True
-  label: "sc"
-  strandedness: True
-  score: 0
-  is_reference: False
-  exclude_redundant: False
-  strip_cds: False
+##### TRANSCRIPTOME ASSEMBLY PARAMETERS
 
 # Use StringTie for annotation building
 stringtie: 
@@ -46,42 +35,7 @@ stringtie:
   use_reference: True # Use reference as a guide
   use_taco: False # Use TACO to merge assemblies
   use_merge: True # Use Stringtie-merge to merge assemblies
-  clean_then_merge: True # clean separate assemblies and then merged; otherwise, merged assembly is cleaned (latter not currently implemented)
-  label: "st"
-  strandedness: True
-  score: 0
-  is_reference: False
-  exclude_redundant: False
-  strip_cds: False
-
-# Use mikado to combine annotations built by multiple tools
-  # NOT CURRENTLY IMPLEMENTED
-use_mikado: False
-
-
-##### PARAMETERS AFFECTING ALL ASSEMBLERS
-
-# Remove low-coverage/non-existent isoforms from reference to use as a guide for StringTie
-clean_reference: True
-
-
-# Parameters to pass to samtools (other than input, output, -m, and -T)
-samtools_params: ""
-
-
-##### SCALLOP PARAMETERS
-
-# Parameters to pass to scallop (other than input and output)
-scallop_params: "--library_type first"
-
-# Parameters to pass to TACO with Scallop input (other than input, output, and threads)
-scallop_taco_params: "--gtf-expr-attr RPKM"
-
-# Parameters to pass to TACO refcomp with Scallop input (other than output, reference, and test annotation)
-scallop_refcomp_params: ""
-
-
-##### STRINGTIE PARAMETERS
+  clean_then_merge: False # clean separate assemblies and then merged; otherwise, merged assembly is cleaned (latter not currently implemented)
 
 
 # Parameters to pass to Stringtie 
@@ -95,6 +49,17 @@ stringtie_taco_params: ""
 
 # Parameters to pass to TACO refcomp with Stringtie input (other than output, reference, and test annotation)
 stringtie_refcomp_params: ""
+
+
+##### PARAMETERS AFFECTING ALL ASSEMBLERS
+
+# Parameters to pass to samtools (other than input, output, -m, and -T)
+samtools_params: ""
+
+
+##### STRINGTIE PARAMETERS
+
+
 
 
 
@@ -111,27 +76,6 @@ stringtie_refcomp_params: ""
 # -p (--priorvar): Variance of prior on intronic RPK trend. Decrease this
 #               to increase the amount of intronic RPK regualrization.
 #               (default = 2)
-# -m (--meancutoff): If a gene has no transcripts that pass filtering, then
-#               the highest coverage transcript will be kept as long as its
-#               average exonic RPK is a factor of -m higher than the intronic RPK.
-#               Only relevant if --discardgenes flag is NOT set.
-#               (default = 10)
-# -x (--maxcutoff): If a gene has no transcripts that pass filtering, then
-#               the highest coverage transcript will be kept as long as its 
-#               maximum exonic RPK is a factor of -x higher than the intronic RPK.
-#               Only relevant if --discardgenes flag is NOT set.
-#               (default = 50)
-# -v (--discardgenes): If a gene has no transcripts that pass filtering,
-#               it will be completely discarded if this flag is set.
-# -n (--ignoreends): If this flag is set, don't consider first and last exonic bin when deciding
-#               if a transcript is good or not. This can help deal with overextension
-#               of UTRs. This will eventually be removed in favor of higher resolution
-#               binning of ends of transcripts to improve trimming.
-# -g (--notrimming): If this flag is set, don't trim ends of transcripts via removal
-#               of low coverage exon bins at ends of transcripts.
-# -z (--minreads): Minimum number of reads which an exonic bin must contain in order for it to
-#               be considered valid.
-#               (default = 10)
 
 # Pruning parameters for StringTie assemblies
 pruning_assembly_params: "--fdr 0.01"
@@ -154,73 +98,3 @@ splitting_bins_params: ""
 ##### FeatureCounts parameters #####
 
 feature_counts_params: ""
-
-
-
-##### MIKADO (not currently implemented) PARAMETERS
-
-# Path to mikado list input (must have .txt extension)
-  # This is created automatically if not already provided
-mikado_list: data/mikado/mikado_list.txt
-
-# Path to scoring function yaml file
-mikado_scoring: data/mikado/scoring.yaml
-
-# Reference genome fasta
-genome: data/genome/reference.fasta
-
-# Reference set of proteins to BLAST
-blast_db: data/blast_db/reference.fasta
-
-# Number of sub-fasta files to split mikado prepared fasta into
-  # For further parallelizing blastx steps
-num_sub: 5
-
-# Annotations you are bringing in
-provided_annotations:
-  sq: # Label
-    annotation: path/to/squanti_annotation # Path to annotation
-    strandedness: True # Strandedness
-    score: 0 # Score for Mikado
-    is_reference: False # Treat this as a reference?
-    exclude_redundant: False #
-    strip_cds: False
-  cl: 
-    annotation: path/to/CLASS2_annotation
-    strandedness: True
-    score: 0
-    is_reference: False
-    exclude_redundant: False
-    strip_cds: False
-  rf: # Label to give to reference for mikado
-    annotation: data/annotation/reference.gtf # path to reference
-    strandedness: True # strandedness of reference
-    score: 0 # Score assigned to reference
-    is_reference: False # treat this like a reference (False means don't always keep reference transcripts)
-    exclude_redundant: False # exclude redundant gene models
-    strip_cds: False # Skip the chimera split routine
-
-
-## Required portcullis parameters
-portcullis_strandedness: "firststrand"
-portcullis_orientation: "RF"
-
-
-## Optional portcullis parameters
-portcullis_prep_params: ""
-portcullis_junc_params: ""
-
-
-## Optional TransDecoder parameters
-transdecoder_params: ""
-transdecoder_predict_params: ""
-
-## Optional blastx parameters
-makeblastdb_params: ""
-blastx_params: "-max_target_seqs 5"
-
-## Optional mikado pipeline parameters
-mikado_configure_params: ""
-mikado_prepare_params: ""
-mikado_serialise_params: ""
-mikado_pick_params: ""
