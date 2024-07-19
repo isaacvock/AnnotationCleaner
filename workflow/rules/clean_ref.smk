@@ -86,8 +86,8 @@ if config["clean_only"]:
         input:
             ref=config["reference_gtf"],
             flatref=config["flat_ref"],
-            cnts_exonbin=expand("results/quantify_reference/{sample}_exonbin.featureCounts", SID = SAMP_NAMES),
-            cnts_intronbin=expand("results/quantify_reference/{sample}_intronbin.featureCounts", SID = SAMP_NAMES),
+            cnts_exonbin=expand("results/quantify_reference/{SID}_exonbin.featureCounts", SID = SAMP_NAMES),
+            cnts_intronbin=expand("results/quantify_reference/{SID}_intronbin.featureCounts", SID = SAMP_NAMES),
         output:
             clean_ref="results/clean_reference/cleaned_reference.gtf"
         params:
