@@ -11,7 +11,7 @@ if config["stringtie"]["use_reference"]:
         threads: 20
         params:
             extra=config["stringtie_params"],
-            guide=config["reference_annotation"],
+            guide=config["reference_gtf"],
         conda:
             "../envs/stringtie.yaml",
         shell:
