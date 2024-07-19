@@ -21,6 +21,9 @@ group_id_table: data/group_ids.csv
 # Annotation GTF to compare assemblies to or guide assembly
 reference_gtf: data/annotation/CHESS.gtf
 
+# Only clean the provided reference (i.e., don't run any assemblers?)
+clean_only: False
+
 # Flattened reference (only relevant if cleaning reference)
 flat_ref: data/annotation/CHESS_flat.gtf
 
