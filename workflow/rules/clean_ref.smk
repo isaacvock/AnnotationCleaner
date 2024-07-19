@@ -96,7 +96,7 @@ if config["clean_only"]:
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_reference/{sample}.log"
+            "logs/clean_reference/clean_reference.log"
         threads: 1
         shell:
             """
