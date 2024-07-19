@@ -814,7 +814,7 @@ if(opt$bins == ""){
 
   }else{
 
-    stop("Not currently compatible with a provided group ID table")
+    exp_id <- as_tibble(fread(opt$groups))
 
   }
 
