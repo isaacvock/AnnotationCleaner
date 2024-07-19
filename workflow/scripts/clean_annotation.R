@@ -54,7 +54,11 @@ option_list <- list(
               help = "Non-linear intercept parameter for coverage vs. dispersion trend"),
   make_option(c("-y", "--ifactor", type = "double"),
               default = 1,
-              help = "Intronic RPK estimate = pmin(median(RPK) + ifactor*mad(RPK), max(RPK))"))
+              help = "Intronic RPK estimate = pmin(median(RPK) + ifactor*mad(RPK), max(RPK))"),
+  make_option(c("-g", "--groups", type = "string"),
+              default = "",
+              help = "Path to table of sample to group ID mappings. If not provided, all samples
+              assumed to be from the same group.")  )
 
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser) # Load options from command line.
@@ -393,10 +397,10 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
             file = paste(dir, paste0(sampleID, "exon_check.csv"), sep = "/"))
   
   
-  # Make sure it passes filter in all samples
+  # Make sure it passes filter in at least one sample
   bonafide_exons <- exon_check %>%
     group_by(all_EF, GF, Exp_ID) %>%
-    summarise(pass = ifelse(all(pass), TRUE, FALSE)) %>%
+    summarise(pass = ifelse(any(pass), TRUE, FALSE)) %>%
     group_by(all_EF, GF) %>%
     summarise(pass = ifelse(any(pass), TRUE, FALSE))
   # Filtered out some 34,000 exon bins once I properly kept all exonic reads
@@ -802,13 +806,17 @@ for(i in seq_along(samps)){
 # Map each sample to an ID corresponding to treatment condition
 if(opt$bins == ""){
   
-  stop("Not currently compatible with multiple samples per cleaning!!")
   
   ### NEED TO CHANGE THIS!!!
-  exp_id = tibble(Exp_ID = c(3, 3, 3, 3, 3, 3,
-                             2, 2, 2, 2, 2, 2, 
-                             1, 1, 1, 1, 1, 1),
-                  sample = unique(intronic_background$sample))
+  if(opt$groups == ""){
+    exp_id = tibble(Exp_ID = 1,
+                    sample = unique(intronic_background$sample))
+
+  }else{
+
+    stop("Not currently compatible with a provided group ID table")
+
+  }
 
 }else{
   

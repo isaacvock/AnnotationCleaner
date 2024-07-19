@@ -10,6 +10,14 @@ samples:
   WT_ctl_3: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_3.bam
 
 
+# Path to table that maps sample IDs to group IDs.
+# Should have two columns, one named 'sample' and the
+# other named 'group_id'. group_id should be a number
+# from 1 to the number of sample "groups" you have. A 
+# sample group is a set of samples that you suspect will
+# have similar transcriptomes
+group_id_table: data/group_ids.csv
+
 # Annotation GTF to compare assemblies to or guide assembly
 reference_gtf: data/annotation/CHESS.gtf
 
