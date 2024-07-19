@@ -160,4 +160,47 @@ else:
             taco_run -o ./results/stringtie_taco/ -p {threads} {params.extra_taco} {input} 1> {log} 2>&1
             taco_refcomp -o ./results/stringtie_taco_refcomp/ -r {params.gtf} -t ./results/stringtie_taco/assembly.gtf {params.extra_refcomp} 1> {log} 2>&1
             """
-    
+
+if config["stringtie"]["clean_then_merge"]  
+
+    ### Remove small transcripts from including SpliceWiz novel targets
+    rule filter_annotation:
+        input:
+            "results/stringtie_merge/stringtie_merged.gtf"
+        output:
+            "results/final_annotation/final_annotation.gtf"
+        params:
+            extra=config["filter_params"],
+            rscript=workflow.source_path("../scripts/filter_annotation.R")
+        log:
+            "logs/filter_annotation/filter.log"
+        conda: 
+            "../envs/cleaning.yaml"
+        threads: 1
+        shell:
+            """
+            chmod +x {params.rscript}
+            {params.rscript} -i {input} -o {output} {params.extra} 1> {log} 2>&1
+            """
+
+else:
+
+    ### Remove small transcripts from including SpliceWiz novel targets
+    rule filter_annotation:
+        input:
+            "results/clean_assembly/stringtie_merged.gtf"
+        output:
+            "results/final_annotation/final_annotation.gtf"
+        params:
+            extra=config["filter_params"],
+            rscript=workflow.source_path("../scripts/filter_annotation.R")
+        log:
+            "logs/filter_annotation/filter.log"
+        conda: 
+            "../envs/cleaning.yaml"
+        threads: 1
+        shell:
+            """
+            chmod +x {params.rscript}
+            {params.rscript} -i {input} -o {output} {params.extra} 1> {log} 2>&1
+            """

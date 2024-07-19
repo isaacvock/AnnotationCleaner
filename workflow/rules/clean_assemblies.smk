@@ -1,23 +1,25 @@
-rule remove_unstranded:
-    input:
-        gtf="results/separate_stringties/{sample}.gtf"
-    output:
-        stranded="results/remove_unstranded/{sample}.gtf"
-    log:
-        "logs/remove_unstranded/{sample}.log",
-    conda:
-        "../envs/cleaning.yaml"
-    params:
-        rscript=workflow.source_path("../scripts/remove_unstranded.R")
-    threads: 1
-    shell:
-        """
-        chmod +x {params.rscript}
-        {params.rscript} -i {input.gtf} -o {output.stranded} 1> {log} 2>&1
-        """
+
 
 
 if config["stringtie"]["clean_then_merge"]:
+
+    rule remove_unstranded:
+        input:
+            gtf="results/separate_stringties/{sample}.gtf"
+        output:
+            stranded="results/remove_unstranded/{sample}.gtf"
+        log:
+            "logs/remove_unstranded/{sample}.log",
+        conda:
+            "../envs/cleaning.yaml"
+        params:
+            rscript=workflow.source_path("../scripts/remove_unstranded.R")
+        threads: 1
+        shell:
+            """
+            chmod +x {params.rscript}
+            {params.rscript} -i {input.gtf} -o {output.stranded} 1> {log} 2>&1
+            """
 
     # DEXSeq flatten individual StringTie assemblies
     rule flatten_assembly:
@@ -127,10 +129,28 @@ if config["stringtie"]["clean_then_merge"]:
 
 else:
 
+    rule remove_unstranded:
+            input:
+                gtf="results/stringtie_merge/stringtie_merged.gtf"
+            output:
+                stranded="results/remove_unstranded/stringtie_merged.gtf"
+            log:
+                "logs/remove_unstranded/{sample}.log",
+            conda:
+                "../envs/cleaning.yaml"
+            params:
+                rscript=workflow.source_path("../scripts/remove_unstranded.R")
+            threads: 1
+            shell:
+                """
+                chmod +x {params.rscript}
+                {params.rscript} -i {input.gtf} -o {output.stranded} 1> {log} 2>&1
+                """
+
     # DEXSeq flatten merged StringTie assembly
     rule flatten_assembly:
         input:
-            gtf="results/stringtie_merge/stringtie_merged.gtf"
+            gtf="results/remove_unstranded/stringtie_merged.gtf"
         output:
             flatgtf="results/raw_flattened_assembly/flat_genome.gtf",
         log:
@@ -166,7 +186,7 @@ else:
         input:
             # list of sam or bam files
             samples="results/sorted/sorted_{sample}.bam",
-            annotation="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
+            annotation="results/flattened_assembly/flat_genome_binID.gtf",
             # optional input
             #chr_names="",           # implicitly sets the -A flag
             #fasta="genome.fasta"    # implicitly sets the -G flag
@@ -190,7 +210,7 @@ else:
         input:
             # list of sam or bam files
             samples="results/sorted/sorted_{sample}.bam",
-            annotation="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
+            annotation="results/flattened_assembly/flat_genome_binID.gtf",
             # optional input
             #chr_names="",           # implicitly sets the -A flag
             #fasta="genome.fasta"    # implicitly sets the -G flag
@@ -213,7 +233,7 @@ else:
         # I am imagining a parameter d that if set, loads sets of csvs as I normally do
     rule stringtie_clean_assembly:
         input:
-            ref="results/remove_unstranded/{sample}.gtf",
+            ref="results/remove_unstranded/stringtie_merged.gtf",
             flatref="results/flattened_assembly/flat_genome_binID.gtf",
             cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.featureCounts", SID = SAMP_NAMES),
             cnts_intronbin=expand("results/quantify_assembly/{SID}_intronbin.featureCounts", SID = SAMP_NAMES)
@@ -232,24 +252,3 @@ else:
             chmod +x {params.rscript}
             {params.rscript} -r {input.ref} -f {input.flatref} -d results/quantify_assembly/ -o {output.clean_ref} {params.extra} 1> {log} 2>&1
             """
-
-
-### Remove small transcripts from including SpliceWiz novel targets
-rule filter_annotation:
-    input:
-        "results/stringtie_merge/stringtie_merged.gtf"
-    output:
-        "results/final_annotation/final_annotation.gtf"
-    params:
-        extra=config["filter_params"],
-        rscript=workflow.source_path("../scripts/filter_annotation.R")
-    log:
-        "logs/filter_annotation/filter.log"
-    conda: 
-        "../envs/cleaning.yaml"
-    threads: 1
-    shell:
-        """
-        chmod +x {params.rscript}
-        {params.rscript} -i {input} -o {output} {params.extra} 1> {log} 2>&1
-        """

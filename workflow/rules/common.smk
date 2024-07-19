@@ -8,47 +8,18 @@ SAMP_NAMES = list(config['samples'].keys())
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
 
-# List of paths to Scallop outputs for Mikado
-if config["scallop"]["use_scallop"]:
-    SCALLOP_PATHS = expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES)
-
 # List of paths to Stringtie outputs for Mikado
 if config["stringtie"]["use_stringtie"]:
     STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES)    
-
-# Retrieve lists of files that must get created for mikado to run
-def get_mikado_input():
-
-    gtfs = []
-
-    if config["scallop"]["use_scallop"]:
-        gtfs.append(expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES))
-    
-    if config["stringtie"]["use_stringtie"]:
-        gtfs.append(expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES))
-
-    return gtfs
 
 # Target rule (so final output to be looked for)
 def get_target_input():
 
     target = []
 
-    if config["use_mikado"]:
-
-        target.append("results/mikado_pick/mikado.loci.gff3")
-    
     if config["stringtie"]["use_stringtie"]:
 
         target.append(expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES))
-
-    if config["scallop"]["use_scallop"]:
-
-        target.append(expand("results/separate_scallops/{SID}.gtf", SID = SAMP_NAMES))
-
-    if config["scallop"]["use_scallop"] and config["scallop"]["use_taco"]:
-
-        target.append("results/ignorethisdirectory_scallop/success.txt")
 
     if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
 
