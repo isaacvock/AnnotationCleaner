@@ -17,20 +17,26 @@ def get_target_input():
 
     target = []
 
-    if config["stringtie"]["use_stringtie"]:
+    if config["clean_only"]:
 
-        target.append(expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES))
+        target.append("results/clean_reference/cleaned_reference.gtf")
 
-    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
+    else:
 
-        target.append("results/ignorethisdirectory_stringtie/success.txt")
+        if config["stringtie"]["use_stringtie"]:
 
-    if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_merge"]:
-    
-        target.append("results/stringtie_merge/stringtie_merged.gtf")
+            target.append(expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES))
 
-    # Filtered annotation
-    target.append("results/final_annotation/final_annotation.gtf")
+        if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
+
+            target.append("results/ignorethisdirectory_stringtie/success.txt")
+
+        if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_merge"]:
+        
+            target.append("results/stringtie_merge/stringtie_merged.gtf")
+
+        # Filtered annotation
+        target.append("results/final_annotation/final_annotation.gtf")
 
     return target
 
