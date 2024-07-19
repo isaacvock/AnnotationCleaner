@@ -814,6 +814,9 @@ if(opt$bins == ""){
 
   }else{
 
+    ### TO-DO: Make an option to require all exons in a group to pass
+    ### Currently just need any to pass, which makes it equivalent to
+    ### not having any groups
     exp_id <- as_tibble(fread(opt$groups))
 
   }
