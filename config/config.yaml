@@ -68,12 +68,6 @@ stringtie_refcomp_params: ""
 samtools_params: ""
 
 
-##### STRINGTIE PARAMETERS
-
-
-
-
-
 ##### ANNOTATION PRUNING RSCRIPT PARAMETERS
 
 ### Options are:
@@ -109,3 +103,9 @@ splitting_bins_params: ""
 ##### FeatureCounts parameters #####
 
 feature_counts_params: ""
+
+
+##### ANNOTATION FILTERING RSCRIPT PARAMETERS
+
+filter_params: ""
+
