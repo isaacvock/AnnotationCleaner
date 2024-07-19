@@ -29,19 +29,9 @@ container: "docker://continuumio/miniconda3"
 
 ##### load rules #####
 include: "rules/common.smk"
-
-if config["scallop"]["use_scallop"]:
-    include: "rules/scallop.smk"
-
-if config["stringtie"]["use_stringtie"]:
-    include: "rules/stringtie.smk"
-    include: "rules/clean_assemblies.smk"
-
-if config["clean_reference"]:
-    include: "rules/clean_ref.smk"
-
-if config["use_mikado"]:
-    include: "rules/mikado.smk"
+include: "rules/stringtie.smk"
+include: "rules/clean_assemblies.smk"
+include: "rules/clean_ref.smk"
 
 ##### target rules #####
 
