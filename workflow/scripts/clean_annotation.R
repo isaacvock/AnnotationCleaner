@@ -437,9 +437,6 @@ clean_annotation <- function(EF_to_TF,
                              debug = FALSE){
   
   
-  if(is.null(exon_check) & preserve_genes){
-    stop("Need to provide exon_check if preserve_genes is TRUE!")
-  }
   
   if(debug){
     browser()
