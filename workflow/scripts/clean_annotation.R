@@ -728,6 +728,8 @@ if(opt$bins == ""){
 
 
 samps <- gsub("_exonbin.featureCounts", "", files)
+samps <- samps[!grepl(".summary$", samps)]
+samps <- unique(samps)
 
 # Create necessary combined table of all relevant quantifications
 # for all samples.
