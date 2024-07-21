@@ -101,8 +101,8 @@ if config["clean_only"]:
         shell:
             """
             chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -f {input.flatref} -b {input.cnts_exonbin} \
-            -u {input.cnts_intronbin} -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
+            {params.rscript} -r {input.ref} -f {input.flatref} \
+             -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
             """
 
 else:
