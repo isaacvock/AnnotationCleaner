@@ -526,12 +526,9 @@ clean_annotation <- function(EF_to_TF,
                                      1,
                                      max(exonic_part_number[preceded_by_sj]))) %>%
     ungroup() %>%
-    mutate(cannot_prune = case_when(
-      first_good > last_bin_b4_1st_sj ~ TRUE, # None of the 5' UTR exons pass filtering
-      is.infinite(first_good) ~ TRUE,
-      last_good < first_bin_after_last_sj ~ TRUE, # None of the 3' UTR exons pass filtering
-      .default = FALSE
-    )) %>%
+    mutate(cannot_prune = (first_good > last_bin_b4_1st_sj) |
+    (is.infinite(first_good)) |
+    (last_good < first_bin_after_last_sj)) %>%
     ungroup() %>%
     # Annotate which bins should be pruned
     mutate(prune = ((exonic_part_number < first_good) |
@@ -566,7 +563,24 @@ clean_annotation <- function(EF_to_TF,
     sapply(strings, function(x) {
       any(sapply(strings, function(y) {
         if(x != y) {
-          grepl(pattern = x, x = y)
+          vect1 <- strsplit(x, ",")
+          vect2 <- strsplit(y, ",")
+          start <- vect1[1]
+          end <- vect1[length(vect1)]
+          if(!(start %in% vect2)){
+            FALSE
+          }else if(!(end %in% vect2)){
+            FALSE
+          }else{
+            substart <- which(vect2 == start)
+            subend <- which(vect2 == end)
+            subvect2 <- vect2[substart:subend]
+            if(identical(x, subvect2)){
+              TRUE
+            }else{
+              FALSE
+            }
+          }
         } else {
           FALSE
         }
