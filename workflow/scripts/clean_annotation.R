@@ -792,7 +792,7 @@ for(i in seq_along(samps)){
     
   }else{
     
-    intronic_background  <- bind_rows(intronbins, intronbins_temp)
+    intronic_background  <- bind_rows(intronic_background, intronbins_temp)
     
   }
   
