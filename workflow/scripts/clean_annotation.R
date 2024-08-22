@@ -775,8 +775,6 @@ for(i in seq_along(samps)){
     
   }
 
-  exonbins <- exonbins %>%
-    dplyr::select(sample, GF, all_EF, reads, mutrate)
   
   ### Intron bin quantification
   
@@ -806,13 +804,17 @@ for(i in seq_along(samps)){
     intronic_background  <- bind_rows(intronic_background, intronbins_temp)
     
   }
-  
-  intronic_background <- intronic_background %>%
-    dplyr::mutate(intron_length = length) %>%
-    dplyr::select(sample, GF, all_IF, reads, mutrate, intron_length)
-  
+
   
 }
+
+exonbins <- exonbins %>%
+  dplyr::select(sample, GF, all_EF, reads, mutrate)
+
+intronic_background <- intronic_background %>%
+  dplyr::mutate(intron_length = length) %>%
+  dplyr::select(sample, GF, all_IF, reads, mutrate, intron_length)
+
 
 ### Make dataframes to pass to pruner
 
