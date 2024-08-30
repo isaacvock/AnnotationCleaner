@@ -39,8 +39,8 @@ def get_target_input():
         target.append("results/final_annotation/final_annotation.gtf")
 
 
-    target.append(expand("results/quantify_intronic_coverage/{SID}_gene.featureCounts"), SID = SAMP_NAMES)
-    target.append(expand("results/quantify_intronic_coverage/{SID}_exonic.featureCounts"), SID = SAMP_NAMES)
+    target.append(expand("results/quantify_intronic_coverage/{SID}_gene.featureCounts", SID = SAMP_NAMES))
+    target.append(expand("results/quantify_intronic_coverage/{SID}_exonic.featureCounts", SID = SAMP_NAMES))
 
     return target
 
