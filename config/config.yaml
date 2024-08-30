@@ -39,7 +39,7 @@ stringtie:
   use_reference: True # Use reference as a guide
   use_taco: False # Use TACO to merge assemblies (not sure this will work currently)
   use_merge: True # Use Stringtie-merge to merge assemblies
-  clean_then_merge: False # clean separate assemblies and then merged; otherwise, merged assembly is cleaned (latter not currently implemented)
+  clean_then_merge: False # clean separate assemblies and then merged; otherwise, merged assembly is cleaned
 
 
 # Parameters to pass to Stringtie 
