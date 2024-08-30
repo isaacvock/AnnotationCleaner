@@ -10,7 +10,7 @@ if config["stringtie"]["use_reference"]:
             "logs/separate_stringties/{sample}.log"
         threads: 20
         params:
-            extra=config["stringtie_params"],
+            extra=ST_STRAND + config["stringtie_params"],
             guide=config["reference_gtf"],
         conda:
             "../envs/stringtie.yaml",
@@ -30,7 +30,7 @@ else:
             "logs/separate_stringties/{sample}.log"
         threads: 20
         params:
-            extra=config["stringtie_params"],
+            extra=ST_STRAND + config["stringtie_params"],
         conda:
             "../envs/stringtie.yaml",
         shell:

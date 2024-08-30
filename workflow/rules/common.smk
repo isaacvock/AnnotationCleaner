@@ -58,6 +58,20 @@ def get_target_input():
 #     SERIALISE_THREADS = 1
 
 
+### StringTie helpers
+if config["strandedness"] == "yes":
+
+    ST_STRAND = "--fr"
+
+elif config["strandedness"] == "reverse":
+
+    ST_STRAND = "--rf"
+
+else:
+
+    ST_STRAND = ""
+
+
 ### FeatureCounts helpers
 
 # Strandedness inference
@@ -90,7 +104,10 @@ else:
 
 FC_EXTRA_IB = FC_EXTRA + " -g intron_id -t intronic_part"
 FC_EXTRA_EB = FC_EXTRA + " -g exon_id -t exonic_part"
+FC_EXTRA_GENE = FC_EXTRA + "-g gene_id -t transcript"
 
+NONOVERLAP = config["feature_counts_exon_nonoverlap"]
+FC_EXTRA_EXON = FC_EXTRA + "-g gene_id --nonOverlap " + NONOVERLAP
 
 
 
