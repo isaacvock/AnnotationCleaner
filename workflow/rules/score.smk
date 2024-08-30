@@ -15,7 +15,7 @@ rule quantify_finalGTF_exonic:
     threads: 20
     params:
         strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
-        extra=FC_EXTRA_EB,
+        extra=FC_EXTRA_EXON,
     log:
         "logs/quantify_finalGTF_exonic/{sample}.log",
     wrapper:
@@ -39,7 +39,7 @@ rule quantify_finalGTF_gene:
     threads: 20
     params:
         strand=STRANDEDNESS,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
-        extra=FC_EXTRA_EB,
+        extra=FC_EXTRA_GENE,
     log:
         "logs/quantify_finalGTF_gene/{sample}.log",
     wrapper:
