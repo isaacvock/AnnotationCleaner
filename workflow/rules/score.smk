@@ -2,7 +2,7 @@ rule quantify_finalGTF_exonic:
     input:
         # list of sam or bam files
         samples="results/sorted/sorted_{sample}.bam",
-        annotation=get_intron_input,
+        annotation=score_input,
         # optional input
         #chr_names="",           # implicitly sets the -A flag
         #fasta="genome.fasta"    # implicitly sets the -G flag
@@ -26,7 +26,7 @@ rule quantify_finalGTF_gene:
     input:
         # list of sam or bam files
         samples="results/sorted/sorted_{sample}.bam",
-        annotation=get_intron_input,
+        annotation=score_input,
         # optional input
         #chr_names="",           # implicitly sets the -A flag
         #fasta="genome.fasta"    # implicitly sets the -G flag
