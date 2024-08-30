@@ -134,7 +134,7 @@ rule sort:
 
 if config["clean_only"]:
 
-    score_input = config["reference_gtf"]
+    score_input = "results/clean_reference/cleaned_reference.gtf"
 
 else:
 
