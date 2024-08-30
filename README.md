@@ -1,43 +1,53 @@
 # AnnotationCleaner
 
 ## Introduction
-AnnotationCleaner is designed to automate the construction of ab initio assembled transcriptomes using several different tools. This will allow you to test the impact of assembler choice on downstream applications. Currently, the assemblers implemented are:
-
-1. [Scallop](https://github.com/Kingsford-Group/scallop) + [TACO](https://tacorna.github.io/)
-2. [Stringtie + Stringtie-merge](https://github.com/gpertea/stringtie)
-3. Stringtie + TACO
-
-Other tools that may be implemented in the future are:
-
-1. [Mikado](https://github.com/EI-CoreBioinformatics/mikado)
-2. [Cufflinks](http://cole-trapnell-lab.github.io/cufflinks/) + [Cuffmerge](http://cole-trapnell-lab.github.io/cufflinks/cuffmerge/)
-3. Cufflinks + TACO
-4. [PsiCLASS](https://github.com/splicebox/PsiCLASS)
-
-Note, TACO is a tool for merging runs of Scallop, Stringtie, or simliar single-sample assemblers on multiple samples. Mikado is a tool combines transcriptomes from multiple different assemblers to infer a consensus transcriptome.
+AnnotationCleaner is designed to automate the construction of ab initio assembled transcriptomes. It also trims transcript ends to correct for overextensions common in assembled transcriptomes, and flags likely spurious or very low abundance isoforms in the final assembled annotation. These latter two functionalities can also be performed on a provided annotation, without running StringTie (the only assembler currently used by AnnotationCleaner).
 
 ## Quickstart
 
-Below are abriged instructions for running AnnotationCleaner, meant specifically for those comfortable with adopting new bioinformatic tools and who have experience with the key dependencies of AnnotationCleaner (i.e., the assembler tools listed above and Snakemake). The rest of the README goes into greater detail about each step of this process.
+All of the steps necessary to deploy AnnotationCleaner are discussed in great detail below. Here, I will present a super succinct description of what needs to be done, with all necessary code included:
 
-Steps to run AnnotationCleaner:
+``` bash
+### 
+# PREREQUISITES: INSTALL MAMBA AND GIT (only need to do once per system)
+###
 
-0. Acquire bam files and a reference annotation (gtf file). These are the necessary input for Annotation Cleaner
-1. Install [Git](https://git-scm.com/downloads), [Snakemake](https://snakemake.readthedocs.io/en/stable/), and [Mamba](https://mamba.readthedocs.io/en/latest/) (or [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)).
-2. Install Snakedeploy and deploy AnnotationCleaner (for example, follow instructions for deploying workflows on the [Snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=cbg-ethz/V-pipe))
-   * Create a directory that you want to run AnnotationCleaner in, then run `snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main` from inside that directory.
-3. Edit config.yaml file, providing paths to bam files and reference annotation, as well as any optional parameters to the assembly tools used.
-4. Run with a call to Snakemake that might look something like: `snakemake --cores all --use-conda`. `--use-conda` will automate installation of all other AnnotationCleaner dependencies, and is thus highly recommended. Otherwise, all dependencies will have to be installed manually and made available for AnnotationCleaner to call.
+# CREATE ENVIRONMENT (only need to do once per system)
+mamba create -c conda-forge -c bioconda --name deploy_snakemake snakemake snakedeploy
 
-## Running 
+# CREATE AND NAVIGATE TO WORKING DIRECTORY (only need to do once per dataset)
+mkdir path/to/working/directory
+cd path/to/working/directory
 
-### Step 1: Install basic dependencies
+# DEPLOY PIPELINE TO YOUR WORKING DIRECTORY (only need to do once per dataset)
+conda activate deploy_snakemake
+snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main
 
-AnnotationCleaner uses the workflow manager [Snakemake](https://snakemake.readthedocs.io/en/stable/). The minimal version of Snakemake is techncially compatible with Windows, Mac, and Linux OS, but several of the software dependencies (e.g., HTSeq) are only Mac and Linux compatible. If you are a Windows user like me, don't sweat it, I would suggest looking to the Windows subsystem for linux which can be easily installed (assuming you are running Windows 10 version 2004 or higher).
+###
+# EDIT CONFIG FILE (need to do once for each new dataset)
+###
 
-In addition, you will need Git installed on your system so that you can clone this repository. Head to [this link](https://git-scm.com/downloads) for installation instructions if you don't already have Git.
+# RUN PIPELINE
 
-Finally, installation of all other dependencies is automated with [Conda](https://docs.conda.io/projects/conda/en/latest/index.html)/[Mamba](https://mamba.readthedocs.io/en/latest/). Conda is a package/environment management system. Mamba is a new, faster, C++ reimplementation of conda. While often associated with Python package management, lots of software, including all of the TimeLapse pipeline dependencies, can be installed with these package managers. They have pretty much the same syntax and can do the same things, so **I highly suggest using Mamba in place of Conda whenever possible**. 
+# See [here](https://snakemake.readthedocs.io/en/stable/executing/cli.html) for details on all of the configurable parameters
+snakemake --cores all --use-conda --rerun-triggers mtime --keep-going
+```
+
+## Detailed instructions
+
+There are 4 steps required to get up and running with fastq2EZbakR
+
+1. [Install conda (or mamba) on your system](#conda). This is the package manager that THE_Aligner uses to make setting up the necessary dependencies a breeze.
+1. [Deploy workflow](#deploy) with [Snakedeploy](https://snakedeploy.readthedocs.io/en/latest/index.html)
+1. [Edit the config file](#config) (located in config/ directory of deployed/cloned repo) to your liking
+1. [Run it!](#run)
+
+The remaining documentation on this page will describe each of these steps in greater detail and point you to additional documentation that might be useful.
+
+### Install conda (or mamba)<a name="conda"></a>
+[Conda](https://docs.conda.io/projects/conda/en/latest/index.html) is a package/environment management system. [Mamba](https://mamba.readthedocs.io/en/latest/) is a newer, faster, C++ reimplementation of conda. While often associated with Python package management, lots of software, including all of the fastq2EZbakR pipeline dependencies, can be installed with these package managers. They have pretty much the same syntax and can do the same things, so I highly suggest using Mamba in place of Conda whenever possible. 
+
+**NOTE**: As of version 22.11 of conda, you can now use the mamba solver to get the speed advantages of Mamba. Thus, another option is to follow the steps outlined [here](https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community) to use this solver in your conda installation. If you do this though, you will need to add `--conda-frontend conda` to your calls to `snakemake`, as Snakemake throws an error if it can't find `mamba`.
 
 One way to install Mamba is to first install Conda following the instructions at [this link](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html). Then you can call:
 
@@ -71,18 +81,16 @@ Do you wish the installer to preprend the install location to PATH ...? [yes|no]
 ```
 answer with `yes`. Prepending to PATH means that after closing your current terminal and opening a new one, you can call the `mamba` (or `conda`) command to install software packages and create isolated environments. We'll be using this in the next step.
 
-AnnotationCleaner requires bam files as input. These bam files can be obtained via alignment of fastq files with any of a number of aligners. [STAR](https://github.com/alexdobin/STAR) and [HISAT2](https://github.com/DaehwanKimLab/hisat2) are commonly suggested for this task.
+### Deploy workflow<a name="deploy"></a>
 
-### Step 2: Deploy workflow
-
-This workflow can easily be deployed for your particular usecase with [Snakedeploy](https://snakedeploy.readthedocs.io/en/latest/index.html). To get started with Snakedeploy, you first need to create a simple conda environment with Snakemake and Snakedeploy:
+Snakemake pipelines can be deployed using the tool [Snakedeploy](https://snakedeploy.readthedocs.io/en/latest/index.html). This is often more convenient than cloning the full repository locally. To get started with Snakedeploy, you first need to create a simple conda environment with Snakemake and Snakedeploy:
 
 
 ``` bash
 mamba create -c conda-forge -c bioconda --name deploy_snakemake snakemake snakedeploy
 ```
 
-Next, create a directory that you want to run AnnotationCleaner in (I'll refer to it as `workdir`) and move into it:
+Next, create a directory that you want to run fastq2EZbakR in (I'll refer to it as `workdir`) and move into it:
 ``` bash
 mkdir workdir
 cd workdir
@@ -95,65 +103,86 @@ conda activate deploy_snakemake
 snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git . --branch main
 ```
 
-`snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git` copies the content of the `config` directory in the AnnotationCleaner Github repo into the directoy specified (`.`, which means current directory, i.e., `workdir` in this example). It also creates a directory called `workflow` that contains a singular Snakefile that instructs Snakemake to use the workflow hosted on the main branch (that is what `--branch main` determines) of the AnnotationCleaner Github repo.
+`snakedeploy deploy-workflow https://github.com/isaacvock/AnnotationCleaner.git` copies the content of the `config` directory in fastq2EZbakR's Github repo into the directoy specified (`.`, which means current directory, i.e., `workdir` in this example). It also creates a directory called `workflow` that contains a singular Snakefile that instructs Snakemake to use the workflow hosted on the main branch (that is what `--branch main` determines) of fastq2EZbakR's Github repo. `--branch main` can be replaced with any other existing branch.
 
-### Step 3: Update config
+### Edit the config file<a name="config"></a>
 
-In the `config/` directory you will find a file named `config.yaml`. If you open it in a text editor, you will see several parameters which you can alter to your heart's content. The first parameter that you have to set is at the top of the file:
+In the `config/` directory you will find a file named `config.yaml`. If you open it in a text editor, you will see several parameters which you can alter to your heart's content. See below for all configurable parameters.
 
-``` yaml
-samples:
-  Rep_1: data/bam/WT_replicate_1.bam
-  Rep_2: data/bam/WT_replicate_2.bam
-  Rep_3: data/bam/WT_replicate_3.bam
-```
-`samples` is the list of sample IDs and paths to .bam files that you want to process. Delete the existing sample names and paths and add yours. The sample names in this example are `Rep_1`, `Rep_2`, and `Rep_3`. The `:` is necessary to distinguish the sample name from what follows, the path to the relevant bam file. Note, the path is NOT an absolute path, it is relative to the directory that you deployed to (i.e., `workdir` in this example). Thus, in this example, the bam files are located in a directory called `samples` that is inside of a directory called `data` located in `workdir`. Your data can be wherever you want it to be, but it might be easiest if you put it in a `data` directory inside the AnnotationCleaner directory as in this example. 
-
-As another example, imagine that the `data` directory was in the directory that contains `workdir`, and that there was no `samples` subdirectory inside of `data`. In that case, the paths would look something like this:
-
-``` yaml
-samples:
-  WT_1: ../data/WT_replicate_1.bam
-  WT_2: ../data/WT_replicate_2.bam
-  WT_ctl: ../data/WT_nos4U.bam
-  KO_1: ../data/KO_replicate_1.bam
-  KO_2: ../data/KO_replicate_2.bam
-  KO_ctl: ../data/KO_nos4U.bam
-```
-where `../` means navigate up one directory. 
-
-The second parameter you will have to edit is `reference_gtf`, which is an annotation file that will be used to map the assembled transcripts to previously annotated transcripts and genes. The gtf should be from the same genome that you used for alignment of fastq files. 
-
-The rest of the parameters in the config decide which assemblers will be used, and tunes their behavior. For example, as shown in the example config, you will want to specify the strandedness of your library in the `scallop_params` and `stringtie_params` parameters. 
-
-For Scallop, the options of what you can specify for the strandedness (`--library_type`)are `unstranded`, `first`, and `second`. `unstranded` means that the library was not stranded. `first` means that the first read in a read pair is the reverse complement of the original RNA sequence (and the second read is the original RNA sequence). `second` means that the first read in a read pair is the original RNA sequence.
-
-For Stringtie, the options of what you can specify for the strandedness are `--rf` (equivalent of `library_type first` in Scallop) and `fr` (equivalent of `library_type second` in Scallop).
-
-See the documentation for relevant tools to get information about all other parameters that can be set.
-
-### Step 4: Run
+### Run it!<a name="run"></a>
 
 Once steps 1-3 are complete, AnnotationCleaner can be run from the directory you deployed the workflow to as follows:
 
 ``` bash
-snakemake --cores all --use-conda
+snakemake --cores all --use-conda --rerun-triggers mtime
 ```
-There are **A LOT** of adjustable parameters that you can play with when running a Snakemake pipeline. I will point you to the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html) 
+
+The `--rerun-triggers mtime` addition is a suggestion that will prevent the pipline from rerunning certain steps who's output already exists and who's input has not been modified since the last run. See [this post](https://github.com/snakemake/snakemake/issues/1694) for a discussion as to why this is necessary as of Snakemake version 7.8.0.
+
+Some additional parameters that you might find useful include:
+
+* `--show-failed-logs`: When you include this, the log files for any rules that fail will be print to the screen. This can make it easier to figure out which steps went wrong and to quickly check the error messages.
+* `--keep-going`: Including this will make Snakemake continue running independent rules even if one rule fails. Snakemake doesn't do this by default because the idea is if something went wrong in a rule, there could be upstream problems lurking that will plague all downstream rules. The `--keep-going` option can be useful in pipelines like bam2bakR though, where there are two independent rules at the end of the pipeline (makecB and maketdf) that don't need each other to complete successfully for the other to complete, and where one of the rules (maketdf) can fail due to a number of reasons (not enough available RAM, IGVtools bugs, etc.) that will not impact the other rule (makecB).
+
+There are **A LOT** of adjustable parameters that you can play with when running a Snakemake pipeline. I would point you to the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executing/cli.html) 
 for the details on everything you can change when running the pipeline.
 
 
-## Output
+## Config file parameters
 
-In the `results` directory, you will find the following sub-directories generated by AnnotationCleaner (if you ran both Stringtie and Scallop; only the directories related to the relevant tool will be present if you ran a single one of these):
+The first parameter that you have to set is at the top of the file:
 
-1. `sorted`: Sorted bam files
-2. `separate_scallops`: Scallop gtfs created for each individual sample passed in
-3. `scallop_taco`: Output of `taco_run` using all Scallop gtfs as input
-4. `scallop_taco_refcomp`: Output of `taco_refcomp` using assembly.gtf present in `scallop_taco` and the provided reference gtf
-5. `separate_stringties`: Stringtie gtfs created for each individual sample passed in
-6. `stringtie_taco`: Output of `taco_run` using all Stringtie gtfs as input
-7. `stringtie_merge`: Output of `stringtie --merge` using all Stringtie gtfs as input
-8. `stringtie_taco_refcomp`: Output of `taco_refcomp` using assembly.gtf present in `stringtie_taco` and the provided reference gtf
-9. `ignorethisdirectory`: Directory that had to get created as a cheap hack for Snakemake to run TACO with Scallop output (problem is Snakemake needs some output for every rule, which in TACO's case should be a directory, but specifying this output to Snakemake causes Snakemake to create the directory prior to TACO running, which breaks TACO). Contains a singular empty text file
-10. `ignorethisdirectory_stringtie`: Directory that had to get created as a cheap hack for Snakemake to run TACO with Stringtie output. Contains a singular empty text file
+``` yaml
+samples:
+    WT_1: data/bams/WT_1.bam
+    WT_2: data/bams/WT_2.bam
+    KO_1: data/bams/KO_1.bam
+    KO_2: data/bams/KO_2.bam
+```
+
+`samples` is the set of \[sample ID\]:\[path\] pairs, where the paths are to bam files you would like to use to assemble and/or trim annotations.  Delete the existing sample names and paths and add yours. The path can either be relative to the directory that you deployed to (i.e., `workdir` in this example), or an absolute path. In this example, the bam files are located in a directory called `bams` that is inside of a directory called `data` located in `workdir`. 
+
+The other crucial parameters are:
+
+1. `reference_gtf`: Path to either a reference annotation that can be used as a guide for transcriptome assembly with StringTie, or an annotation that would like to trim.
+2. `clean_only`: If True, won't run StringTie and will just trim the provided `reference_gtf` and flag isoforms that are likely spurious or otherwise poorly supported by the provided bam files.
+3. `flat_ref`: Path to DEXseq flattened reference. Will get created by the pipeline if it doesn't already exist.
+4. `strandedness`: Strandedness of library. `"reverse"` means that the second read in a read pair represents sequence of the original RNA (read 1 would represent its reverse complement sequence in this case). `"yes"` means that the first read represents the original RNA sequence. `"no"` means that the library was unstranded.
+5. `PE`: If True, indicates that the library is paired-end.
+
+The next set of parameters specific steps of the pipeline. The first is a collection of parameters to specify how StringTie assembly and trimming/cleaning should unfold. These are currently pretty inflexible and should probably be kept as the defaults:
+
+```yaml
+stringtie: 
+  use_stringtie: True
+  use_reference: True
+  use_taco: False
+  use_merge: True
+  clean_then_merge: False
+```
+
+`use_stringtie`: currenlty uas to be True, as there are no other assemblers implemented.
+
+`use_reference`: True if you want to use `reference_gtf` as a guide for assembly
+
+`use_taco`: Use TACO to merge separate stringtie annotations. Not sure that this will currently work, so best to just use stringtie-merge for merging.
+
+`use_merge`: Use stringtie-merge for merging.
+
+`clean_then_merge`: If True, then separate assemblies are cleaned and then merged. This means that the "problematic" tag will not be included in the final annotation, which flags isoforms that may be spurious assembly artifacts. Thus, best to keep this as False for now.
+
+The remanining parameters are:
+
+1. `stringtie_params`: Parameters to pass to `stringtie`. See its [docs](https://github.com/gpertea/stringtie) for details.
+2. `stringtie_merge_params`: Parameters to pass to `stringtie-merge`.
+3. `stringtie_taco_params`: Parameters to pass to TACO merge function.
+4. `stringtie_refcomp_params`: Parameters to pass to TACO refcomp.
+5. `samtools_params`: Parameters to pass to `samtools sort`
+6. `pruning_assembly_params`: Parameters to pass to custom R script for stringtie assembly annotation trimming. See config for details.
+7. `pruning_reference_params`: Parameters to pass to custom R script for reference trimming. See config for details
+8. `splitting_bins_params`: Parameters to pass to custom R script to split up exonic bins into equal sizes. See config for details
+9. `feature_counts_params`: Parameters to pass to all featureCounts steps.
+10. `feature_counts_exon_nonoverlap`: How many non-overlapping bases should be allowed for a read to be called purely exonic? See config for details.
+11. `filter_params`: Parameters to pass to custom R script for filtering strandless transcripts from StringTie assembly. Currently there are no parameters passed to this script.
+
+
