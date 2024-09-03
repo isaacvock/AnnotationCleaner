@@ -433,7 +433,7 @@ clean_annotation <- function(EF_to_TF,
                              flat_annotation,
                              gtf,
                              output_path,
-                             exon_detail_out = "./results/clean_reference/exon_details.csv",
+                             dir,
                              exon_check = NULL,
                              debug = FALSE){
   
@@ -540,7 +540,7 @@ clean_annotation <- function(EF_to_TF,
              is.infinite(unique(first_good))) # Catch transcripts with bad internal bins or no good bins at all
   
   # Save this useful table with details regaring all exons and their prunability
-  write_csv(EF_test, file = exon_detail_out)
+  write_csv(EF_test, file = paste0(dir, "/exon_details.csv"))
   
   EF_test2 %>%
     group_by(GF, all_XF) %>%
@@ -885,4 +885,5 @@ clean_annotation(EF_to_TF = EF_to_TF,
                  flat_annotation = flat_annotation,
                  gtf = gtf,
                  exon_check = exon_check,
+                 dir = dir,
                  output_path = output_path)
