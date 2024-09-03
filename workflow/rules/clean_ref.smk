@@ -1,15 +1,16 @@
 rule flatten_reference:
     input:
-        gtf=config["reference_gtf"]
+        gtf=config["reference_gtf"],
     output:
         flatgtf="results/raw_flattened_reference/flat_genome.gtf",
     log:
         "logs/flatten_reference/flatten.log",
-    conda: 
+    conda:
         "../envs/dexseq.yaml"
     threads: 1
     script:
         "../scripts/dexseq_prepare_annotation.py"
+
 
 rule smaller_bins_reference:
     input:
@@ -17,10 +18,10 @@ rule smaller_bins_reference:
     output:
         higherres=config["flat_ref"],
     log:
-        "logs/smaller_bins_reference/smaller_bins.log"
+        "logs/smaller_bins_reference/smaller_bins.log",
     params:
         rscript=workflow.source_path("../scripts/split_bins.R"),
-        extra=config["splitting_bins_params"]
+        extra=config["splitting_bins_params"],
     conda:
         "../envs/cleaning.yaml"
     threads: 6
@@ -55,6 +56,7 @@ rule quantify_reference_exonbin:
     wrapper:
         "v3.0.2/bio/subread/featurecounts"
 
+
 # Quantify intronic bins
 rule quantify_reference_intronbin:
     input:
@@ -86,17 +88,23 @@ if config["clean_only"]:
         input:
             ref=config["reference_gtf"],
             flatref=config["flat_ref"],
-            cnts_exonbin=expand("results/quantify_reference/{SID}_exonbin.featureCounts", SID = SAMP_NAMES),
-            cnts_intronbin=expand("results/quantify_reference/{SID}_intronbin.featureCounts", SID = SAMP_NAMES),
+            cnts_exonbin=expand(
+                "results/quantify_reference/{SID}_exonbin.featureCounts",
+                SID=SAMP_NAMES,
+            ),
+            cnts_intronbin=expand(
+                "results/quantify_reference/{SID}_intronbin.featureCounts",
+                SID=SAMP_NAMES,
+            ),
         output:
-            clean_ref="results/clean_reference/cleaned_reference.gtf"
+            clean_ref="results/clean_reference/cleaned_reference.gtf",
         params:
             rscript=workflow.source_path("../scripts/clean_annotation.R"),
-            extra=config["pruning_reference_params"]
+            extra=config["pruning_reference_params"],
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_reference/clean_reference.log"
+            "logs/clean_reference/clean_reference.log",
         threads: 1
         shell:
             """
@@ -112,16 +120,16 @@ else:
             ref=config["reference_gtf"],
             flatref=config["flat_ref"],
             cnts_exonbin="results/quantify_reference/{sample}_exonbin.featureCounts",
-            cnts_intronbin="results/quantify_reference/{sample}_intronbin.featureCounts"
+            cnts_intronbin="results/quantify_reference/{sample}_intronbin.featureCounts",
         output:
-            clean_ref="results/clean_reference/{sample}.gtf"
+            clean_ref="results/clean_reference/{sample}.gtf",
         params:
             rscript=workflow.source_path("../scripts/clean_annotation.R"),
-            extra=config["pruning_reference_params"]
+            extra=config["pruning_reference_params"],
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_reference/{sample}.log"
+            "logs/clean_reference/{sample}.log",
         threads: 1
         shell:
             """

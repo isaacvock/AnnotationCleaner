@@ -44,4 +44,3 @@ rule quantify_finalGTF_gene:
         "logs/quantify_finalGTF_gene/{sample}.log",
     wrapper:
         "v3.0.2/bio/subread/featurecounts"
-

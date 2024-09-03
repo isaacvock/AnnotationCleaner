@@ -102,7 +102,7 @@ feature_counts_params: ""
   # by featureCounts, so sometimes worth increasing this a 
   # bit from "0" to avoid calling a significant fraction of
   # truly exonic reads intronic.
-feature_counts_exon_nonverlap: "5"
+feature_counts_exon_nonoverlap: "5"
 
 
 ##### ANNOTATION FILTERING RSCRIPT PARAMETERS

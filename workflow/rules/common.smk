@@ -2,45 +2,53 @@ import glob
 
 # Sample names, used in multiple places to help Snakemake infer wildcards
 # and to expand list of bam files
-SAMP_NAMES = list(config['samples'].keys())
+SAMP_NAMES = list(config["samples"].keys())
+
 
 # Retrieve input bam files for first steps
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
 
+
 # List of paths to Stringtie outputs for Mikado
 if config["stringtie"]["use_stringtie"]:
-    STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES)    
+    STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
+
 
 # Target rule (so final output to be looked for)
 def get_target_input():
-
     target = []
 
     if config["clean_only"]:
-
         target.append("results/clean_reference/cleaned_reference.gtf")
 
     else:
-
         if config["stringtie"]["use_stringtie"]:
-
-            target.append(expand("results/separate_stringties/{SID}.gtf", SID = SAMP_NAMES))
+            target.append(
+                expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
+            )
 
         if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
-
             target.append("results/ignorethisdirectory_stringtie/success.txt")
 
         if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_merge"]:
-        
             target.append("results/stringtie_merge/stringtie_merged.gtf")
 
         # Filtered annotation
         target.append("results/final_annotation/final_annotation.gtf")
 
-
-    target.append(expand("results/quantify_intronic_coverage/{SID}_gene.featureCounts", SID = SAMP_NAMES))
-    target.append(expand("results/quantify_intronic_coverage/{SID}_exonic.featureCounts", SID = SAMP_NAMES))
+    target.append(
+        expand(
+            "results/quantify_intronic_coverage/{SID}_gene.featureCounts",
+            SID=SAMP_NAMES,
+        )
+    )
+    target.append(
+        expand(
+            "results/quantify_intronic_coverage/{SID}_exonic.featureCounts",
+            SID=SAMP_NAMES,
+        )
+    )
 
     return target
 
@@ -64,15 +72,12 @@ def get_target_input():
 
 ### StringTie helpers
 if config["strandedness"] == "yes":
-
     ST_STRAND = "--fr"
 
 elif config["strandedness"] == "reverse":
-
     ST_STRAND = "--rf"
 
 else:
-
     ST_STRAND = ""
 
 
@@ -80,15 +85,12 @@ else:
 
 # Strandedness inference
 if config["strandedness"] == "yes":
-
     STRANDEDNESS = 1
 
 elif config["strandedness"] == "reverse":
-
     STRANDEDNESS = 2
 
 else:
-
     STRANDEDNESS = 0
 
 
@@ -97,13 +99,10 @@ else:
 FC_EXTRA = config["feature_counts_params"]
 
 if config["PE"]:
-
     FC_EXTRA = FC_EXTRA + " -O -f -p"
 
 else:
-
     FC_EXTRA = FC_EXTRA + " -O -f"
-
 
 
 FC_EXTRA_IB = FC_EXTRA + " -g intron_id -t intronic_part"
@@ -114,16 +113,14 @@ NONOVERLAP = config["feature_counts_exon_nonoverlap"]
 FC_EXTRA_EXON = FC_EXTRA + "-g gene_id --nonOverlap " + NONOVERLAP
 
 
-
-
 ### Sort bam files
 rule sort:
     input:
         get_input_bams,
     output:
-        "results/sorted/sorted_{sample}.bam"
+        "results/sorted/sorted_{sample}.bam",
     log:
-        "logs/sort/{sample}.log"
+        "logs/sort/{sample}.log",
     threads: 8
     params:
         extra=config["samtools_params"],
@@ -132,14 +129,11 @@ rule sort:
     script:
         "../scripts/samtools_sort.py"
 
+
 ### For intron fraction calculation
 
 if config["clean_only"]:
-
     score_input = "results/clean_reference/cleaned_reference.gtf"
 
 else:
-
     score_input = "results/final_annotation/final_annotation.gtf"
-
-

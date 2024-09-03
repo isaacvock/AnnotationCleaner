@@ -1,5 +1,3 @@
-
-
 from snakemake.utils import min_version
 
 ##### set minimum snakemake version #####
@@ -34,8 +32,10 @@ include: "rules/clean_assemblies.smk"
 include: "rules/clean_ref.smk"
 include: "rules/score.smk"
 
+
 ##### target rules #####
+
 
 rule all:
     input:
-        get_target_input()
+        get_target_input(),

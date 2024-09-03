@@ -1,19 +1,16 @@
-
-
-
 if config["stringtie"]["clean_then_merge"]:
 
     rule remove_unstranded:
         input:
-            gtf="results/separate_stringties/{sample}.gtf"
+            gtf="results/separate_stringties/{sample}.gtf",
         output:
-            stranded="results/remove_unstranded/{sample}.gtf"
+            stranded="results/remove_unstranded/{sample}.gtf",
         log:
             "logs/remove_unstranded/{sample}.log",
         conda:
             "../envs/cleaning.yaml"
         params:
-            rscript=workflow.source_path("../scripts/remove_unstranded.R")
+            rscript=workflow.source_path("../scripts/remove_unstranded.R"),
         threads: 1
         shell:
             """
@@ -24,12 +21,12 @@ if config["stringtie"]["clean_then_merge"]:
     # DEXSeq flatten individual StringTie assemblies
     rule flatten_assembly:
         input:
-            gtf="results/remove_unstranded/{sample}.gtf"
+            gtf="results/remove_unstranded/{sample}.gtf",
         output:
             flatgtf="results/raw_flattened_assembly/{sample}_flat_genome.gtf",
         log:
             "logs/flatten_assembly/{sample}.log",
-        conda: 
+        conda:
             "../envs/dexseq.yaml"
         threads: 1
         script:
@@ -42,10 +39,10 @@ if config["stringtie"]["clean_then_merge"]:
         output:
             higherres="results/flattened_assembly/{sample}_flat_genome_binID.gtf",
         log:
-            "logs/smaller_bins_assembly/{sample}.log"
+            "logs/smaller_bins_assembly/{sample}.log",
         params:
             rscript=workflow.source_path("../scripts/split_bins.R"),
-            extra=config["splitting_bins_params"]
+            extra=config["splitting_bins_params"],
         conda:
             "../envs/cleaning.yaml"
         threads: 6
@@ -111,14 +108,14 @@ if config["stringtie"]["clean_then_merge"]:
             cnts_exonbin="results/quantify_assembly/{sample}_exonbin.featureCounts",
             cnts_intronbin="results/quantify_assembly/{sample}_intronbin.featureCounts",
         output:
-            clean_ref="results/clean_assembly/{sample}.gtf"
+            clean_ref="results/clean_assembly/{sample}.gtf",
         params:
             rscript=workflow.source_path("../scripts/clean_annotation.R"),
-            extra=config["pruning_assembly_params"]
+            extra=config["pruning_assembly_params"],
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_assembly/{sample}.log"
+            "logs/clean_assembly/{sample}.log",
         threads: 1
         shell:
             """
@@ -130,19 +127,19 @@ if config["stringtie"]["clean_then_merge"]:
 else:
 
     rule remove_unstranded:
-            input:
-                gtf="results/stringtie_merge/stringtie_merged.gtf"
-            output:
-                stranded="results/remove_unstranded/stringtie_merged.gtf"
-            log:
-                "logs/remove_unstranded/{sample}.log",
-            conda:
-                "../envs/cleaning.yaml"
-            params:
-                rscript=workflow.source_path("../scripts/remove_unstranded.R")
-            threads: 1
-            shell:
-                """
+        input:
+            gtf="results/stringtie_merge/stringtie_merged.gtf",
+        output:
+            stranded="results/remove_unstranded/stringtie_merged.gtf",
+        log:
+            "logs/remove_unstranded/{sample}.log",
+        conda:
+            "../envs/cleaning.yaml"
+        params:
+            rscript=workflow.source_path("../scripts/remove_unstranded.R"),
+        threads: 1
+        shell:
+            """
                 chmod +x {params.rscript}
                 {params.rscript} -i {input.gtf} -o {output.stranded} 1> {log} 2>&1
                 """
@@ -150,12 +147,12 @@ else:
     # DEXSeq flatten merged StringTie assembly
     rule flatten_assembly:
         input:
-            gtf="results/remove_unstranded/stringtie_merged.gtf"
+            gtf="results/remove_unstranded/stringtie_merged.gtf",
         output:
             flatgtf="results/raw_flattened_assembly/flat_genome.gtf",
         log:
             "logs/flatten_assembly/flatten.log",
-        conda: 
+        conda:
             "../envs/dexseq.yaml"
         threads: 1
         script:
@@ -168,10 +165,10 @@ else:
         output:
             higherres="results/flattened_assembly/flat_genome_binID.gtf",
         log:
-            "logs/smaller_bins_assembly/{sample}.log"
+            "logs/smaller_bins_assembly/{sample}.log",
         params:
             rscript=workflow.source_path("../scripts/split_bins.R"),
-            extra=config["splitting_bins_params"]
+            extra=config["splitting_bins_params"],
         conda:
             "../envs/cleaning.yaml"
         threads: 6
@@ -230,22 +227,27 @@ else:
             "v3.0.2/bio/subread/featurecounts"
 
     # Clean StringTie assemblies with custom R script
-        # I am imagining a parameter d that if set, loads sets of csvs as I normally do
+    # I am imagining a parameter d that if set, loads sets of csvs as I normally do
     rule stringtie_clean_assembly:
         input:
             ref="results/remove_unstranded/stringtie_merged.gtf",
             flatref="results/flattened_assembly/flat_genome_binID.gtf",
-            cnts_exonbin=expand("results/quantify_assembly/{SID}_exonbin.featureCounts", SID = SAMP_NAMES),
-            cnts_intronbin=expand("results/quantify_assembly/{SID}_intronbin.featureCounts", SID = SAMP_NAMES)
+            cnts_exonbin=expand(
+                "results/quantify_assembly/{SID}_exonbin.featureCounts", SID=SAMP_NAMES
+            ),
+            cnts_intronbin=expand(
+                "results/quantify_assembly/{SID}_intronbin.featureCounts",
+                SID=SAMP_NAMES,
+            ),
         output:
-            clean_ref="results/clean_assembly/stringtie_merged.gtf"
+            clean_ref="results/clean_assembly/stringtie_merged.gtf",
         params:
             rscript=workflow.source_path("../scripts/clean_annotation.R"),
-            extra=config["pruning_assembly_params"]
+            extra=config["pruning_assembly_params"],
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_assembly/{sample}.log"
+            "logs/clean_assembly/{sample}.log",
         threads: 1
         shell:
             """
