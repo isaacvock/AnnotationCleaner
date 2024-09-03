@@ -165,7 +165,7 @@ else:
         output:
             higherres="results/flattened_assembly/flat_genome_binID.gtf",
         log:
-            "logs/smaller_bins_assembly/{sample}.log",
+            "logs/smaller_bins_assembly/smaller_bins_assembly.log",
         params:
             rscript=workflow.source_path("../scripts/split_bins.R"),
             extra=config["splitting_bins_params"],
