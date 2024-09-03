@@ -127,8 +127,10 @@ rule sort:
     threads: 8
     params:
         extra=config["samtools_params"],
-    wrapper:
-        "v4.3.0/bio/samtools/sort"
+    conda:
+        "../envs/sort.yaml"
+    script:
+        "../scripts/samtools_sort.py"
 
 ### For intron fraction calculation
 
