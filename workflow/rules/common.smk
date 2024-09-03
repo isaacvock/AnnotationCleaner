@@ -99,18 +99,18 @@ else:
 FC_EXTRA = config["feature_counts_params"]
 
 if config["PE"]:
-    FC_EXTRA = FC_EXTRA + " -O -f -p"
+    FC_EXTRA = FC_EXTRA + " -O -p"
 
 else:
-    FC_EXTRA = FC_EXTRA + " -O -f"
+    FC_EXTRA = FC_EXTRA + " -O"
 
 
-FC_EXTRA_IB = FC_EXTRA + " -g intron_id -t intronic_part"
-FC_EXTRA_EB = FC_EXTRA + " -g exon_id -t exonic_part"
-FC_EXTRA_GENE = FC_EXTRA + "-g gene_id -t transcript"
+FC_EXTRA_IB = FC_EXTRA + " -f -g intron_id -t intronic_part --extraAttributes gene_id"
+FC_EXTRA_EB = FC_EXTRA + " -f -g exon_id -t exonic_part --extraAttributes gene_id"
+FC_EXTRA_GENE = FC_EXTRA + " -g gene_id -t transcript"
 
 NONOVERLAP = config["feature_counts_exon_nonoverlap"]
-FC_EXTRA_EXON = FC_EXTRA + "-g gene_id --nonOverlap " + NONOVERLAP
+FC_EXTRA_EXON = FC_EXTRA + " -g gene_id --nonOverlap " + NONOVERLAP
 
 
 ### Sort bam files
