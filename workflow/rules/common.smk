@@ -72,10 +72,10 @@ def get_target_input():
 
 ### StringTie helpers
 if config["strandedness"] == "yes":
-    ST_STRAND = "--fr"
+    ST_STRAND = "--fr "
 
 elif config["strandedness"] == "reverse":
-    ST_STRAND = "--rf"
+    ST_STRAND = "--rf "
 
 else:
     ST_STRAND = ""
