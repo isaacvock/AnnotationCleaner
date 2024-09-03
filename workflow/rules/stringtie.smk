@@ -54,37 +54,6 @@ if config["stringtie"]["clean_then_merge"]:
         shell:
             "stringtie --merge -p {threads} -o {output} {params.extra} {input}"
 
-    rule stringtie_tacoinput:
-        input:
-            expand("results/clean_assembly/{SID}.gtf", SID=SAMP_NAMES),
-        output:
-            "results/stringtie_tacoinput/samplefile.txt",
-        threads: 1
-        run:
-            with open(output[0], "w") as file:
-                for path in input:
-                    file.write(path + "\n")
-
-    rule stringtie_taco:
-        input:
-            "results/stringtie_tacoinput/samplefile.txt",
-        output:
-            output="results/stringtie_taco/assembly.gtf",
-        log:
-            "logs/stringtie_taco/stringtie_taco.log",
-        threads: 10
-        params:
-            extra_taco=config["stringtie_taco_params"],
-            extra_refcomp=config["stringtie_refcomp_params"],
-            gtf=config["reference_gtf"],
-        conda:
-            "../envs/stringtie.yaml"
-        shell:
-            """
-            rm -fr ./results/stringtie_taco/
-            taco_run -o ./results/stringtie_taco/ -p {threads} {params.extra_taco} {input} 1> {log} 2>&1
-            taco_refcomp -o ./results/stringtie_taco_refcomp/ -r {params.gtf} -t ./results/stringtie_taco/assembly.gtf {params.extra_refcomp} 1> {log} 2>&1
-            """
 
     ### Remove small transcripts from including SpliceWiz novel targets
     rule filter_annotation:
