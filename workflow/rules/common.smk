@@ -128,7 +128,7 @@ rule sort:
     params:
         extra=config["samtools_params"],
     wrapper:
-        "v2.1.1/bio/samtools/sort"
+        "v4.3.0/bio/samtools/sort"
 
 ### For intron fraction calculation
 
