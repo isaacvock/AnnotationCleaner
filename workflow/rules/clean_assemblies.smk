@@ -132,7 +132,7 @@ else:
         output:
             stranded="results/remove_unstranded/stringtie_merged.gtf",
         log:
-            "logs/remove_unstranded/{sample}.log",
+            "logs/remove_unstranded/remove_unstranded.log",
         conda:
             "../envs/cleaning.yaml"
         params:
