@@ -247,7 +247,7 @@ else:
         conda:
             "../envs/cleaning.yaml"
         log:
-            "logs/clean_assembly/{sample}.log",
+            "logs/clean_assembly/stringtie_clean_assembly.log",
         threads: 1
         shell:
             """
