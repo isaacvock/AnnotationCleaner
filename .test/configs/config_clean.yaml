@@ -1,0 +1,98 @@
+##### PARAMETERS TO ALTER
+
+# Path to bam files, relative to directory that AnnotationCleaner was deployed to
+samples:
+  WT_1: data/bams/WT_replicate_1.bam
+  WT_2: data/bams/WT_replicate_2.bam
+  WT_3: data/bams/WT_nos4U.bam
+
+
+# Annotation GTF to compare assemblies to or guide assembly
+reference_gtf: data/annotation/genome.gtf
+
+# Only clean the provided reference (i.e., don't run any assemblers?)
+clean_only: True
+
+# Flattened reference (only relevant if cleaning reference)
+  # File is created by pipeline if it does not already exist.
+flat_ref: data/annotation/genome_flat.gtf
+
+# Strandedness of library
+  # set to "reverse", "yes", or "no"
+  # reverse means that read 2 represents 5' to 3' sequence of original RNA (read 1 thus represents its reverse complement)
+  # yes means that read 1 represents 5' to 3' sequence of original RNA
+  # no means unstranded
+  # Used by FeatureCounts, though naming convention is from HTSeq
+strandedness: "reverse"
+
+# Paired-end data?
+PE: True
+
+##### TRANSCRIPTOME ASSEMBLY PARAMETERS
+
+# Use StringTie for annotation building
+use_reference: True
+
+# Parameters to pass to Stringtie 
+stringtie_params: "-f 0.05 -j 10 -c 10 -s 10 -g 1"
+
+# Parameters to pass to Stringtie --merge
+stringtie_merge_params: ""
+
+##### PARAMETERS AFFECTING ALL ASSEMBLERS
+
+# Parameters to pass to samtools (other than input, output, -m, and -T)
+samtools_params: ""
+
+
+##### ANNOTATION PRUNING RSCRIPT PARAMETERS
+
+### Options are:
+# -c (--fdr): False-exon-discovery rate (default = 0.05)
+# -l (--floor): Min. factor diference between exonic and 
+#               intronic RPK to call a region exonic (default = 3)
+# -a (--readlength): Total effective read length. E.g., if PE-50 data
+#               this should be 100 (50*2) You can also increase this
+#               above the actual read length to increase conservativeness
+#               of exonic RPK estimate (default = 100).
+# -p (--priorvar): Variance of prior on intronic RPK trend. Decrease this
+#               to increase the amount of intronic RPK regualrization.
+#               (default = 2)
+
+# Pruning parameters for StringTie assemblies
+pruning_assembly_params: "--fdr 0.05"
+
+# Pruning parameters for reference
+pruning_reference_params: "--fdr 0.05"
+
+
+##### Exonic bin splitting parmaters #####
+
+### Options are:
+# -s (--size): Largest exonic bin allowed (in # of nucleotides). Bins larger than this will be split
+#               up into smaller exonic bins to increase resolution of end trimming and prevent loss 
+#               of isoforms due to overextended UTRs.
+#               (default 200)
+
+splitting_bins_params: ""
+
+
+##### FeatureCounts parameters #####
+
+# To be passed to all calls to featureCounts
+feature_counts_params: ""
+
+# To be passed to featureCounts --nonOverlap parameter
+  # Sets number of bases in reads that can not overlap
+  # with exonic regions of gene for read to get called intronic.
+  # Soft-clipping is unfortunately considered non-overlapping
+  # by featureCounts, so sometimes worth increasing this a 
+  # bit from "0" to avoid calling a significant fraction of
+  # truly exonic reads intronic.
+feature_counts_exon_nonoverlap: "5"
+
+
+##### ANNOTATION FILTERING RSCRIPT PARAMETERS
+
+filter_params: ""
+
