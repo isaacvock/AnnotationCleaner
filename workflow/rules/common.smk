@@ -11,7 +11,7 @@ def get_input_bams(wildcards):
 
 
 # List of paths to Stringtie outputs for Mikado
-if config["stringtie"]["use_stringtie"]:
+if not config["clean_only"]:
     STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
 
 
@@ -23,20 +23,18 @@ def get_target_input():
         target.append("results/clean_reference/cleaned_reference.gtf")
 
     else:
-        if config["stringtie"]["use_stringtie"]:
-            target.append(
-                expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
-            )
+        # Each StringTie assembly
+        target.append(
+            expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
+        )
 
-        if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_taco"]:
-            target.append("results/ignorethisdirectory_stringtie/success.txt")
-
-        if config["stringtie"]["use_stringtie"] and config["stringtie"]["use_merge"]:
-            target.append("results/stringtie_merge/stringtie_merged.gtf")
+        # Merged StringTie assembly
+        target.append("results/stringtie_merge/stringtie_merged.gtf")
 
         # Filtered annotation
         target.append("results/final_annotation/final_annotation.gtf")
 
+    # For scoring final annotations
     target.append(
         expand(
             "results/quantify_intronic_coverage/{SID}_gene.featureCounts",

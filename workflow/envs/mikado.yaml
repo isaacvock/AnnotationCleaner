@@ -1,6 +1,0 @@
-channels:
-  - anaconda
-  - conda-forge
-  - bioconda
-dependencies:
-  - mikado>=2.3.0

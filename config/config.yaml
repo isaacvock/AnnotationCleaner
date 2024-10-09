@@ -2,18 +2,15 @@
 
 # Path to bam files, relative to directory that AnnotationCleaner was deployed to
 samples:
-  NMD11j_ctl_1: ../THE_Aligner/twopass_hogg_star/align/NMD11j_ctl_1.bam
-  NMD11j_ctl_2: ../THE_Aligner/twopass_hogg_star/align/NMD11j_ctl_2.bam
-  NMD11j_ctl_3: ../THE_Aligner/twopass_hogg_star/align/NMD11j_ctl_3.bam
-  WT_ctl_1: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_1.bam
-  WT_ctl_2: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_2.bam
-  WT_ctl_3: ../THE_Aligner/twopass_hogg_star/align/WT_ctl_3.bam
+  WT_ctl_1: bams/WT_ctl_1.bam
+  WT_ctl_2: bams/WT_ctl_2.bam
+  WT_ctl_3: bams/WT_ctl_3.bam
 
 
-# Annotation GTF to compare assemblies to or guide assembly
+# Annotation GTF to clean or to guide assembly
 reference_gtf: data/annotation/CHESS.gtf
 
-# Only clean the provided reference (i.e., don't run any assemblers?)
+# Only clean the provided reference (i.e., don't run StringTie?)
 clean_only: False
 
 # Flattened reference (only relevant if cleaning reference)
@@ -31,28 +28,16 @@ strandedness: "reverse"
 # Paired-end data?
 PE: True
 
-##### TRANSCRIPTOME ASSEMBLY PARAMETERS
+##### STRINGTIE TRANSCRIPTOME ASSEMBLY PARAMETERS
 
-# Use StringTie for annotation building
-stringtie: 
-  use_stringtie: True
-  use_reference: True # Use reference as a guide
-  use_taco: False # Use TACO to merge assemblies (not sure this will work currently)
-  use_merge: True # Use Stringtie-merge to merge assemblies
-  clean_then_merge: False # clean separate assemblies and then merged; otherwise, merged assembly is cleaned
-
+# Use provided reference as guide for StringTie
+use_reference: True
 
 # Parameters to pass to Stringtie 
 stringtie_params: "-f 0.05 -j 10 -c 10 -s 10 -g 1"
 
 # Parameters to pass to Stringtie --merge
 stringtie_merge_params: ""
-
-# Parameters to pass to TACO with Stringtie input
-stringtie_taco_params: ""
-
-# Parameters to pass to TACO refcomp with Stringtie input (other than output, reference, and test annotation)
-stringtie_refcomp_params: ""
 
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS

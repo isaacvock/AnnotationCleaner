@@ -31,26 +31,13 @@ PE: True
 ##### TRANSCRIPTOME ASSEMBLY PARAMETERS
 
 # Use StringTie for annotation building
-stringtie: 
-  use_stringtie: True
-  use_reference: True # Use reference as a guide
-  use_taco: False # Use TACO to merge assemblies (not sure this will work currently)
-  use_merge: True # Use Stringtie-merge to merge assemblies
-  clean_then_merge: False # clean separate assemblies and then merged; otherwise, merged assembly is cleaned
-
+use_reference: True
 
 # Parameters to pass to Stringtie 
 stringtie_params: "-f 0.05 -j 10 -c 10 -s 10 -g 1"
 
 # Parameters to pass to Stringtie --merge
 stringtie_merge_params: ""
-
-# Parameters to pass to TACO with Stringtie input
-stringtie_taco_params: ""
-
-# Parameters to pass to TACO refcomp with Stringtie input (other than output, reference, and test annotation)
-stringtie_refcomp_params: ""
-
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
 
