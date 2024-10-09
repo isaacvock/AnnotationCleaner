@@ -9,10 +9,21 @@ SAMP_NAMES = list(config["samples"].keys())
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
 
+# Were long reads provided?
+LONGREADS_PROVIDED = len(config["long_reads"]) > 0
+
+if LONGREADS_PROVIDED:
+
+    LONGREAD_NAMES = list(set(SAMP_NAMES) & set(config["long_reads"]))
+    SAMP_NAMES = list(set(SAMP_NAMES) - set(config["long_reads"]))
+
 
 # List of paths to Stringtie outputs for Mikado
 if not config["clean_only"]:
     STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
+
+
+
 
 
 # Target rule (so final output to be looked for)

@@ -1,14 +1,12 @@
-# Use provided reference as guide
-if LONGREADS_PROVIDED:
+if config["use_reference"]:
 
-    rule stringtie:
+    rule longread_stringtie:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            guide="results/longread_assembly/longread_assembly.gtf"
         output:
-            "results/separate_stringties/{sample}.gtf",
+            "results/separate_longread_stringties/{sample}.gtf",
         log:
-            "logs/separate_stringties/{sample}.log",
+            "logs/longread_stringtie/{sample}.log",
         threads: 20
         params:
             extra=ST_STRAND + config["stringtie_params"],
@@ -16,50 +14,31 @@ if LONGREADS_PROVIDED:
         conda:
             "../envs/stringtie.yaml"
         shell:
-            "stringtie -G {input.guide} -o {output} -p {threads} {params.extra} {input.bam} 1> {log} 2>&1"
-
-
-elif config["use_reference"]:
-
-    rule stringtie:
-        input:
-            bam="results/sorted/sorted_{sample}.bam",
-        output:
-            "results/separate_stringties/{sample}.gtf",
-        log:
-            "logs/separate_stringties/{sample}.log",
-        threads: 20
-        params:
-            extra=ST_STRAND + config["stringtie_params"],
-            guide=config["reference_gtf"],
-        conda:
-            "../envs/stringtie.yaml"
-        shell:
-            "stringtie -G {params.guide} -o {output} -p {threads} {params.extra} {input.bam} 1> {log} 2>&1"
+            "stringtie -G {params.guide} -L -o {output} -p {threads} {params.extra} {input.bam} 1> {log} 2>&1"
 
 
 # Don't use a guide
 else:
 
-    rule stringtie:
+    rule longread_stringtie:
         input:
             bam="results/sorted/sorted_{sample}.bam",
         output:
-            "results/separate_stringties/{sample}.gtf",
+            "results/separate_longread_stringties/{sample}.gtf",
         log:
-            "logs/separate_stringties/{sample}.log",
+            "logs/longread_stringties/{sample}.log",
         threads: 20
         params:
             extra=ST_STRAND + config["stringtie_params"],
         conda:
             "../envs/stringtie.yaml"
         shell:
-            "stringtie -o {output} -p {threads} {params.extra} {input.bam} 1> {log} 2>&1"
+            "stringtie -o {output} -L -p {threads} {params.extra} {input.bam} 1> {log} 2>&1"
 
 
-rule stringtie_merge:
+rule longread_stringtie_merge:
     input:
-        expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES),
+        expand("results/separate_stringties/{SID}.gtf", SID=LONGREAD_NAMES),
     output:
         "results/stringtie_merge/stringtie_merged.gtf",
     log:
@@ -74,7 +53,7 @@ rule stringtie_merge:
 
 
 ### Remove small transcripts from including SpliceWiz novel targets
-rule filter_annotation:
+rule filter_longread_annotation:
     input:
         "results/clean_assembly/stringtie_merged.gtf",
     output:

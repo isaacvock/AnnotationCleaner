@@ -1,11 +1,19 @@
 ##### PARAMETERS TO ALTER
 
-# Path to bam files, relative to directory that AnnotationCleaner was deployed to
+# Path to short or long read bam files. Absolute or relative to directory that AnnotationCleaner was deployed to
 samples:
   WT_1: data/bams/WT_replicate_1.bam
   WT_2: data/bams/WT_replicate_2.bam
   WT_3: data/bams/WT_nos4U.bam
 
+
+# Are any of the samples long read data?
+# Leave as empty `[]` if none are.
+# Otherwise, input list of sample IDs. For example
+# if WT_1 of samples above is long read data,
+# long_reads should be ["WT_1"]. If both WT_1 and WT_2
+# are long read data, long_reads should be ["WT_1", "WT_2"]
+long_reads: []
 
 # Annotation GTF to compare assemblies to or guide assembly
 reference_gtf: data/annotation/genome.gtf
