@@ -52,6 +52,7 @@ rule stringtie_merge:
     shell:
         "stringtie --merge -p {threads} -o {output} {params.extra} {input}"
 
+
 ### Remove small transcripts from including SpliceWiz novel targets
 rule filter_annotation:
     input:

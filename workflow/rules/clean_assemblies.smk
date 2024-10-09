@@ -16,6 +16,7 @@ rule remove_unstranded:
             {params.rscript} -i {input.gtf} -o {output.stranded} 1> {log} 2>&1
             """
 
+
 # DEXSeq flatten merged StringTie assembly
 rule flatten_assembly:
     input:
@@ -29,6 +30,7 @@ rule flatten_assembly:
     threads: 1
     script:
         "../scripts/dexseq_prepare_annotation.py"
+
 
 # Decrease size of exonic bins
 rule smaller_bins_assembly:
@@ -49,6 +51,7 @@ rule smaller_bins_assembly:
         chmod +x {params.rscript}
         {params.rscript} -i {input.gtf} -o {output.higherres} -t {threads} {params.extra} 1> {log} 2>&1
         """
+
 
 # Quantify exonic bins
 rule quantify_assembly_exonbin:
@@ -74,6 +77,7 @@ rule quantify_assembly_exonbin:
     wrapper:
         "v3.0.2/bio/subread/featurecounts"
 
+
 # Quantify intronic bins
 rule quantify_assembly_intronbin:
     input:
@@ -97,6 +101,7 @@ rule quantify_assembly_intronbin:
         "logs/quantify_assembly_intronbin/{sample}.log",
     wrapper:
         "v3.0.2/bio/subread/featurecounts"
+
 
 # Clean StringTie assemblies with custom R script
 # I am imagining a parameter d that if set, loads sets of csvs as I normally do
@@ -126,4 +131,3 @@ rule stringtie_clean_assembly:
         chmod +x {params.rscript}
         {params.rscript} -r {input.ref} -f {input.flatref} -d results/quantify_assembly/ -o {output.clean_ref} {params.extra} 1> {log} 2>&1
         """
-

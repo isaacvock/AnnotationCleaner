@@ -24,9 +24,7 @@ def get_target_input():
 
     else:
         # Each StringTie assembly
-        target.append(
-            expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
-        )
+        target.append(expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES))
 
         # Merged StringTie assembly
         target.append("results/stringtie_merge/stringtie_merged.gtf")
