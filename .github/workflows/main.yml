@@ -33,9 +33,15 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-    - name: Test workflow
-      uses: snakemake/snakemake-github-action@v1.25.1
+    - name: Test assembly
+      uses: ezherman/snakemake-github-action@5027c0eb6bd319468ad9a049d37058554ebcd52eca38c92
       with:
         directory: .test
         snakefile: workflow/Snakefile
         args: "--configfile .test/configs/config.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --latency-wait 30"
+    - name: Test clean only
+      uses: ezherman/snakemake-github-action@5027c0eb6bd319468ad9a049d37058554ebcd52eca38c92
+      with:
+        directory: .test
+        snakefile: workflow/Snakefile
+        args: "--configfile .test/configs/config_clean.yaml --use-conda --show-failed-logs --cores 2 --conda-cleanup-pkgs cache --latency-wait 30"
