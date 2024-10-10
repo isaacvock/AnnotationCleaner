@@ -1,20 +1,20 @@
-# rule flatten_reference:
-#     input:
-#         gtf=config["reference_gtf"],
-#     output:
-#         flatgtf="results/raw_flattened_reference/flat_genome.gtf",
-#     log:
-#         "logs/flatten_reference/flatten.log",
-#     conda:
-#         "../envs/dexseq.yaml"
-#     threads: 1
-#     script:
-#         "../scripts/dexseq_prepare_annotation.py"
+rule flatten_reference:
+    input:
+        gtf=config["reference_gtf"],
+    output:
+        flatgtf="results/raw_flattened_reference/flat_genome.gtf",
+    log:
+        "logs/flatten_reference/flatten.log",
+    conda:
+        "../envs/dexseq.yaml"
+    threads: 1
+    script:
+        "../scripts/dexseq_prepare_annotation.py"
 
 
 rule smaller_bins_reference:
     input:
-        gtf=config["reference_gtf"],
+        gtf="results/raw_flattened_reference/flat_genome.gtf",
     output:
         higherres=config["flat_ref"],
     log:

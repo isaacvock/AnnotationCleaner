@@ -11,7 +11,5 @@ dependencies:
   - r-data.table
   - r-purrr
   - r-furrr
-  - bioconductor-biocinstaller
   - bioconductor-rtracklayer
   - bioconductor-genomicranges
-  - bioconductor-genomicfeatures
