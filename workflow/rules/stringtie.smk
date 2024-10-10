@@ -4,7 +4,7 @@ if LONGREADS_PROVIDED:
     rule stringtie:
         input:
             bam="results/sorted/sorted_{sample}.bam",
-            guide="results/longread_assembly/longread_assembly.gtf"
+            guide="results/longread_stringtie_merge/filtered_longread_annotation.gtf"
         output:
             "results/separate_stringties/{sample}.gtf",
         log:

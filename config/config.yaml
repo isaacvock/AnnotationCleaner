@@ -6,6 +6,13 @@ samples:
   WT_ctl_2: bams/WT_ctl_2.bam
   WT_ctl_3: bams/WT_ctl_3.bam
 
+# Are any of the samples long read data?
+# Leave as empty `[]` if none are.
+# Otherwise, input list of sample IDs. For example
+# if WT_1 of samples above is long read data,
+# long_reads should be ["WT_1"]. If both WT_1 and WT_2
+# are long read data, long_reads should be ["WT_1", "WT_2"]
+long_reads: []
 
 # Annotation GTF to clean or to guide assembly
 reference_gtf: data/annotation/CHESS.gtf
@@ -39,6 +46,12 @@ stringtie_params: "-f 0.05 -j 10 -c 10 -s 10 -g 1"
 # Parameters to pass to Stringtie --merge
 stringtie_merge_params: ""
 
+# Stringtie assembly parameters for long read data
+# -L is automatically set
+stringtie_longread_params: ""
+
+# Stringtie merge parameters for long read data
+stringtie_merge_longread_params: ""
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
 

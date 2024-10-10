@@ -9,7 +9,7 @@ if config["use_reference"]:
             "logs/longread_stringtie/{sample}.log",
         threads: 20
         params:
-            extra=ST_STRAND + config["stringtie_params"],
+            extra=ST_STRAND + config["stringtie_longread_params"],
             guide=config["reference_gtf"],
         conda:
             "../envs/stringtie.yaml"
@@ -29,7 +29,7 @@ else:
             "logs/longread_stringties/{sample}.log",
         threads: 20
         params:
-            extra=ST_STRAND + config["stringtie_params"],
+            extra=ST_STRAND + config["stringtie_longread_params"],
         conda:
             "../envs/stringtie.yaml"
         shell:
@@ -40,12 +40,12 @@ rule longread_stringtie_merge:
     input:
         expand("results/separate_stringties/{SID}.gtf", SID=LONGREAD_NAMES),
     output:
-        "results/stringtie_merge/stringtie_merged.gtf",
+        "results/longread_stringtie_merge/stringtie_merged.gtf",
     log:
-        "logs/stringtie_merge/stringtie_merged.log",
+        "logs/longread_stringtie_merge/stringtie_merged.log",
     threads: 10
     params:
-        extra=config["stringtie_merge_params"],
+        extra=config["stringtie_merge_longread_params"],
     conda:
         "../envs/stringtie.yaml"
     shell:
@@ -55,9 +55,9 @@ rule longread_stringtie_merge:
 ### Remove small transcripts from including SpliceWiz novel targets
 rule filter_longread_annotation:
     input:
-        "results/clean_assembly/stringtie_merged.gtf",
+        "results/longread_stringtie_merge/stringtie_merged.gtf",
     output:
-        "results/final_annotation/final_annotation.gtf",
+        "results/longread_stringtie_merge/filtered_longread_annotation.gtf",
     params:
         extra=config["filter_params"],
         rscript=workflow.source_path("../scripts/filter_annotation.R"),

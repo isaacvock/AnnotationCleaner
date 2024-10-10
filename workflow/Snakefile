@@ -25,13 +25,27 @@ report: "report/workflow.rst"
 container: "docker://continuumio/miniconda3"
 
 
+
+##### Check for potentially missing config parameters #####
+
+if "long_reads" not in config:
+    config["long_reads"] = []
+
+if "stringtie_longread_params" not in config:
+    config["stringtie_longread_params"] = ""
+
+if "stringtie_merge_longread_params" not in config:
+    config["stringtie_merge_longread_params"] = ""
+
+
 ##### load rules #####
+
 include: "rules/common.smk"
 include: "rules/stringtie.smk"
 include: "rules/clean_assemblies.smk"
 include: "rules/clean_ref.smk"
 include: "rules/score.smk"
-
+include: "rules/longread_assembly.smk"
 
 ##### target rules #####
 
