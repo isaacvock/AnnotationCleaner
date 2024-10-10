@@ -134,8 +134,10 @@ rule sort:
         extra=config["samtools_params"],
     conda:
         "../envs/sort.yaml"
-    script:
-        "../scripts/samtools_sort.py"
+    shell:
+        """
+        samtools sort -@ {threads} {params.extra} -o {output} {input}
+        """
 
 
 ### For intron fraction calculation
