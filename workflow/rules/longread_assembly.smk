@@ -5,7 +5,7 @@ if config["use_reference"]:
             bam="results/sorted/sorted_{sample}.bam",
             guide="results/clean_reference/cleaned_reference.gtf"
         output:
-            "results/longread_stringties/{sample}.gtf",
+            "results/longread_stringtie/{sample}.gtf",
         log:
             "logs/longread_stringtie/{sample}.log",
         threads: 20
@@ -38,7 +38,7 @@ else:
 
 rule longread_stringtie_merge:
     input:
-        expand("results/separate_stringties/{SID}.gtf", SID=LONGREAD_NAMES),
+        expand("results/longread_stringtie/{SID}.gtf", SID=LONGREAD_NAMES),
     output:
         "results/longread_stringtie_merge/stringtie_merged.gtf",
     log:
