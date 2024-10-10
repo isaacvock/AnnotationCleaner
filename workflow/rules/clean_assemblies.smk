@@ -17,25 +17,25 @@ rule remove_unstranded:
             """
 
 
-# DEXSeq flatten merged StringTie assembly
-rule flatten_assembly:
-    input:
-        gtf="results/remove_unstranded/stringtie_merged.gtf",
-    output:
-        flatgtf="results/raw_flattened_assembly/flat_genome.gtf",
-    log:
-        "logs/flatten_assembly/flatten.log",
-    conda:
-        "../envs/dexseq.yaml"
-    threads: 1
-    script:
-        "../scripts/dexseq_prepare_annotation.py"
+# # DEXSeq flatten merged StringTie assembly
+# rule flatten_assembly:
+#     input:
+#         gtf="results/remove_unstranded/stringtie_merged.gtf",
+#     output:
+#         flatgtf="results/raw_flattened_assembly/flat_genome.gtf",
+#     log:
+#         "logs/flatten_assembly/flatten.log",
+#     conda:
+#         "../envs/dexseq.yaml"
+#     threads: 1
+#     script:
+#         "../scripts/dexseq_prepare_annotation.py"
 
 
 # Decrease size of exonic bins
 rule smaller_bins_assembly:
     input:
-        gtf="results/raw_flattened_assembly/flat_genome.gtf",
+        gtf="results/remove_unstranded/stringtie_merged.gtf",
     output:
         higherres="results/flattened_assembly/flat_genome_binID.gtf",
     log:

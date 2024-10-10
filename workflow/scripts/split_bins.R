@@ -6,12 +6,20 @@
 
 # Load dependencies ------------------------------------------------------------
 
+if (!requireNamespace("txdbmaker", quietly = TRUE)) {
+  BiocManager::install("txdbmaker")
+}
+
 library(rtracklayer)
 library(dplyr)
 library(purrr)
 library(furrr)
 library(GenomicRanges)
+library(GenomicFeatures)
+library(txdbmaker)
 library(optparse)
+
+
 
 
 # Parse command line arguments -------------------------------------------------
@@ -21,7 +29,7 @@ args = commandArgs(trailingOnly = TRUE)
 
 option_list <- list(
   make_option(c("-i", "--input", type="character"),
-              help = "Path to input flat gtf."),
+              help = "Path to input gtf."),
   make_option(c("-o", "--output", type="chracter"),
               help = "Path to output flat gtf"),
   make_option(c("-s", "--sizelimit"),
@@ -101,8 +109,18 @@ binning <- function(df, size_limit = 200,
 
 # Modify exon bins to increase resolution --------------------------------------
 
-# Load input
-flat_gtf_gr <- rtracklayer::import(opt$input)
+### Load input and flatten
+
+gtf <- rtracklayer::import(opt$input)
+txdb <- makeTxDbFromGRanges(gtf)
+
+flat_gr <- exonicParts(txdb, linked.to.single.gene.only = TRUE)
+genes_gr <- genes(txdb)
+
+flat_gr$type <- "exonic_part"
+genes_gr$type <- "aggregate_gene"
+
+flat_gtf_gr <- c(flat_gr, genes_gr)
 
 ### Add intronic_parts to gtf
 
