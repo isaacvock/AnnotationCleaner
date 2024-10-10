@@ -3,18 +3,18 @@ if config["use_reference"]:
     rule longread_stringtie:
         input:
             bam="results/sorted/sorted_{sample}.bam",
+            guide="results/clean_reference/cleaned_reference.gtf"
         output:
-            "results/separate_longread_stringties/{sample}.gtf",
+            "results/longread_stringties/{sample}.gtf",
         log:
             "logs/longread_stringtie/{sample}.log",
         threads: 20
         params:
             extra=ST_STRAND + config["stringtie_longread_params"],
-            guide=config["reference_gtf"],
         conda:
             "../envs/stringtie.yaml"
         shell:
-            "stringtie -G {params.guide} -L -o {output} -p {threads} {params.extra} {input.bam} 1> {log} 2>&1"
+            "stringtie -G {input.guide} -L -o {output} -p {threads} {params.extra} {input.bam} 1> {log} 2>&1"
 
 
 # Don't use a guide
@@ -24,7 +24,7 @@ else:
         input:
             bam="results/sorted/sorted_{sample}.bam",
         output:
-            "results/separate_longread_stringties/{sample}.gtf",
+            "results/longread_stringtie/{sample}.gtf",
         log:
             "logs/longread_stringties/{sample}.log",
         threads: 20
@@ -62,7 +62,7 @@ rule filter_longread_annotation:
         extra=config["filter_params"],
         rscript=workflow.source_path("../scripts/filter_annotation.R"),
     log:
-        "logs/filter_annotation/filter.log",
+        "logs/filter_longread_annotation/filter.log",
     conda:
         "../envs/cleaning.yaml"
     threads: 1

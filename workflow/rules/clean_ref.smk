@@ -82,58 +82,31 @@ rule quantify_reference_intronbin:
         "v3.0.2/bio/subread/featurecounts"
 
 
-if config["clean_only"]:
-
-    rule clean_reference:
-        input:
-            ref=config["reference_gtf"],
-            flatref=config["flat_ref"],
-            cnts_exonbin=expand(
-                "results/quantify_reference/{SID}_exonbin.featureCounts",
-                SID=SAMP_NAMES,
-            ),
-            cnts_intronbin=expand(
-                "results/quantify_reference/{SID}_intronbin.featureCounts",
-                SID=SAMP_NAMES,
-            ),
-        output:
-            clean_ref="results/clean_reference/cleaned_reference.gtf",
-        params:
-            rscript=workflow.source_path("../scripts/clean_annotation.R"),
-            extra=config["pruning_reference_params"],
-        conda:
-            "../envs/cleaning.yaml"
-        log:
-            "logs/clean_reference/clean_reference.log",
-        threads: 1
-        shell:
-            """
-            chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -f {input.flatref} \
-             -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
-            """
-
-else:
-
-    rule clean_reference:
-        input:
-            ref=config["reference_gtf"],
-            flatref=config["flat_ref"],
-            cnts_exonbin="results/quantify_reference/{sample}_exonbin.featureCounts",
-            cnts_intronbin="results/quantify_reference/{sample}_intronbin.featureCounts",
-        output:
-            clean_ref="results/clean_reference/{sample}.gtf",
-        params:
-            rscript=workflow.source_path("../scripts/clean_annotation.R"),
-            extra=config["pruning_reference_params"],
-        conda:
-            "../envs/cleaning.yaml"
-        log:
-            "logs/clean_reference/{sample}.log",
-        threads: 1
-        shell:
-            """
-            chmod +x {params.rscript}
-            {params.rscript} -r {input.ref} -f {input.flatref} -b {input.cnts_exonbin} \
-            -u {input.cnts_intronbin} -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
-            """
+rule clean_reference:
+    input:
+        ref=config["reference_gtf"],
+        flatref=config["flat_ref"],
+        cnts_exonbin=expand(
+            "results/quantify_reference/{SID}_exonbin.featureCounts",
+            SID=SAMP_NAMES,
+        ),
+        cnts_intronbin=expand(
+            "results/quantify_reference/{SID}_intronbin.featureCounts",
+            SID=SAMP_NAMES,
+        ),
+    output:
+        clean_ref="results/clean_reference/cleaned_reference.gtf",
+    params:
+        rscript=workflow.source_path("../scripts/clean_annotation.R"),
+        extra=config["pruning_reference_params"],
+    conda:
+        "../envs/cleaning.yaml"
+    log:
+        "logs/clean_reference/clean_reference.log",
+    threads: 1
+    shell:
+        """
+        chmod +x {params.rscript}
+        {params.rscript} -r {input.ref} -f {input.flatref} \
+            -o {output.clean_ref} -d ./results/quantify_reference/ {params.extra} 1> {log} 2>&1
+        """
