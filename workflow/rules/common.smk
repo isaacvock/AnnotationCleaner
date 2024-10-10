@@ -11,6 +11,7 @@ def get_input_bams(wildcards):
 
 # Were long reads provided?
 LONGREADS_PROVIDED = len(config["long_reads"]) > 0
+LONGREAD_NAMES = []
 
 if LONGREADS_PROVIDED:
 
