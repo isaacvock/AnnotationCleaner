@@ -10,7 +10,7 @@ if config["use_reference"]:
             "logs/longread_stringtie/{sample}.log",
         threads: 20
         params:
-            extra=ST_STRAND + config["stringtie_longread_params"],
+            extra=config["stringtie_longread_params"],
         conda:
             "../envs/stringtie.yaml"
         shell:
@@ -29,7 +29,7 @@ else:
             "logs/longread_stringties/{sample}.log",
         threads: 20
         params:
-            extra=ST_STRAND + config["stringtie_longread_params"],
+            extra=config["stringtie_longread_params"],
         conda:
             "../envs/stringtie.yaml"
         shell:
