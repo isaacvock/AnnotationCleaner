@@ -136,7 +136,7 @@ rule sort:
         "../envs/sort.yaml"
     shell:
         """
-        samtools sort -@ {threads} {params.extra} -o {output} {input}
+        samtools sort -@ {threads} {params.extra} -o {output} {input} 1> {log} 2>&1
         """
 
 
