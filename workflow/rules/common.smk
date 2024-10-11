@@ -47,9 +47,15 @@ if config["LRonly_first"]:
 
     GUIDE_GTF = "results/longread_stringtie_merge/filtered_longread_annotation.gtf"
 
+    # If doing this, then want to overwrite potential "use_refernce" = False so that
+    # the mixed assembly is still reference guided.
+    LR_GUIDED = True
+
 else:
 
     GUIDE_GTF = "results/clean_reference/cleaned_reference.gtf"
+
+    LR_GUIDED = False
 
 
 

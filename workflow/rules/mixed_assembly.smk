@@ -1,9 +1,9 @@
-if config["use_reference"]:
+if config["use_reference"] or LR_GUIDED:
 
     rule stringtie_mixed:
         input:
             bams=get_mixed_bams,
-            guide="results/clean_reference/cleaned_reference.gtf",
+            guide=GUIDE_GTF,
         output:
             "results/stringtie_mixed/{sample}.gtf",
         log:
