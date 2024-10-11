@@ -36,11 +36,11 @@ def get_mixed_bams(wildcards):
 
 if config["use_mix"] and LONGREADS_PROVIDED:
 
-    GTFS_TO_MERGE = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
+    GTFS_TO_MERGE = expand("results/stringtie_mixed/{SID}.gtf", SID=SAMP_NAMES)
 
 else:
 
-    GTFS_TO_MERGE = expand("results/stringtie_mixed/{SID}.gtf", SID=SAMP_NAMES)
+    GTFS_TO_MERGE = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
 
 # Target rule (so final output to be looked for)
 def get_target_input():
