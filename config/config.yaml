@@ -35,6 +35,27 @@ strandedness: "reverse"
 # Paired-end data?
 PE: True
 
+# Use stringtie's --mix mode for using both long and short reads?
+# If not, then long read will be used first, and the reference created
+# will be used as a guide for short read assembly
+#
+# Only relevant if you have included long read bam files (i.e., if long_reads is non-empty)
+#
+# If TRUE, then LRSR_pairs must be specified
+use_mix: False
+
+
+# Which short reads should be paired with which long reads?
+# Key: short read ID
+# Value: long read ID
+# Example:
+# LRSR_pairs:
+#   WT: WT_LR
+#   KO: KO_LR
+LRSR_pairs:
+  
+
+
 ##### STRINGTIE TRANSCRIPTOME ASSEMBLY PARAMETERS
 
 # Use provided reference as guide for StringTie

@@ -59,7 +59,7 @@ else:
 
 rule stringtie_merge:
     input:
-        expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES),
+        GTFS_TO_MERGE,
     output:
         "results/stringtie_merge/stringtie_merged.gtf",
     log:

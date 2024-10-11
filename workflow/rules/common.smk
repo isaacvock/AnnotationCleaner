@@ -24,8 +24,23 @@ if not config["clean_only"]:
     STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
 
 
+# Get bam file combo for longread + short read mixed assembly
+def get_mixed_bams(wildcards):
+    SR_bam = config["samples"][wildcards.sample]
+    LR_bam = config["samples"][config["LRSR_pairs"][wildcards.sample]]
+
+    return [SR_bam, LR_bam]
 
 
+# GTFs that will be merged
+
+if config[""]:
+
+    GTFS_TO_MERGE = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
+
+else:
+
+    GTFS_TO_MERGE = expand("results/stringtie_mixed/{SID}.gtf", SID=SAMP_NAMES)
 
 # Target rule (so final output to be looked for)
 def get_target_input():
@@ -35,9 +50,6 @@ def get_target_input():
         target.append("results/clean_reference/cleaned_reference.gtf")
 
     else:
-        # Each StringTie assembly
-        target.append(expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES))
-
         # Merged StringTie assembly
         target.append("results/stringtie_merge/stringtie_merged.gtf")
 
