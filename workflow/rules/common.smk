@@ -42,6 +42,17 @@ else:
 
     GTFS_TO_MERGE = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
 
+# GTF to be used as guide
+if config["LRonly_first"]:
+
+    GUIDE_GTF = "results/longread_stringtie_merge/filtered_longread_annotation.gtf"
+
+else:
+
+    GUIDE_GTF = "results/clean_reference/cleaned_reference.gtf"
+
+
+
 # Target rule (so final output to be looked for)
 def get_target_input():
     target = []
