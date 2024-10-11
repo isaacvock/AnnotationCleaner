@@ -34,7 +34,7 @@ def get_mixed_bams(wildcards):
 
 # GTFs that will be merged
 
-if config[""]:
+if config["use_mix"] and LONGREADS_PROVIDED:
 
     GTFS_TO_MERGE = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
 
