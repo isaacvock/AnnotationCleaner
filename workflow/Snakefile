@@ -37,15 +37,22 @@ if "stringtie_longread_params" not in config:
 if "stringtie_merge_longread_params" not in config:
     config["stringtie_merge_longread_params"] = ""
 
+if "use_mix" not in config:
+    config["use_mix"] = False
+
+if "LRSR_pairs" not in config:
+    config["LRSR_pairs"] = {}
+
 
 ##### load rules #####
 
 include: "rules/common.smk"
-include: "rules/stringtie.smk"
 include: "rules/clean_assemblies.smk"
 include: "rules/clean_ref.smk"
 include: "rules/score.smk"
 include: "rules/longread_assembly.smk"
+include: "rules/shortread_assembly.smk"
+include: "rules/mixed_assembly.smk"
 
 ##### target rules #####
 
