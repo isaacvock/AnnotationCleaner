@@ -8,7 +8,7 @@ if config["use_reference"] or LR_GUIDED:
             "results/stringtie_mixed/{sample}.gtf",
         log:
             "logs/stringtie_mixed/{sample}.log",
-        threads: 20
+        threads: 32
         params:
             extra=ST_STRAND + config["stringtie_params"],
         conda:
@@ -25,7 +25,7 @@ else:
             "results/stringtie_mixed/{sample}.gtf",
         log:
             "logs/stringtie_mixed/{sample}.log",
-        threads: 20
+        threads: 32
         params:
             extra=ST_STRAND + config["stringtie_params"],
         conda:
