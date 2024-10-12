@@ -26,8 +26,11 @@ if not config["clean_only"]:
 
 # Get bam file combo for longread + short read mixed assembly
 def get_mixed_bams(wildcards):
+
+    LR_str = str(config["LRSR_pairs"][wildcards.sample])
+
     SR_bam = f"results/sorted/sorted_{wildcards.sample}.bam"
-    LR_bam = f"results/sorted/sorted_{config["LRSR_pairs"][wildcards.sample]}.bam"
+    LR_bam = f"results/sorted/sorted_{LR_str}.bam"
 
     return [SR_bam, LR_bam]
 
