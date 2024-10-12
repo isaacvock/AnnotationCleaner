@@ -43,6 +43,8 @@ if "use_mix" not in config:
 if "LRSR_pairs" not in config:
     config["LRSR_pairs"] = {}
 
+if "LRonly_first" not in config:
+    config["LRonly_first"] = False
 
 ##### load rules #####
 

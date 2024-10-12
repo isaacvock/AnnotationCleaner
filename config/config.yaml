@@ -48,7 +48,7 @@ use_mix: False
 # If use_mix is True, do you also want to build an annotation
 # with just the long read first, to be used as a guide for
 # mixed assembly?
-LRonly_first: True
+LRonly_first: False
 
 
 # Which short reads should be paired with which long reads?
