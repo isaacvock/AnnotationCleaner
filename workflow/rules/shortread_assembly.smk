@@ -9,7 +9,7 @@ if LONGREADS_PROVIDED:
             "results/separate_stringties/{sample}.gtf",
         log:
             "logs/separate_stringties/{sample}.log",
-        threads: 20
+        threads: 32
         params:
             extra=ST_STRAND + config["stringtie_params"],
             guide=config["reference_gtf"],
@@ -28,7 +28,7 @@ elif config["use_reference"]:
             "results/separate_stringties/{sample}.gtf",
         log:
             "logs/separate_stringties/{sample}.log",
-        threads: 20
+        threads: 32
         params:
             extra=ST_STRAND + config["stringtie_params"],
             guide=config["reference_gtf"],
@@ -48,7 +48,7 @@ else:
             "results/separate_stringties/{sample}.gtf",
         log:
             "logs/separate_stringties/{sample}.log",
-        threads: 20
+        threads: 32
         params:
             extra=ST_STRAND + config["stringtie_params"],
         conda:
