@@ -8,7 +8,7 @@ rule mixed_stringtie:
         "logs/mixed_stringtie/{sample}.log",
     threads: 32
     params:
-        extra=ST_STRAND + config["stringtie_params"],
+        extra=ST_STRAND + config["mixed_stringtie_params"],
     conda:
         "../envs/stringtie.yaml"
     shell:
@@ -25,7 +25,7 @@ rule mixed_stringtie_merge:
         "logs/mixed_stringtie_merge/mixed_stringtie_merged.log",
     threads: 10
     params:
-        extra=config["stringtie_mixed_merge_params"],
+        extra=config["mixed_stringtie_merge_params"],
     conda:
         "../envs/stringtie.yaml"
     shell:
@@ -41,7 +41,7 @@ if MIX_IS_FINAL:
         output:
             "results/final_annotation/final_annotation.gtf",
         params:
-            extra=config["filter_params"],
+            extra=config["mixed_filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),
         log:
             "logs/filter_annotation/filter.log",
@@ -63,7 +63,7 @@ else:
         output:
             "results/mixed_filter_annotation/mixed_filter_annotation.gtf",
         params:
-            extra=config["filter_params"],
+            extra=config["mixed_filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),
         log:
             "logs/filter_annotation/filter.log",

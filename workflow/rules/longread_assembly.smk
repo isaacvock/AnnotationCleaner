@@ -8,7 +8,7 @@ rule longread_stringtie:
         "logs/longread_stringtie/{sample}.log",
     threads: 32
     params:
-        extra=config["stringtie_longread_params"],
+        extra=config["longread_stringtie_params"],
     conda:
         "../envs/stringtie.yaml"
     shell:
@@ -24,7 +24,7 @@ rule longread_stringtie_merge:
         "logs/longread_stringtie_merge/longread_stringtie_merged.log",
     threads: 10
     params:
-        extra=config["stringtie_merge_longread_params"],
+        extra=config["longread_stringtie_merge_params"],
     conda:
         "../envs/stringtie.yaml"
     shell:
@@ -40,7 +40,7 @@ if LR_IS_FINAL:
         output:
             "results/final_annotation/final_annotation.gtf",
         params:
-            extra=config["filter_params"],
+            extra=config["longread_filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),
         log:
             "logs/filter_longread_annotation/filter.log",
@@ -63,7 +63,7 @@ else:
         output:
             "results/filter_longread_annotation/filtered_longread_annotation.gtf",
         params:
-            extra=config["filter_params"],
+            extra=config["longread_filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),
         log:
             "logs/filter_longread_annotation/filter.log",
