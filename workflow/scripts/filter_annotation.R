@@ -38,7 +38,7 @@ gtf <- rtracklayer::import(opt$input)
 
 # Find transcripts of an acceptable length
 Transcripts_keep <- as_tibble(gtf) %>%
-  filter(type == "exon") %>%
+  filter(type == "exon" & strand != "*") %>%
   group_by(transcript_id) %>%
   summarise(length = sum(width)) %>%
   filter(length >= opt$sizelimit)
