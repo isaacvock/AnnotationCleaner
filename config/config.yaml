@@ -2,9 +2,10 @@
 
 # Path to bam files, relative to directory that AnnotationCleaner was deployed to
 samples:
-  WT_ctl_1: bams/WT_ctl_1.bam
-  WT_ctl_2: bams/WT_ctl_2.bam
-  WT_ctl_3: bams/WT_ctl_3.bam
+  DMSO_nos4U_SR: ../THE_Aligner/results/align/DMSO_nos4U.bam
+  11j_nos4U_SR: ../THE_Aligner/results/align/11j_nos4U.bam
+  DMSO_LR: ../THE_Aligner/jm_LR_results/align/DMSO_LR.bam
+  11j_LR: ../THE_Aligner/jm_LR_results/align/11j_LR.bam
 
 # Are any of the samples long read data?
 # Leave as empty `[]` if none are.
@@ -12,17 +13,17 @@ samples:
 # if WT_1 of samples above is long read data,
 # long_reads should be ["WT_1"]. If both WT_1 and WT_2
 # are long read data, long_reads should be ["WT_1", "WT_2"]
-long_reads: []
+long_reads: ["DMSO_LR", "11j_LR"]
 
 # Annotation GTF to clean or to guide assembly
-reference_gtf: data/annotation/CHESS.gtf
+reference_gtf: data/annotations/hg38_refseq.gtf
 
 # Only clean the provided reference (i.e., don't run StringTie?)
 clean_only: False
 
 # Flattened reference (only relevant if cleaning reference)
   # File is created by pipeline if it does not already exist.
-flat_ref: data/annotation/CHESS_flat.gtf
+flat_ref: data/annotation/hg38_ref_flat.gtf
 
 # Strandedness of library
   # set to "reverse", "yes", or "no"
@@ -52,7 +53,7 @@ PE: True
 options:
   trim_reference: True
   trim_assembly: True
-  LRSR_strat: ""
+  LRSR_strat: "LR_then_mix"
 
 
 # Which short reads should be paired with which long reads?
@@ -63,7 +64,8 @@ options:
   #   WT: WT_LR
   #   KO: KO_LR
 LRSR_pairs:
-  
+  DMSO_nos4U_SR: "DMSO_LR"
+  11j_nos4U_SR: "11j_LR"
 
 
 ##### STRINGTIE TRANSCRIPTOME ASSEMBLY PARAMETERS
@@ -113,7 +115,7 @@ samtools_params: ""
 pruning_assembly_params: "--fdr 0.01"
 
 # Pruning parameters for reference
-pruning_reference_params: "--fdr 0.001"
+pruning_reference_params: "--fdr 0.01"
 
 
 ##### Exonic bin splitting parmaters #####
@@ -144,5 +146,8 @@ feature_counts_exon_nonoverlap: "0"
 
 ##### ANNOTATION FILTERING RSCRIPT PARAMETERS
 
-filter_params: ""
+shortread_filter_params: ""
 
+mixed_filter_params: ""
+
+longread_filter_params: ""
