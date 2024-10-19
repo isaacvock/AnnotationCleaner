@@ -38,8 +38,6 @@ if LRSR_STRAT == "mix_only":
 
         MIX_GUIDE_GTF = REFERENCE
 
-    FINAL_GTF = 
-
     if config["options"]["trim_reference"]:
 
         FINAL_INPUT = CLEANED_ASSEMBLY
