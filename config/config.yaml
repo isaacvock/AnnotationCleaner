@@ -72,17 +72,22 @@ LRSR_pairs:
 use_reference: True
 
 # Parameters to pass to Stringtie 
-stringtie_params: "-f 0.05 -j 10 -c 10 -s 10 -g 1"
+shortread_stringtie_params: "-f 0.05"
 
 # Parameters to pass to Stringtie --merge
-stringtie_merge_params: ""
+shortread_stringtie_merge_params: ""
 
-# Stringtie assembly parameters for long read data
-# -L is automatically set
-stringtie_longread_params: ""
+# Parameters to pass to Stringtie 
+longread_stringtie_params: "-f 0.05"
 
-# Stringtie merge parameters for long read data
-stringtie_merge_longread_params: ""
+# Parameters to pass to Stringtie --merge
+longread_stringtie_merge_params: ""
+
+# Parameters to pass to Stringtie 
+mixed_stringtie_params: "-f 0.05"
+
+# Parameters to pass to Stringtie --merge
+mixed_stringtie_merge_params: ""
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
 
