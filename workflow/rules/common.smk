@@ -9,7 +9,7 @@ SAMP_NAMES = list(config["samples"].keys())
 
 # Possible paths for various inputs/outputs
 DUMMY_PATH = "results/dummypath"
-REFERENCE = config["reference"]
+REFERENCE = config["reference_gtf"]
 CLEANED_REFERENCE = "results/clean_reference/cleaned_reference.gtf"
 CLEANED_ASSEMBLY = "results/clean_assembly/cleaned_assembly.gtf"
 FILTERED_LR_GTF = "results/longread_stringtie_merge/filtered_longread_annotation.gtf"
