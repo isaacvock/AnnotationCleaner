@@ -35,29 +35,33 @@ strandedness: "reverse"
 # Paired-end data?
 PE: True
 
-# Use stringtie's --mix mode for using both long and short reads?
-# If not, then long read will be used first, and the reference created
-# will be used as a guide for short read assembly
-#
-# Only relevant if you have included long read bam files (i.e., if long_reads is non-empty)
-#
-# If TRUE, then LRSR_pairs must be specified
-use_mix: False
 
-
-# If use_mix is True, do you also want to build an annotation
-# with just the long read first, to be used as a guide for
-# mixed assembly?
-LRonly_first: False
+# Tuning the pipeline
+  # 1) LRSR_strat: What strategy to use for long + short read integration?
+    # "mix_only": Use StringTie's --mix mode to generate final annotation
+    # "LR_then_SR": Use long read data to generate an assembly that is used
+    #   as a guide for short read assembly.
+    # "mix_then_SR": Use StringTie's --mix mode to generate an assmebly that
+    #   is used as a guide for short read assembly. Strategy used in NMDtxDB paper ().
+    # "LR_then_mix": Use long read data to generate an assembly that is used as a guide
+    #   for a long read + short read StringTie --mix assembly. 
+  # 1) use_mix: Use stringtie's --mix mode for using both long and short reads?
+  #   If not, then long read will be used
+  # 2) trim_reference: Trim the provided reference?
+  # 3) trim_assembly: Trim the final assembly?
+options:
+  trim_reference: True
+  trim_assembly: True
+  LRSR_strat: ""
 
 
 # Which short reads should be paired with which long reads?
 # Key: short read ID
 # Value: long read ID
 # Example:
-# LRSR_pairs:
-#   WT: WT_LR
-#   KO: KO_LR
+  # LRSR_pairs:
+  #   WT: WT_LR
+  #   KO: KO_LR
 LRSR_pairs:
   
 

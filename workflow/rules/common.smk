@@ -5,6 +5,45 @@ import glob
 SAMP_NAMES = list(config["samples"].keys())
 
 
+# Impute config values given strategy
+LRSR_STRAT = config["options"]["LRSR_strat"]
+
+if LRSR_STRAT == "mix_only":
+
+    config["LRonly_first"] = False
+    config["use_mix"] = True
+    MIX_IS_FINAL = True
+    SR_IS_FINAL = False
+    LR_IS_FINAL = False
+
+elif LRSR_STRAT == "LR_then_SR":
+
+    config["LRonly_first"] = False
+    config["use_mix"] = False
+    SR_GUIDE = "results/longread_stringtie_merge/filtered_longread_annotation.gtf"
+    MIX_IS_FINAL = False
+    SR_IS_FINAL = True
+    LR_IS_FINAL = False
+
+elif LRSR_STRAT == "mix_then_SR":
+
+    config["LRonly_first"] = False
+    config["use_mix"] = True
+    SR_GUIDE = "results/filter_mixed_annotation/filter_mixed_annotation.gtf"
+    MIX_IS_FINAL = False
+    SR_IS_FINAL = True
+    LR_IS_FINAL = False
+
+elif LRSR_STRAT == "LR_then_mix":
+
+    config["LRonly_first"] = True
+    config["use_mix"] = True
+    MIX_IS_FINAL = True
+    SR_IS_FINAL = False
+    LR_IS_FINAL = False
+
+
+
 # Retrieve input bam files for first steps
 def get_input_bams(wildcards):
     return config["samples"][wildcards.sample]
