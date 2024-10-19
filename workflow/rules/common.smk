@@ -5,7 +5,19 @@ import glob
 SAMP_NAMES = list(config["samples"].keys())
 
 
-# Impute config values given strategy
+### INFER PIPELINE PATHWAY FROM CONFIG VALUES
+
+# Possible paths for various inputs/outputs
+DUMMY_PATH = "results/dummypath"
+REFERENCE = config["reference"]
+CLEANED_REFERENCE = "results/clean_reference/cleaned_reference.gtf"
+CLEANED_ASSEMBLY = "results/clean_assembly/cleaned_assembly.gtf"
+FILTERED_LR_GTF = "results/longread_stringtie_merge/filtered_longread_annotation.gtf"
+FILTERED_MIX_GTF = "results/mixed_filter_annotation/mixed_filter_annotation.gtf"
+MERGED_MIX_GTF = "results/mixed_stringtie_merge/mixed_stringtie_merged.gtf"
+MERGED_SR_GTF = "results/shortread_stringtie_merge/shortread_stringtie_merged.gtf"
+
+# Pathway inference
 LRSR_STRAT = config["options"]["LRSR_strat"]
 
 if LRSR_STRAT == "mix_only":
@@ -15,24 +27,89 @@ if LRSR_STRAT == "mix_only":
     MIX_IS_FINAL = True
     SR_IS_FINAL = False
     LR_IS_FINAL = False
+    LR_GUIDE_GTF = DUMMY_PATH
+    SR_GUIDE_GTF = DUMMY_PATH
+
+    if config["options"]["trim_reference"]:
+
+        MIX_GUIDE_GTF = CLEANED_REFERENCE
+
+    else:
+
+        MIX_GUIDE_GTF = REFERENCE
+
+    FINAL_GTF = 
+
+    if config["options"]["trim_reference"]:
+
+        FINAL_INPUT = CLEANED_ASSEMBLY
+        ASSEMBLY_CLEANING_INPUT = MERGED_MIX_GTF
+
+    else:
+
+        FINAL_INPUT = MERGED_MIX_GTF
+        ASSEMBLY_CLEANING_INPUT = DUMMY_PATH
+
 
 elif LRSR_STRAT == "LR_then_SR":
 
     config["LRonly_first"] = False
     config["use_mix"] = False
-    SR_GUIDE = "results/longread_stringtie_merge/filtered_longread_annotation.gtf"
     MIX_IS_FINAL = False
     SR_IS_FINAL = True
     LR_IS_FINAL = False
+
+    if config["options"]["trim_reference"]:
+
+        LR_GUIDE_GTF = CLEANED_REFERENCE
+
+
+    else:
+
+        LR_GUIDE_GTF = REFERENCE
+
+    SR_GUIDE_GTF = FILTERED_LR_GTF
+    MIX_GUIDE_GTF = DUMMY_PATH
+
+    if config["options"]["trim_reference"]:
+
+        FINAL_INPUT = CLEANED_ASSEMBLY
+        ASSEMBLY_CLEANING_INPUT = MERGED_SR_GTF
+
+    else:
+
+        FINAL_INPUT = MERGED_SR_GTF
+        ASSEMBLY_CLEANING_INPUT = DUMMY_PATH
 
 elif LRSR_STRAT == "mix_then_SR":
 
     config["LRonly_first"] = False
     config["use_mix"] = True
-    SR_GUIDE = "results/filter_mixed_annotation/filter_mixed_annotation.gtf"
     MIX_IS_FINAL = False
     SR_IS_FINAL = True
     LR_IS_FINAL = False
+    LR_GUIDE_GTF = DUMMY_PATH
+    SR_GUIDE_GTF = FILTERED_MIX_GTF
+
+    if config["option"]["trim_reference"]:
+
+        MIX_GUIDE_GTF = CLEANED_REFERENCE
+
+    else:
+
+        MIX_GUIDE_GTF = REFERENCE
+
+
+    if config["options"]["trim_reference"]:
+
+        FINAL_INPUT = CLEANED_ASSEMBLY
+        ASSEMBLY_CLEANING_INPUT = MERGED_SR_GTF
+
+    else:
+
+        FINAL_INPUT = MERGED_SR_GTF
+        ASSEMBLY_CLEANING_INPUT = DUMMY_PATH
+
 
 elif LRSR_STRAT == "LR_then_mix":
 
@@ -41,7 +118,30 @@ elif LRSR_STRAT == "LR_then_mix":
     MIX_IS_FINAL = True
     SR_IS_FINAL = False
     LR_IS_FINAL = False
+    
+    if config["options"]["trim_reference"]:
 
+        LR_GUIDE_GTF = CLEANED_REFERENCE
+
+    else:
+
+        LR_GUIDE_GTF = REFERENCE
+
+    SR_GUIDE_GTF = DUMMY_PATH
+    MIX_GUIDE_GTF = FILTERED_LR_GTF
+
+
+    if config["options"]["trim_reference"]:
+
+        FINAL_INPUT = CLEANED_ASSEMBLY
+        ASSEMBLY_CLEANING_INPUT = MERGED_MIX_GTF
+
+    else:
+
+        FINAL_INPUT = MERGED_MIX_GTF
+        ASSEMBLY_CLEANING_INPUT = DUMMY_PATH
+
+### END OF PIPELINE PATHWAY INFERENCE
 
 
 # Retrieve input bam files for first steps
@@ -58,11 +158,6 @@ if LONGREADS_PROVIDED:
     SAMP_NAMES = list(set(SAMP_NAMES) - set(config["long_reads"]))
 
 
-# List of paths to Stringtie outputs for Mikado
-if not config["clean_only"]:
-    STRINGTIE_PATHS = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
-
-
 # Get bam file combo for longread + short read mixed assembly
 def get_mixed_bams(wildcards):
     LR_str = str(config["LRSR_pairs"][wildcards.sample])
@@ -71,32 +166,6 @@ def get_mixed_bams(wildcards):
     LR_bam = f"results/sorted/sorted_{LR_str}.bam"
 
     return [SR_bam, LR_bam]
-
-
-# GTFs that will be merged
-
-if config["use_mix"] and LONGREADS_PROVIDED:
-
-    GTFS_TO_MERGE = expand("results/stringtie_mixed/{SID}.gtf", SID=SAMP_NAMES)
-
-else:
-
-    GTFS_TO_MERGE = expand("results/separate_stringties/{SID}.gtf", SID=SAMP_NAMES)
-
-# GTF to be used as guide
-if config["LRonly_first"]:
-
-    GUIDE_GTF = "results/longread_stringtie_merge/filtered_longread_annotation.gtf"
-
-    # If doing this, then want to overwrite potential "use_refernce" = False so that
-    # the mixed assembly is still reference guided.
-    LR_GUIDED = True
-
-else:
-
-    GUIDE_GTF = "results/clean_reference/cleaned_reference.gtf"
-
-    LR_GUIDED = False
 
 
 
@@ -108,9 +177,6 @@ def get_target_input():
         target.append("results/clean_reference/cleaned_reference.gtf")
 
     else:
-        # Merged StringTie assembly
-        target.append("results/stringtie_merge/stringtie_merged.gtf")
-
         # Filtered annotation
         target.append("results/final_annotation/final_annotation.gtf")
 

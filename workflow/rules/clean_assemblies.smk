@@ -1,6 +1,6 @@
 rule remove_unstranded:
     input:
-        gtf="results/stringtie_merge/stringtie_merged.gtf",
+        gtf=ASSEMBLY_CLEANING_INPUT,
     output:
         stranded="results/remove_unstranded/stringtie_merged.gtf",
     log:
@@ -117,7 +117,7 @@ rule stringtie_clean_assembly:
             SID=SAMP_NAMES,
         ),
     output:
-        clean_ref="results/clean_assembly/stringtie_merged.gtf",
+        clean_ref="results/clean_assembly/cleaned_assembly.gtf",
     params:
         rscript=workflow.source_path("../scripts/clean_annotation.R"),
         extra=config["pruning_assembly_params"],

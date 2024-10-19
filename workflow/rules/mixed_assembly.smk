@@ -1,11 +1,11 @@
-rule stringtie_mixed:
+rule mixed_stringtie:
     input:
         bams=get_mixed_bams,
         guide=MIX_GUIDE_GTF,
     output:
-        "results/stringtie_mixed/{sample}.gtf",
+        "results/mixed_stringtie/{sample}.gtf",
     log:
-        "logs/stringtie_mixed/{sample}.log",
+        "logs/mixed_stringtie/{sample}.log",
     threads: 32
     params:
         extra=ST_STRAND + config["stringtie_params"],
@@ -16,13 +16,13 @@ rule stringtie_mixed:
 
 
 ### Merge if using as a guide later
-rule stringtie_mixed_merge:
+rule mixed_stringtie_merge:
     input:
         expand("results/stringtie_mixed/{SID}.gtf", SID = SAMP_NAMES),
     output:
-        "results/stringtie_mixed_merge/stringtie_mixed_merged.gtf",
+        "results/mixed_stringtie_merge/mixed_stringtie_merged.gtf",
     log:
-        "logs/stringtie_mixed_merge/stringtie_mixed_merged.log",
+        "logs/mixed_stringtie_merge/mixed_stringtie_merged.log",
     threads: 10
     params:
         extra=config["stringtie_mixed_merge_params"],
@@ -35,11 +35,11 @@ rule stringtie_mixed_merge:
 if MIX_IS_FINAL:
 
     ### Remove small transcripts from including SpliceWiz novel targets
-    rule filter_mixed_annotation:
+    rule mixed_filter_annotation:
         input:
-            "results/stringtie_mixed_merge/stringtie_mixed_merged.gtf",
+            FINAL_INPUT
         output:
-            "results/filter_annotation/filter_mixed_annotation.gtf",
+            "results/final_annotation/final_annotation.gtf",
         params:
             extra=config["filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),
@@ -57,11 +57,11 @@ if MIX_IS_FINAL:
 else:
 
     ### Remove small transcripts from including SpliceWiz novel targets
-    rule filter_mixed_annotation:
+    rule mixed_filter_annotation:
         input:
-            "results/stringtie_mixed_merge/stringtie_mixed_merged.gtf",
+            "results/mixed_stringtie_merge/mixed_stringtie_merged.gtf",
         output:
-            "results/filter_mixed_annotation/filter_mixed_annotation.gtf",
+            "results/mixed_filter_annotation/mixed_filter_annotation.gtf",
         params:
             extra=config["filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),

@@ -1,11 +1,11 @@
-rule SR_stringtie:
+rule shortread_stringtie:
     input:
         bam="results/sorted/sorted_{sample}.bam",
         guide=SR_GUIDE_GTF,
     output:
-        "results/SR_stringtie/{sample}.gtf",
+        "results/shortread_stringtie/{sample}.gtf",
     log:
-        "logs/SR_stringtie/{sample}.log",
+        "logs/shortread_stringtie/{sample}.log",
     threads: 32
     params:
         extra=ST_STRAND + config["stringtie_params"],
@@ -16,13 +16,13 @@ rule SR_stringtie:
 
 
 
-rule SR_stringtie_merge:
+rule shortread_stringtie_merge:
     input:
         expand("results/SR_stringtie/{SID}.gtf", SID = SAMP_NAMES),
     output:
-        "results/SR_stringtie_merge/SR_stringtie_merged.gtf",
+        "results/shortread_stringtie_merge/shortread_stringtie_merged.gtf",
     log:
-        "logs/SR_stringtie_merge/SR_stringtie_merged.log",
+        "logs/shortread_stringtie_merge/shortread_stringtie_merge.log",
     threads: 10
     params:
         extra=config["SR_stringtie_merge_params"],
@@ -34,9 +34,9 @@ rule SR_stringtie_merge:
 if SR_IS_FINAL:
 
     ### Remove small transcripts from including SpliceWiz novel targets
-    rule SR_filter_annotation:
+    rule shortread_filter_annotation:
         input:
-            "results/clean_assembly/stringtie_merged.gtf",
+            FINAL_INPUT
         output:
             "results/final_annotation/final_annotation.gtf",
         params:
@@ -56,11 +56,11 @@ if SR_IS_FINAL:
 else:
 
     ### Remove small transcripts from including SpliceWiz novel targets
-    rule SR_filter_annotation:
+    rule shortread_filter_annotation:
         input:
-            "results/clean_assembly/stringtie_merged.gtf",
+            "results/shortread_stringtie_merge/shortead_stringtie_merged.gtf",
         output:
-            "results/SR_filter_annotation/filtered_SR_annotation.gtf",
+            "results/shortread_filter_annotation/shortread_filtered_annotation.gtf",
         params:
             extra=config["filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),
