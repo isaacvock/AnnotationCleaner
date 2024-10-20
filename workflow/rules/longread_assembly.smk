@@ -19,7 +19,7 @@ rule longread_stringtie_merge:
     input:
         expand("results/longread_stringtie/{SID}.gtf", SID=LONGREAD_NAMES),
     output:
-        "results/longread_stringtie_merge/longread_stringtie_merged.gtf",
+        "results/longread_filter_annotation/longread_filtered_annotation.gtf",
     log:
         "logs/longread_stringtie_merge/longread_stringtie_merged.log",
     threads: 10
