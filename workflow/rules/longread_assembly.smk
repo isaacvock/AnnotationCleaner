@@ -61,7 +61,7 @@ else:
         input:
             "results/longread_stringtie_merge/stringtie_merged.gtf",
         output:
-            "results/filter_longread_annotation/filtered_longread_annotation.gtf",
+            "results/longread_filter_annotation/longread_filtered_annotation.gtf",
         params:
             extra=config["longread_filter_params"],
             rscript=workflow.source_path("../scripts/filter_annotation.R"),
