@@ -18,7 +18,7 @@ rule shortread_stringtie:
 
 rule shortread_stringtie_merge:
     input:
-        expand("results/SR_stringtie/{SID}.gtf", SID = SAMP_NAMES),
+        expand("results/shortread_stringtie/{SID}.gtf", SID = SAMP_NAMES),
     output:
         "results/shortread_stringtie_merge/shortread_stringtie_merged.gtf",
     log:

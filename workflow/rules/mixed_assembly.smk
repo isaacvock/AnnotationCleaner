@@ -18,7 +18,7 @@ rule mixed_stringtie:
 ### Merge if using as a guide later
 rule mixed_stringtie_merge:
     input:
-        expand("results/stringtie_mixed/{SID}.gtf", SID = SAMP_NAMES),
+        expand("results/mixed_stringtie/{SID}.gtf", SID = SAMP_NAMES),
     output:
         "results/mixed_stringtie_merge/mixed_stringtie_merged.gtf",
     log:
