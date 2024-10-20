@@ -89,7 +89,7 @@ elif LRSR_STRAT == "mix_then_SR":
     LR_GUIDE_GTF = DUMMY_PATH
     SR_GUIDE_GTF = FILTERED_MIX_GTF
 
-    if config["option"]["trim_reference"]:
+    if config["options"]["trim_reference"]:
 
         MIX_GUIDE_GTF = CLEANED_REFERENCE
 
