@@ -208,7 +208,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
                     all_IF = intron_id) %>%
       dplyr::select(GF, all_IF, intron_length)
     
-    # Intronless genes  
+    # Intronless genes 
     intronless_genes <- flat_gtf %>%
       group_by(gene_id) %>%
       summarise(total_length = width[type == "aggregate_gene"],
@@ -216,20 +216,33 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
       mutate(intron_length = total_length - exon_length) %>%
       filter(intron_length == 0) %>%
       mutate(RPK = 0,
-             mutrate = 0,
-             sample = sampleID) %>%
+             mutrate = 0)
+    
+    # Add sample IDs
+    nrow_IGs <- nrow(intronless_genes)
+    sample_names <- unique(intronic_background$sample)
+    feature_names <- unique(intronless_genes$gene_id)
+    sample_df <- tibble(sample = rep(sample_names,
+                                     each = length(feature_names)),
+                        gene_id = rep(feature_names,
+                                      times = length(sample_names)))
+    
+
+    intronless_genes <- intronless_genes %>%
+      inner_join(sample_df,
+                 by = "gene_id") %>%
       dplyr::select(sample, gene_id, RPK, mutrate, intron_length)
-      
+    
+    
     colnames(intronless_genes) <- c("sample", "GF", "RPK", "mutrate", "intron_length")
     
-    
-    
+
     # RPK normalize
-      # If there is more than 1 intronic bin, use the minimum of either the
-      # max RPK of all bins or the median RPK plus some constant (user-defined, default of 1.5) times
-      # the mad of RPKs (mad calculated on log-scale). Captures uncertainty in the intronic
-      # RPK estimate that the negative binomial model downstream of this 
-      # does not currently account for.
+    # If there is more than 1 intronic bin, use the minimum of either the
+    # max RPK of all bins or the median RPK plus some constant (user-defined, default of 1.5) times
+    # the mad of RPKs (mad calculated on log-scale). Captures uncertainty in the intronic
+    # RPK estimate that the negative binomial model downstream of this 
+    # does not currently account for.
     intronic_background <- intronic_background %>%
       mutate(RPK = (reads + 1)/((intron_length + ((read_length - 1)))/1000)) %>%
       group_by(sample, GF) %>%
