@@ -518,8 +518,58 @@ clean_annotation <- function(EF_to_TF,
   ### TO-DO: NEED TO HAVE AN INTRONLESS EDGE CASE HANDLE WHERE I DO A BETTER JOB
   ### OF NOT PRUNING ANY BINS WHICH WOULD INTRODUCE A NEW SPLICE JUNCTION
   
-  ### Can I do it all from EF_test?
-  # I think so! And it was stupid easy...
+  ### Annotate retained intron bins
+  # Need to catch edge case where retained intron is included in first
+  # or last exon and includes some crap exons. Currently, this risks not
+  # getting flagged as problematic.
+  # 
+  # Potential retained intron start/end bin is either one where it is followed or preceded by a splice
+  # junction in a different isoform, but not the current isoform being assessed.
+  # First part of this code flags these as RI. 
+  #
+  # These potential retained intron start/end bins may just be alternative splice sites,
+  # so they only enclose a true RI if no splice junctions exist between them.
+  # The next part of the code thus assesses if this is the case and determines the
+  # TRUE RI status of each bin, filling in values of TRUE for those bins between the
+  # start and end.
+  #
+  # One consequence of this is that the retained intron end bin will get flagged
+  # as not part of the RI, so the last thing to do is cover for this edge case.
+  EF_test <- EF_test %>% 
+    group_by(all_EF) %>% 
+    # Flag start and end of an RI region
+    mutate(RI = ifelse((any(followed_by_sj) & !followed_by_sj) | 
+                         (any(preceded_by_sj) & !preceded_by_sj), 
+                       TRUE, 
+                       FALSE)) %>%
+    group_by(all_XF) %>%
+    # Determine if potential RI is actually RI:
+    arrange(exonic_part_number) %>%
+    mutate(RI_check = cumsum(RI),
+           sj_check = cumsum(preceded_by_sj | followed_by_sj)) %>%
+    group_by(all_XF, RI_check) %>%
+    mutate(RI_intermed = ifelse(length(unique(sj_check)) == 1,
+                                TRUE,
+                                FALSE)) %>%
+    ungroup() %>%
+    group_by(all_XF) %>%
+    # Edge case; first and last bin may get called RI if is immediately followed by
+    # an RI. Correct these:
+    mutate(RI_final = RI_intermed & 
+             (RI_check != min(RI_check)) &
+             (RI_check != max(RI_check))) %>%
+    # Make sure RI end bin is called as RI
+    mutate(RI_final = ifelse(lag(RI_final, order_by = exonic_part_number,
+                                 default = FALSE) &
+                               !lead(RI_final, order_by = exonic_part_number,
+                                     default = FALSE) ,
+                             TRUE,
+                             RI_final)) %>%
+    dplyr::select(-RI, -RI_check, -sj_check, -RI_intermed) %>%
+    dplyr::rename(RI = RI_final)
+    
+
+  ### Prune when possible, and flag as problematic when not
   EF_test2 <- EF_test %>%
     # annotate some bins as likely intronic
     mutate(likely_intronic = all_EF %in% crap_exons$all_EF) %>%
@@ -541,19 +591,20 @@ clean_annotation <- function(EF_to_TF,
                                      max(exonic_part_number[preceded_by_sj]))) %>%
     ungroup() %>%
     mutate(cannot_prune = (first_good > last_bin_b4_1st_sj) |
-    (is.infinite(first_good)) |
-    (last_good < first_bin_after_last_sj)) %>%
+             (is.infinite(first_good)) |
+             (last_good < first_bin_after_last_sj)) %>%
     ungroup() %>%
     # Annotate which bins should be pruned
     mutate(prune = ((exonic_part_number < first_good) |
                       (exonic_part_number > last_good)) & !cannot_prune) %>% # Don't flag any exonic bins as prunable if pruning introduces splice junctions
     group_by(GF, all_XF) %>%
-    mutate(problematic = cannot_prune |
-             (any(exonic_part_number[likely_intronic] >= unique(last_bin_b4_1st_sj) & exonic_part_number[likely_intronic] <= unique(first_bin_after_last_sj))) |
-             is.infinite(unique(first_good))) # Catch transcripts with bad internal bins or no good bins at all
+    mutate(problematic = cannot_prune | # Didn't pass tests above
+             (any(RI & likely_intronic)) | # Likely bogus retained intron
+             (any(exonic_part_number[likely_intronic] >= unique(last_bin_b4_1st_sj) & exonic_part_number[likely_intronic] <= unique(first_bin_after_last_sj))) | # Bin is between first and last splice junction, so removing it would introduce splice junction
+             is.infinite(unique(first_good))) # No good bins
   
   # Save this useful table with details regaring all exons and their prunability
-  write_csv(EF_test, file = paste0(dir, "/exon_details.csv"))
+  write_csv(EF_test2, file = paste0(dir, "/exon_details.csv"))
   
   EF_test2 %>%
     group_by(GF, all_XF) %>%
