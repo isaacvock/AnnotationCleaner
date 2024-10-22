@@ -58,7 +58,7 @@ else:
     ### Remove small transcripts from including SpliceWiz novel targets
     rule shortread_filter_annotation:
         input:
-            "results/shortread_stringtie_merge/shortead_stringtie_merged.gtf",
+            "results/shortread_stringtie_merge/shortread_stringtie_merged.gtf",
         output:
             "results/shortread_filter_annotation/shortread_filtered_annotation.gtf",
         params:
