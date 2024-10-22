@@ -38,7 +38,9 @@ PE: True
 
 
 # Tuning the pipeline
-  # 1) LRSR_strat: What strategy to use for long + short read integration?
+  # 1) trim_reference: Trim the provided reference?
+  # 2) trim_assembly: Trim the final assembly?
+  # 3) LRSR_strat: What strategy to use for long + short read integration?
     # "mix_only": Use StringTie's --mix mode to generate final annotation
     # "LR_then_SR": Use long read data to generate an assembly that is used
     #   as a guide for short read assembly.
@@ -46,10 +48,8 @@ PE: True
     #   is used as a guide for short read assembly. Strategy used in NMDtxDB paper ().
     # "LR_then_mix": Use long read data to generate an assembly that is used as a guide
     #   for a long read + short read StringTie --mix assembly. 
-  # 1) use_mix: Use stringtie's --mix mode for using both long and short reads?
-  #   If not, then long read will be used
-  # 2) trim_reference: Trim the provided reference?
-  # 3) trim_assembly: Trim the final assembly?
+    # "SR_then_mix": Use short read data to generate an assembly that is used as a guide
+    #   for a long read + short read Stringtie --mix assembly.
 options:
   trim_reference: True
   trim_assembly: True
