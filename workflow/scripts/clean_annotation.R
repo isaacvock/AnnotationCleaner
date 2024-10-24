@@ -682,7 +682,8 @@ clean_annotation <- function(EF_to_TF,
     group_by(GF, all_XF) %>%
     summarise(new_start_base = start[exonic_part_number == min(exonic_part_number)], # DO I NEED TO ASSESS STRANDEDNESS?
               new_end_base = end[exonic_part_number == max(exonic_part_number)],
-              problematic = any(problematic))
+              problematic = any(problematic)) %>%
+    dplyr::filter(new_start_base < new_end_base)
   
   
   ### NOTE: CURRENTLY THERE IS A WARNING WHEN I INNER JOIN BECAUSE CHECK HAS
