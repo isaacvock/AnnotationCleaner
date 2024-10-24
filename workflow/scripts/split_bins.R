@@ -25,7 +25,7 @@ option_list <- list(
   make_option(c("-o", "--output", type="chracter"),
               help = "Path to output flat gtf"),
   make_option(c("-s", "--sizelimit"),
-              default = 50,
+              default = 100,
               help = "Largest exon bin size allowed. Larger bins will be split up into smaller bins."),
   make_option(c("-n", "--intronsize"),
               default = 300,
