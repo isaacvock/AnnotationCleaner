@@ -246,9 +246,7 @@ score_exons <- function(cB, flat_gtf, gtf, dir,
     intronic_background <- intronic_background %>%
       mutate(RPK = (reads + 1)/((intron_length + ((read_length - 1)))/1000)) %>%
       group_by(sample, GF) %>%
-      summarise(RPK = ifelse(n() < 2, 
-                             mean(RPK),
-                             pmin(median(RPK) + ifactor*stats::mad(RPK), max(RPK))),
+      summarise(RPK = median(RPK),
                 intron_length = sum(intron_length),
                 mutrate = mean(mutrate))
     
@@ -689,37 +687,65 @@ clean_annotation <- function(EF_to_TF,
   ### NOTE: CURRENTLY THERE IS A WARNING WHEN I INNER JOIN BECAUSE CHECK HAS
   ### ONE ROW FOR EACH RETAINED EXONIC BIN
   
-  # Filter out bogus transcripts and prune ends of real transcripts
-  transcript_annotation <- gtf %>%
-    filter(type == "transcript") %>%
-    inner_join(check %>%
-                 ungroup() %>%
-                 mutate(transcript_id = all_XF) %>%
-                 dplyr::select(transcript_id, new_start_base, new_end_base, problematic),
-               by = "transcript_id") %>%
-    mutate(start = new_start_base,
-           end = new_end_base) %>%
-    mutate(width = end - start)  %>%
-    dplyr::select(-new_start_base, -new_end_base)
+### TO-DO: fix fact that all exons are getting the new start and ends
+# Filter out bogus exons and prune ends of real exons
+exon_annotation <- gtf %>%
+  filter(type == "exon") %>%
+  inner_join(check %>%
+               ungroup() %>%
+               mutate(transcript_id = all_XF) %>%
+               dplyr::select(transcript_id, new_start_base, new_end_base, problematic),
+             by = "transcript_id") %>%
+  mutate(start = ifelse(start < new_start_base,
+                        new_start_base,
+                        start),
+         end = ifelse(end > new_end_base,
+                      new_end_base,
+                      end)) %>%
+  mutate(width = end - start + 1)  %>%
+  dplyr::select(-new_start_base, -new_end_base)
+
+
+get_exon_number <- function(n, strand){
   
+  if(strand == "-"){
+    return(as.character(n:1))
+  }else{
+    return(as.character(1:n))
+  }
   
-  ### TO-DO: fix fact that all exons are getting the new start and ends
-  # Filter out bogus exons and prune ends of real exons
-  exon_annotation <- gtf %>%
-    filter(type == "exon") %>%
-    inner_join(check %>%
-                 ungroup() %>%
-                 mutate(transcript_id = all_XF) %>%
-                 dplyr::select(transcript_id, new_start_base, new_end_base, problematic),
-               by = "transcript_id") %>%
-    mutate(start = ifelse(start < new_start_base,
-                          new_start_base,
-                          start),
-           end = ifelse(end > new_end_base,
-                        new_end_base,
-                        end)) %>%
-    mutate(width = end - start)  %>%
-    dplyr::select(-new_start_base, -new_end_base)
+}
+
+# RefSeq has these wild annotations where separate exons
+# are not actually spliced exons, but just two different regions
+# of the same exon. This can lead to trimming yield negative
+# length exons. This deals with that weird edge case and renumbers
+# exons accordingly
+exon_annotation <- exon_annotation %>%
+  filter(width > 0) %>%
+  group_by(transcript_id) %>%
+  arrange(start) %>%
+  mutate(exon_number = get_exon_number(dplyr::n(), unique(strand)))
+
+
+# Get transcript ends
+transcript_ends <- exon_annotation %>%
+  group_by(transcript_id) %>%
+  summarise(new_start_base = min(start),
+            new_end_base = max(end),
+            problematic = unique(problematic))
+
+
+# Filter out bogus transcripts and prune ends of real transcripts
+transcript_annotation <- gtf %>%
+  filter(type == "transcript") %>%
+  inner_join(transcript_ends,
+             by = "transcript_id") %>%
+  mutate(start = new_start_base,
+         end = new_end_base) %>%
+  mutate(width = end - start + 1)  %>%
+  dplyr::select(-new_start_base, -new_end_base)
+
   
 
   ### TO-DO: IMPLEMENT OPTION TO FILTER OUT PROBLEMATIC TRANSCRIPTS
