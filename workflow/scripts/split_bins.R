@@ -163,13 +163,13 @@ plan(multisession, workers = opt$threads)
 # Bin intronic regions
 list_of_higher_res_introns <- future_map(seq_len(nrow(large_introns)), ~binning(large_introns[.x, ], 
                                                                                 type = "intronic_part",
-                                                                                size_limit = opt$sizelimit))
+                                                                                size_limit = opt$intronsize))
 higher_res_introns <- bind_rows(list_of_higher_res_introns)
 
 
 # Bin exonic regions
 list_of_higher_res_exons <- future_map(seq_len(nrow(large_exons)), ~binning(large_exons[.x, ], 
-                                                                                     size_limit = opt$intronsize))
+                                                                                     size_limit = opt$sizelimit))
 higher_res_exons <- bind_rows(list_of_higher_res_exons)
 
 
