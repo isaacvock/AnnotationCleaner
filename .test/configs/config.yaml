@@ -42,16 +42,36 @@ PE: True
 use_reference: True
 
 # Parameters to pass to Stringtie 
-stringtie_params: "-f 0.05 -j 10 -c 10 -s 10 -g 1"
+shortread_stringtie_params: "-f 0.05"
 
 # Parameters to pass to Stringtie --merge
-stringtie_merge_params: ""
+shortread_stringtie_merge_params: ""
+
+# Parameters to pass to Stringtie 
+longread_stringtie_params: "-f 0.05"
+
+# Parameters to pass to Stringtie --merge
+longread_stringtie_merge_params: ""
+
+# Parameters to pass to Stringtie 
+mixed_stringtie_params: "-f 0.05"
+
+# Parameters to pass to Stringtie --merge
+mixed_stringtie_merge_params: ""
 
 ##### PARAMETERS AFFECTING ALL ASSEMBLERS
 
 # Parameters to pass to samtools (other than input, output, -m, and -T)
 samtools_params: ""
 
+options:
+  trim_reference: True
+  trim_assembly: True
+  LRSR_strat: "LR_then_mix"
+
+
+
+LRSR_pairs:
 
 ##### ANNOTATION PRUNING RSCRIPT PARAMETERS
 
@@ -68,10 +88,10 @@ samtools_params: ""
 #               (default = 2)
 
 # Pruning parameters for StringTie assemblies
-pruning_assembly_params: "--fdr 0.05"
+pruning_assembly_params: "--fdr 0.01"
 
 # Pruning parameters for reference
-pruning_reference_params: "--fdr 0.05"
+pruning_reference_params: "--fdr 0.01"
 
 
 ##### Exonic bin splitting parmaters #####
@@ -97,10 +117,13 @@ feature_counts_params: ""
   # by featureCounts, so sometimes worth increasing this a 
   # bit from "0" to avoid calling a significant fraction of
   # truly exonic reads intronic.
-feature_counts_exon_nonoverlap: "5"
+feature_counts_exon_nonoverlap: "0"
 
 
 ##### ANNOTATION FILTERING RSCRIPT PARAMETERS
 
-filter_params: ""
+shortread_filter_params: ""
 
+mixed_filter_params: ""
+
+longread_filter_params: ""
