@@ -3,5 +3,4 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - stringtie
-  - taco=0.7.3
+  - stringtie=3.0.0
